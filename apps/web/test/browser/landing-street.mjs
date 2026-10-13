@@ -80,8 +80,17 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       const centred = await art();
       assert.ok(centred.top >= 0 && centred.bottom <= height && Math.abs((centred.left + centred.right) / 2 - width / 2) < 2, `${at}: at rest, whole and in the middle`);
       assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.lz-hero')).visibility), 'hidden', `${at}: the first screen's words are gone`);
-      // The dive: the picture is never brought nearer than 1.5 times; a drawn copy of the folder (no see-through wash)
-      // comes up, opens like a book (its cover turning on its near edge), and its dark inside covers the screen at the cut.
+      // The dive: the picture is never brought nearer than 1.5 times; a drawn copy of the folder (no see-through wash) at
+      // its true size opens like a book (its cover turning on its near edge, the bill inside), stays smaller than the
+      // table till the last tenth of the dive, then the pocket in its cover covers the screen at the cut.
+      const folderBox = () => page.evaluate(() => {
+        const parts = ['.zs-cut-inside', '.zs-cut-cover'].map(s => document.querySelector(s).getBoundingClientRect());
+        const cafe = document.querySelector('.zs-cafe img').getBoundingClientRect();
+        return { w: Math.max(...parts.map(r => r.right)) - Math.min(...parts.map(r => r.left)), table: cafe.width * 0.36, receipt: document.querySelector('.zs-cut-receipt').getBoundingClientRect().width };
+      });
+      await along(page, cut - (cut - rest) * 0.15, 1600);
+      const late = await folderBox();
+      assert.ok(late.w > 0 && late.w < late.table && late.receipt > 0, `${at}: at 0.85 of the dive the open folder is smaller than the table (${Math.round(late.w)} < ${Math.round(late.table)} px), the bill inside`);
       await along(page, cut - (cut - rest) * 0.4, 1600);
       const opening = await page.evaluate(() => {
         const svg = document.querySelector('.zs-cutter');
@@ -92,13 +101,13 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       const scale = await page.evaluate(() => Number(/scale\(([\d.]+)\)/.exec(document.querySelector('.zs-world').style.transform)?.[1]));
       assert.ok(scale <= 1.5001 * Math.min(1.12, 2), `${at}: no nearer than 1.5 times its first size (${scale})`);
       const cover = await page.evaluate(() => {
-        const svg = document.querySelector('.zs-cutter'), poly = svg.querySelector('.zs-cut-inside');
+        const svg = document.querySelector('.zs-cutter'), poly = svg.querySelector('.zs-cut-pocket');
         const pts = poly.getAttribute('points').split(' ').map(q => q.split(',').map(Number));
         const inside = (x, y) => { let s = 0; for (let i = 0; i < 4; i++) { const [ax, ay] = pts[i], [bx, by] = pts[(i + 1) % 4]; s += Math.sign((bx - ax) * (y - ay) - (by - ay) * (x - ax)); } return Math.abs(s) === 4; };
         const cs = getComputedStyle(svg);
         return { shown: cs.visibility === 'visible' && cs.opacity === '1', corners: [[0, 0], [innerWidth, 0], [0, innerHeight], [innerWidth, innerHeight]].every(([x, y]) => inside(x, y)), fill: getComputedStyle(poly).fill };
       });
-      assert.deepEqual(cover, { shown: true, corners: true, fill: 'rgb(46, 45, 49)' }, `${at}: the folder's dark inside covers the screen at the cut`);
+      assert.deepEqual(cover, { shown: true, corners: true, fill: 'rgb(46, 45, 49)' }, `${at}: the pocket's charcoal covers the screen at the cut`);
       // Each station: its caption word for word, the rail's stops up to it, its picture in, nothing sideways.
       for (let i = 0; i < 5; i++) {
         await along(page, k[i], 1500);
@@ -212,6 +221,11 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await page.locator('.zs.zs-stacked').waitFor();
       await page.waitForTimeout(300);
       assert.equal(await page.evaluate(() => document.getAnimations().length), 0, `${at}: nothing moves`);
+      if (width >= 760) {
+        // The picture of the dinner fits the first screen under the words, as with motion.
+        const fit = await page.evaluate(() => { const r = document.querySelector('.zs-cafe .lz-art img').getBoundingClientRect(); return { bottom: r.bottom, vh: innerHeight }; });
+        assert.ok(fit.bottom <= fit.vh - 16, `${at}: the dinner fits the first screen (${Math.round(fit.bottom)} of ${fit.vh})`);
+      }
       assert.deepEqual((await page.locator('.zs-say').allTextContents()).map(flat), SAY, `${at}: every caption`);
       assert.ok(await page.locator('.zs-station-in').evaluateAll(list => list.every(el => getComputedStyle(el).position !== 'sticky')), `${at}: no station is held`);
       // After the last station night falls on the page itself: a fade from white to the band's ink.
@@ -229,6 +243,17 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await context.close();
       visits++;
       console.log(`ok ${at}`);
+    }
+    // ── Reduced motion at the other laptop sizes: the dinner fits the first screen ──
+    for (const [width, height] of [[1280, 720], [1366, 768], [1512, 860]]) {
+      const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce', locale: 'en-US' });
+      const page = await context.newPage();
+      await page.goto(origin + '/');
+      await page.locator('.zs.zs-stacked').waitFor();
+      await page.waitForTimeout(200);
+      const fit = await page.evaluate(() => { const r = document.querySelector('.zs-cafe .lz-art img').getBoundingClientRect(); return { bottom: r.bottom, vh: innerHeight }; });
+      assert.ok(fit.bottom <= fit.vh - 16, `${engine} ${width} reduce: the dinner fits the first screen (${Math.round(fit.bottom)} of ${fit.vh})`);
+      await context.close();
     }
   } finally {
     await browser.close();

@@ -100,6 +100,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await along(page, 1, 1600);
       assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.zs-stage')).backgroundColor), 'rgb(11, 12, 15)', `${at}: night at the end`);
       assert.ok(await page.evaluate(() => document.documentElement.classList.contains('lz-night')), `${at}: night glass on the header`);
+      assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.zs-world')).visibility), 'hidden', `${at}: nothing drawn (not the café's picture) under the street at night`);
       assert.equal(await page.locator('.zs-hud-say.on').count(), 0, `${at}: no caption at night`);
       // The band after the street begins in the same ink: no white between them.
       assert.match(await page.locator('.ls-band').evaluate(el => getComputedStyle(el).backgroundImage), /^linear-gradient\(rgb\(11, 12, 15\)/, `${at}: the band begins in ink`);
@@ -115,6 +116,51 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await page.evaluate(() => document.querySelector('.lz-motion').click());
       assert.deepEqual(requests.filter(url => !url.startsWith(origin) && !url.startsWith('data:') && !url.startsWith('blob:')), [], `${at}: nothing from another site`);
       assert.deepEqual(errors, [], `${at}: no errors`);
+      await context.close();
+      visits++;
+      console.log(`ok ${at}`);
+    }
+    // The people's labels on a wide screen never overlap: 30 points along the 3D street (and the moments the rows and
+    // the grid settle) at three widths; at the table and the bank the legend stands under the caption instead.
+    for (const [width, height] of [[1280, 720], [1440, 900], [1512, 860]]) {
+      const at = `${engine} ${width} labels`;
+      const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'no-preference', locale: 'en-US' });
+      // Every frame is told it came 16.7 ms after the last, so that on a busy test machine the street's frame guard keeps
+      // the 3D street on (what is checked here is where the labels stand, not how fast frames come).
+      await context.addInitScript(() => {
+        const raf = window.requestAnimationFrame.bind(window);
+        const realNow = performance.now.bind(performance);
+        let real = -1, steady = realNow();
+        performance.now = () => steady;
+        window.requestAnimationFrame = callback => raf(ts => { if (ts !== real) { real = ts; steady += 16.7; } callback(steady); });
+      });
+      const page = await context.newPage();
+      await page.goto(origin + '/');
+      await page.locator('.zs').waitFor();
+      await page.waitForTimeout(800);
+      await page.evaluate(() => scrollTo(0, 120));
+      if (!(await page.waitForFunction(() => document.querySelector('.zs.zs-3d-ready .zs-3d canvas') !== null, null, { timeout: 90000 }).then(() => true, () => false))) { await context.close(); continue; }
+      const points = [...Array.from({ length: 30 }, (_, i) => 0.02 + (i / 29) * 0.96), 0.205, 0.214, 0.218, 0.222, 0.235, 0.33, 0.338, 0.344, 0.82, 0.85, 0.88].sort((x, y) => x - y);
+      let shown = 0;
+      for (const q of points) {
+        await along(page, q, 320);
+        const rects = await page.evaluate(() => [...document.querySelectorAll('.zs-3d-labels .zs-chip')]
+          .filter(c => getComputedStyle(c.parentElement).display !== 'none' && Number(getComputedStyle(c).opacity) > 0.02)
+          .map(c => { const r = c.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom, c.querySelector('b').textContent]; }));
+        shown += rects.length;
+        for (let a = 0; a < rects.length; a++) {
+          for (let b = a + 1; b < rects.length; b++) {
+            const [A, B] = [rects[a], rects[b]];
+            assert.ok(!(A[0] < B[2] && B[0] < A[2] && A[1] < B[3] && B[1] < A[3]), `${at}: at ${q.toFixed(3)} ${A[4]}'s and ${B[4]}'s labels overlap`);
+          }
+        }
+      }
+      assert.ok(shown > 0, `${at}: labels were shown along the way`);
+      for (const q of [0.54, 0.72]) {
+        await along(page, q, 700);
+        assert.ok(await page.evaluate(() => document.querySelector('.zs-hud').classList.contains('zs-legend-on') && getComputedStyle(document.querySelector('.zs-legend')).display === 'grid'), `${at}: the legend at ${q}`);
+        assert.equal(await page.evaluate(() => [...document.querySelectorAll('.zs-3d-labels .zs-chip')].filter(c => Number(getComputedStyle(c).opacity) > 0.02).length), 0, `${at}: no labels at ${q}`);
+      }
       await context.close();
       visits++;
       console.log(`ok ${at}`);

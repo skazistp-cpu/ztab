@@ -24,7 +24,9 @@ export interface Lamp { x: number; bulb: Vector3; index: number }
 
 export interface Street { bulbs: Bulb[]; lamps: Lamp[]; windows: Bulb[] }
 
-export function buildStreet(world: World): Street {
+/** The street, built in steps: the page gives the main thread back between them (index.ts), so a phone's slower
+ *  processor never meets one long task as the visitor starts to scroll. */
+export function* buildStreetSteps(world: World): Generator<void, Street, void> {
   // In chunks along the street, so what is off screen is not drawn (nor drawn into the shadow map).
   const m = new ChunkMesher(12);
   const crowns = new ChunkMesher(12);
@@ -66,6 +68,7 @@ export function buildStreet(world: World): Street {
     const from = new Vector3(x, 2.92, LAMP_Z);
     bulbs.push(...stringLights(m, from, top, 0.42, 5, i));
   });
+  yield;
 
   // The far side: a row of shopfronts the length of the street, trees in planters between some of them.
   const widths = [3.2, 2.5, 3.7, 2.8, 3.1, 2.4, 3.5];
@@ -92,6 +95,7 @@ export function buildStreet(world: World): Street {
     } else sx += 0.12;
     k++;
   }
+  yield;
   // Trees along the back walkway, between the stations.
   for (const x of [-4.5, 5.3, 14.6, 25.4, 34.8, 45.2]) tree(m, at(x, 0, -5.75), 0.92, x * 0.37, crowns);
 
@@ -118,6 +122,14 @@ export function buildStreet(world: World): Street {
   m.all().forEach((chunk, i) => world.addStill(chunk, `street-${i}`));
   crowns.all().forEach((chunk, i) => world.addStill(chunk, `crowns-${i}`, false));
   return { bulbs, lamps, windows };
+}
+
+/** The street, built at once. */
+export function buildStreet(world: World): Street {
+  const steps = buildStreetSteps(world);
+  let step = steps.next();
+  while (!step.done) step = steps.next();
+  return step.value;
 }
 
 export type { Matrix4 };

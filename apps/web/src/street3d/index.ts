@@ -1,7 +1,7 @@
 import { OrthographicCamera, Vector3 } from 'three';
 import { Pipeline } from './pipeline.ts';
 import { World } from './world.ts';
-import { buildStreet } from './street.ts';
+import { buildStreetSteps } from './street.ts';
 import { act12, PEOPLE, type Act, type Item, type Spot } from './act12.ts';
 import { act345 } from './act345.ts';
 import { INLAY_Z, inlayHead, STUB_X, STUB_Z, stubLit } from './spots.ts';
@@ -65,8 +65,13 @@ const DUSK: [number, number] = [0.94, 1.0];
 /** Each station's centre on the scroll (the middle of the camera's stay there). */
 const STATIONS = [0.15, 0.322, 0.54, 0.72, 0.87];
 
+/** Gives the main thread back for a moment (a frame can be drawn, the page can answer the visitor). */
+const breathe = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 0));
+
 export function mountStreet(host: HTMLElement, opts: StreetOptions = {}): Promise<StreetHandle & { debug: StreetDebug }> {
-  return new Promise((resolve, reject) => {
+  // The mount comes in short steps, not one long task: on a phone at a quarter of a desktop's speed no step is longer
+  // than about a tenth of a second, and the shaders are compiled off the main thread where the browser can.
+  return new Promise((resolve, reject) => { (async () => {
     const canvas = document.createElement('canvas');
     canvas.setAttribute('aria-hidden', 'true');
     canvas.style.cssText = 'display:block;width:100%;height:100%;';
@@ -84,11 +89,17 @@ export function mountStreet(host: HTMLElement, opts: StreetOptions = {}): Promis
     try {
       pipe = new Pipeline(canvas, gl);
       world = new World();
-      const street = buildStreet(world);
+      await breathe();
+      const steps = buildStreetSteps(world);
+      let step = steps.next();
+      while (!step.done) { await breathe(); step = steps.next(); }
+      const street = step.value;
       lamps = street.lamps;
       bulbs = street.bulbs;
       windows = street.windows;
+      await breathe();
       const late = act345(world);
+      await breathe();
       acts = [act12(world), late];
       bulbs = bulbs.concat(late.bulbs);
       birds = new Birds(world);
@@ -289,13 +300,15 @@ export function mountStreet(host: HTMLElement, opts: StreetOptions = {}): Promis
     document.addEventListener('visibilitychange', onVisibility);
 
     size();
-    // First frame now, so the handle resolves with a picture on the canvas; and every material compiled up front
-    // (the glows, steam and rays appear only later, and must not stall a frame when they do).
-    draw();
+    // Every material compiled up front (the glows, steam and rays appear only later, and must not stall a frame when
+    // they do), in parallel off the main thread where the browser can; then the first frame, so the handle resolves
+    // with a picture on the canvas.
+    await breathe();
     try {
-      pipe.renderer.compile(world.scene, camera);
-      for (const o of [world.halos.mesh, ...world.overlays]) pipe.renderer.compile(o, camera);
+      await pipe.renderer.compileAsync(world.scene, camera);
+      for (const o of [world.halos.mesh, ...world.overlays]) await pipe.renderer.compileAsync(o, camera);
     } catch { /* compiling ahead is only an optimisation */ }
+    draw();
 
     const handle: StreetHandle & { debug: StreetDebug } = {
       setProgress(next: number): void {
@@ -375,5 +388,5 @@ export function mountStreet(host: HTMLElement, opts: StreetOptions = {}): Promis
     };
     wake();
     resolve(handle);
-  });
+  })().catch(err => reject(err instanceof Error ? err : new Error(String(err)))); });
 }

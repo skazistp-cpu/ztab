@@ -341,6 +341,19 @@ type Mount3D = (host: HTMLElement, options: { onReady?: () => void }) => Promise
 const LOAD3D = import.meta.glob<{ mountStreet: Mount3D }>('./street3d/index.ts')['./street3d/index.ts'];
 /** Whether the 3D street can be tried here: it is in the build and the browser has WebGL 2 (no context is made to ask). */
 const can3d = (): boolean => Boolean(LOAD3D) && typeof WebGL2RenderingContext !== 'undefined';
+/** The 3D street's progress at which a wide screen's people get the legend instead of labels (the table and the bank). */
+const LEGEND_FROM = 0.45, LEGEND_TO = 0.8;
+/**
+ * Whether person k's object stands still at the 3D street's progress q, so that its label may show (the spans follow
+ * the 3D street's own beats, street3d/act12.ts and act345.ts): station 1's row from when it has settled until the
+ * card flies; station 2's grid from when the card has risen until the act moves on; station 5's rows once the tick is in.
+ */
+function settled(q: number, k: number, item: { active: boolean; done: boolean } | undefined): boolean {
+  if (q >= 0.214 && q < 0.222 + k * 0.0045) return true;
+  if (q >= 0.316 + (k % 3) * 0.006 + (k < 3 ? 0.014 : 0) && q < 0.345) return true;
+  if (q >= LEGEND_TO) return Boolean(item?.done) && !item?.active;
+  return false;
+}
 /** A person's id in the 3D street: the name in plain lower-case letters (Tomás is tomas). */
 const idOf = (name: string): string => name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -356,11 +369,11 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
   const cafeTile = h('div', { class: 'zs-cafe' }, cafe);
   const props = h('div', { class: 'zs-props', 'aria-hidden': 'true' });
   const world = h('div', { class: 'zs-world' }, props, cafeTile, ...built.map(b => b.el));
-  // The cut: a drawn copy of the bill folder's top (charcoal with its gold edge), laid exactly over the picture's folder
-  // and grown from it until it covers the screen; on the drawn street it then closes onto the printer of station 1.
-  // The folder opens like a book: its inside, its cover (turning on its near edge), the cover's gold edge and a glint
-  // running along the spine; then the inside grows over the screen.
-  const part = <K extends 'polygon' | 'polyline'>(tag: K, cls: string): SVGElementTagNameMap[K] => {
+  // The cut. In the dive the bill folder, drawn over the picture's own at its true size, opens like a book: its cover
+  // turns on its near edge with a soft shadow under it, its underside lighter, inked, gold-stitched and with a pocket;
+  // inside, a cream page and the bill. Then the camera pushes into the pocket, whose charcoal fills the screen for the
+  // cut to the printer (on the drawn street that charcoal then closes onto station 1's printer).
+  const part = <K extends 'polygon' | 'polyline' | 'path'>(tag: K, cls: string): SVGElementTagNameMap[K] => {
     const el = document.createElementNS(NS, tag);
     el.setAttribute('class', cls);
     return el;
@@ -368,18 +381,40 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
   const cutFace = part('polygon', 'zs-cut-face');
   const cutEdge = part('polyline', 'zs-cut-edge');
   const cutInside = part('polygon', 'zs-cut-inside');
+  const cutPage = part('polygon', 'zs-cut-page');
+  const cutReceipt = part('polygon', 'zs-cut-receipt');
+  const cutLines = part('path', 'zs-cut-lines');
+  const cutTotal = part('path', 'zs-cut-total');
+  const cutShadow = part('polygon', 'zs-cut-shadow');
+  const cutThick = part('polygon', 'zs-cut-thick');
   const cutCover = part('polygon', 'zs-cut-cover');
+  const cutPocket = part('polygon', 'zs-cut-pocket');
+  const cutLip = part('polyline', 'zs-cut-lip');
   const cutStitch = part('polygon', 'zs-cut-stitch');
-  const cutGild = part('polyline', 'zs-cut-gild');
+  const cutGild = part('polygon', 'zs-cut-gild');
   const cutGlint = part('polyline', 'zs-cut-glint');
   cutGlint.setAttribute('pathLength', '1');
+  const softBlur = document.createElementNS(NS, 'feGaussianBlur');
+  const soft = document.createElementNS(NS, 'filter');
+  for (const [k, v] of Object.entries({ id: 'zs-soft', x: '-50%', y: '-50%', width: '200%', height: '200%' })) soft.setAttribute(k, v);
+  soft.append(softBlur);
+  const defs = document.createElementNS(NS, 'defs');
+  defs.append(soft);
+  cutShadow.setAttribute('filter', 'url(#zs-soft)');
   const cutter = document.createElementNS(NS, 'svg');
   cutter.setAttribute('class', 'zs-cutter');
   cutter.setAttribute('aria-hidden', 'true');
-  cutter.append(cutFace, cutEdge, cutInside, cutCover, cutStitch, cutGild, cutGlint);
+  cutter.append(defs, cutFace, cutEdge, cutInside, cutPage, cutReceipt, cutLines, cutTotal, cutShadow, cutThick, cutCover, cutPocket, cutLip, cutStitch, cutGild, cutGlint);
   const host3d = h('div', { class: 'zs-3d', 'aria-hidden': 'true' });
   const labels3d = LANDING_SAMPLE.shares.map(share => chip(share.name, usd(share.fiatShare), !share.own));
-  const labelLayer = h('div', { class: 'zs-3d-labels', 'aria-hidden': 'true' }, ...labels3d);
+  // A thin gold line from a label to its object, when the label had to stand aside to keep clear of another.
+  const leaders = labels3d.map(() => { const l = document.createElementNS(NS, 'line'); l.setAttribute('class', 'zs-leader'); return l; });
+  const leaderSvg = document.createElementNS(NS, 'svg');
+  leaderSvg.setAttribute('class', 'zs-leaders');
+  leaderSvg.append(...leaders);
+  const labelLayer = h('div', { class: 'zs-3d-labels', 'aria-hidden': 'true' }, leaderSvg, ...labels3d);
+  /** Each label's size (measured once it is laid out) and where it was last placed, with when it was last shown. */
+  const labelBox = labels3d.map(() => ({ w: 0, h: 0, l: 0, t: 0, shown: false, hiddenAt: -1e9 }));
   const captions = built.map((b, k) => h('p', { class: 'zs-hud-say' }, h('span', { class: 'zs-say-in' }, icon(k), b.caption.textContent ?? '')));
   // On a phone the 3D street names no one at the stations (the names would collide): a legend of the six under the
   // caption does, each lit while that person's part is playing and gold once it is done.
@@ -457,6 +492,8 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
    * under another. Then the stations' places, the cameras and the beats.
    */
   const layout = (): void => {
+    // The labels' sizes are measured again at the new width.
+    labelBox.forEach(box => { box.w = 0; box.h = 0; });
     // A phone's width takes the tall picture of the dinner; a screen taller than wide (a phone, or a tablet held
     // upright, as the 3D street sees it: under 0.8 wide for its height) frames each station in its upper part with
     // the caption under it.
@@ -473,6 +510,13 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
       world.style.removeProperty('filter');
       stage.style.removeProperty('background-color');
       cafeTile.style.removeProperty('width');
+      // On a wide screen the picture of the dinner still fits the first screen under the words, as when the stage is
+      // held: sized from the height left under them (reduced motion lays the street out one station under another).
+      if (!narrow) {
+        const top = words.offsetTop + words.offsetHeight + Math.max(8, innerHeight * 0.012);
+        const fit = Math.max(320, (innerHeight - top - 24) / 0.5625);
+        cafeTile.style.width = `${Math.round(Math.min(1600, (stage.clientWidth || innerWidth) - 48, fit))}px`;
+      }
       built.forEach(b => { for (const prop of ['left', 'top', 'width']) b.el.style.removeProperty(prop); });
       cutter.style.opacity = '0';
       return;
@@ -591,6 +635,65 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
     return smooth(clamp((p - from) / Math.max(1e-6, ends[i] - from)));
   };
 
+  let legendOn = false;
+  let lastSayH = 0, lastLegH = 0;
+  /**
+   * The people's labels on a wide screen. A label shows only while its object stands still (station 1's row once
+   * formed, station 2's grid once risen, station 5's rows once ticked); it fades out while its object flies. Then,
+   * should two still come close, a label stands aside upward (6 px apart at least) with a gold line to its object.
+   */
+  const placeLabels = (q: number, points: { id: string; x: number; y: number; visible: boolean }[], states: { id: string; active: boolean; done: boolean }[]): void => {
+    const now = performance.now();
+    const GAP = 6;
+    const wanted = labels3d.map((_, k) => {
+      const id = idOf(LANDING_SAMPLE.shares[k].name);
+      const a = points.find(x => x.id === id);
+      if (!a?.visible) return undefined;
+      const item = states.find(x => x.id === id);
+      return settled(q, k, item) ? a : undefined;
+    });
+    // Sizes, measured once the layer is laid out (they change only with the page's width).
+    labels3d.forEach((label, k) => {
+      const box = labelBox[k];
+      if (wanted[k] && !box.w) { box.w = label.offsetWidth; box.h = label.offsetHeight; }
+    });
+    // A label fading out holds its place (and keeps others off it) for as long as it fades.
+    const placed: { l: number; t: number; r: number; b: number }[] = [];
+    labelBox.forEach((box, k) => {
+      if (!wanted[k] && box.shown) { box.shown = false; box.hiddenAt = now; }
+      if (!wanted[k] && now - box.hiddenAt < 260 && box.w) placed.push({ l: box.l, t: box.t, r: box.l + box.w, b: box.t + box.h });
+    });
+    const clash = (a: { l: number; t: number; r: number; b: number }): { l: number; t: number; r: number; b: number } | undefined =>
+      placed.find(o => a.l < o.r + GAP && o.l < a.r + GAP && a.t < o.b + GAP && o.t < a.b + GAP);
+    // The lowest first, each where its object is (above it), and up out of the way of any already placed.
+    const order = labels3d.map((_, k) => k).filter(k => wanted[k]).sort((m, n) => (wanted[n] as { y: number }).y - (wanted[m] as { y: number }).y);
+    for (const k of order) {
+      const a = wanted[k] as { x: number; y: number };
+      const box = labelBox[k];
+      const r = { l: a.x - box.w / 2, t: a.y - box.h, r: a.x + box.w / 2, b: a.y };
+      for (let guard = 0; guard < 12; guard++) {
+        const o = clash(r);
+        if (!o) break;
+        const lift = r.b - (o.t - GAP);
+        r.t -= lift; r.b -= lift;
+      }
+      placed.push(r);
+      box.l = r.l; box.t = r.t; box.shown = true;
+      labels3d[k].style.transform = `translate(${r.l.toFixed(1)}px, ${r.t.toFixed(1)}px)`;
+      const aside = a.y - r.b > 3;
+      const line = leaders[k];
+      line.style.opacity = aside ? '1' : '0';
+      if (aside) {
+        line.setAttribute('x1', a.x.toFixed(1)); line.setAttribute('y1', a.y.toFixed(1));
+        line.setAttribute('x2', a.x.toFixed(1)); line.setAttribute('y2', r.b.toFixed(1));
+      }
+    }
+    labels3d.forEach((label, k) => {
+      label.style.opacity = wanted[k] ? '1' : '0';
+      if (!wanted[k]) leaders[k].style.opacity = '0';
+    });
+  };
+
   /** The camera and the scenes at progress p of the whole move. */
   const draw = (p: number, hold: boolean): void => {
     if (mode !== 'pinned' || !beats.length) return;
@@ -643,48 +746,83 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
     let covered = false;
     const pts = (q: [number, number][]): string => q.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
     let book = false;
-    let inkTop = false;
     if (beat.kind === 'dive' && folderQuad.length) {
-      // The folder: [far top, far right, near bottom, near left] on the screen.
-      const base = folderQuad.map(q => toScreen(q, cam));
-      const xs = base.map(q => q[0]);
-      const width = Math.max(...xs) - Math.min(...xs);
-      // It comes up toward the eye (till about a third of a wide screen across, half of a phone's), its cover turns open
-      // on its near edge, then its dark inside grows over the screen.
-      const gA = Math.max(1, ((W < 760 ? 0.5 : 0.3) * W) / Math.max(1, width));
-      const gC = Math.max(gA * 1.01, cover(base));
-      const rise = smooth(clamp((local - 0.18) / 0.27));
-      const open = ease(clamp((local - 0.45) / 0.27));
-      const fill = clamp((local - 0.72) / 0.21);
-      const g = Math.pow(gA, rise) * Math.pow(gC / gA, Math.pow(fill, 2.2));
-      const [T, R, B, L] = grow(base, g);
-      const theta = open * Math.PI * 0.97;
+      // The folder at its true size on the table, where the picture draws it: [far top, far right, near bottom, near left].
+      const [T, R, B, L] = folderQuad.map(q => toScreen(q, cam));
+      const size = Math.hypot(B[0] - L[0], B[1] - L[1]);
+      // Its cover turns open on its near edge (a book opening toward the eye) while the camera dives in; then the camera
+      // pushes into the pocket inside the cover. Only in the last tenth of the dive is anything larger than the table.
+      const open = ease(clamp((local - 0.25) / 0.45));
+      const theta = open * Math.PI * 0.955;
+      const fill = clamp((local - 0.9) / 0.08);
+      const up = Math.sin(theta), across = Math.cos(theta);
       const turn = (from: [number, number], to: [number, number]): [number, number] => {
-        const dx = to[0] - from[0], dy = to[1] - from[1], len = Math.hypot(dx, dy);
-        return [from[0] + Math.cos(theta) * dx, from[1] + Math.cos(theta) * dy - Math.sin(theta) * len];
+        const dx = to[0] - from[0], dy = to[1] - from[1];
+        return [from[0] + across * dx, from[1] + across * dy - up * Math.hypot(dx, dy)];
       };
-      const coverPts: [number, number][] = [L, B, turn(B, R), turn(L, T)];
-      cutInside.setAttribute('points', pts([T, R, B, L]));
-      cutCover.setAttribute('points', pts(coverPts));
-      cutCover.classList.toggle('zs-cover-inner', theta > Math.PI / 2);
-      // Lit from above: the cover darkens as it stands up, and its inside lightens a little as it lies down again.
-      const lit = Math.abs(Math.cos(theta));
-      cutCover.style.fill = theta > Math.PI / 2 ? `rgb(${Math.round(30 + 10 * lit)}, ${Math.round(29 + 10 * lit)}, ${Math.round(33 + 10 * lit)})` : `rgb(${Math.round(40 + 16 * lit)}, ${Math.round(39 + 16 * lit)}, ${Math.round(42 + 16 * lit)})`;
-      inkTop = fill > 0.55;
-      cutGild.setAttribute('points', pts([coverPts[2], coverPts[3]]));
-      // The cover's gold stitching, a little in from its edges, on its outside.
-      const at = (u: number, v: number): [number, number] => {
-        const [c0, c1, c2, c3] = coverPts;
+      /** A point of a quad [hinge start, hinge end, far end, far start] at u along the hinge and v away from it. */
+      const on = (q: [number, number][], u: number, v: number): [number, number] => {
         const w = [(1 - u) * (1 - v), u * (1 - v), u * v, (1 - u) * v];
-        return [w[0] * c0[0] + w[1] * c1[0] + w[2] * c2[0] + w[3] * c3[0], w[0] * c0[1] + w[1] * c1[1] + w[2] * c2[1] + w[3] * c3[1]];
+        return [w[0] * q[0][0] + w[1] * q[1][0] + w[2] * q[2][0] + w[3] * q[3][0], w[0] * q[0][1] + w[1] * q[1][1] + w[2] * q[2][1] + w[3] * q[3][1]];
       };
-      cutStitch.setAttribute('points', pts([at(0.09, 0.07), at(0.91, 0.07), at(0.91, 0.93), at(0.09, 0.93)]));
-      cutStitch.style.opacity = theta < Math.PI / 2 ? (0.85 * (1 - theta / (Math.PI / 2))).toFixed(3) : '0';
-      cutGlint.setAttribute('points', pts([L, B]));
+      const box = (q: [number, number][], u0: number, v0: number, u1: number, v1: number): [number, number][] => [on(q, u0, v0), on(q, u1, v0), on(q, u1, v1), on(q, u0, v1)];
+      const inside: [number, number][] = [L, B, R, T];
+      const coverQ: [number, number][] = [L, B, turn(B, R), turn(L, T)];
+      const pocket = box(coverQ, 0.1, 0.44, 0.9, 0.9);
+      // The push: everything grows about the pocket's middle until its charcoal covers the screen.
+      const g = Math.pow(cover(pocket), Math.pow(fill, 2.2));
+      const ax = pocket.reduce((sum, q) => sum + q[0] / 4, 0), ay = pocket.reduce((sum, q) => sum + q[1] / 4, 0);
+      const at = (q: [number, number]): [number, number] => [ax + (q[0] - ax) * g, ay + (q[1] - ay) * g];
+      const set = (el: SVGElement, q: [number, number][]): void => el.setAttribute('points', pts(q.map(at)));
+      const line = (q: [number, number][], u0: number, u1: number, v: number): string => {
+        const [x0, y0] = at(on(q, u0, v)), [x1, y1] = at(on(q, u1, v));
+        return `M${x0.toFixed(1)} ${y0.toFixed(1)}L${x1.toFixed(1)} ${y1.toFixed(1)}`;
+      };
+      // Inside: the folder's dark leather, a cream page, and on it the bill (a few thin lines and its gold total).
+      set(cutInside, inside);
+      set(cutPage, box(inside, 0.07, 0.08, 0.93, 0.92));
+      set(cutReceipt, box(inside, 0.3, 0.14, 0.7, 0.88));
+      cutLines.setAttribute('d', [[0.8, 0.64], [0.72, 0.58], [0.64, 0.62], [0.56, 0.52], [0.25, 0.58]].map(([v, u1]) => line(inside, v === 0.25 ? 0.42 : 0.36, u1, v)).join(''));
+      cutTotal.setAttribute('d', line(inside, 0.36, 0.64, 0.36));
+      cutLines.style.strokeWidth = (size * 0.014 * g).toFixed(2);
+      cutTotal.style.strokeWidth = (size * 0.026 * g).toFixed(2);
+      // The cover's soft shadow on the page and the table (the light is from the upper left, as in the picture).
+      const footR = [B[0] + across * (R[0] - B[0]), B[1] + across * (R[1] - B[1])];
+      const footT = [L[0] + across * (T[0] - L[0]), L[1] + across * (T[1] - L[1])];
+      const hR = up * Math.hypot(R[0] - B[0], R[1] - B[1]), hT = up * Math.hypot(T[0] - L[0], T[1] - L[1]);
+      set(cutShadow, [L, B, [footR[0] + hR * 0.42, footR[1] + hR * 0.16], [footT[0] + hT * 0.42, footT[1] + hT * 0.16]]);
+      // (It goes as the camera pushes in: a blur that large would cost frames for nothing.)
+      cutShadow.style.opacity = (0.5 * Math.pow(up, 0.6) * (1 - fill) * (1 - fill)).toFixed(3);
+      cutShadow.style.display = fill > 0.3 ? 'none' : '';
+      softBlur.setAttribute('stdDeviation', (size * 0.05 * g).toFixed(2));
+      // The cover: its edge (its thickness) under it, then its face: outside charcoal like the picture's, darker as it
+      // stands up; past upright its underside, a lighter charcoal, with gold stitching and a pocket.
+      const thick = size * 0.035 * g;
+      cutThick.setAttribute('points', pts(coverQ.map(at).map(([x, y]) => [x, y + thick] as [number, number])));
+      set(cutCover, coverQ);
+      const under = theta > Math.PI / 2;
+      cutCover.classList.toggle('zs-cover-inner', under);
+      const shade = (rgb: number[], k: number): string => `rgb(${rgb.map(c => Math.round(c * k)).join(', ')})`;
+      cutCover.style.fill = under ? shade([76, 75, 82], 0.74 + 0.26 * -across) : shade([58, 58, 60], 0.72 + 0.28 * across);
+      const showUnder = smooth(clamp((theta - Math.PI / 2) / 0.5));
+      set(cutPocket, pocket);
+      cutLip.setAttribute('points', pts([on(coverQ, 0.1, 0.44), on(coverQ, 0.9, 0.44)].map(at)));
+      set(cutStitch, box(coverQ, 0.05, 0.06, 0.95, 0.95));
+      for (const el of [cutPocket, cutLip, cutStitch]) el.style.opacity = showUnder.toFixed(3);
+      const dash = Math.max(1.2, size * 0.03) * g;
+      cutStitch.style.strokeDasharray = `${dash.toFixed(2)} ${(dash * 0.8).toFixed(2)}`;
+      cutStitch.style.strokeWidth = Math.max(0.8, size * 0.012 * g).toFixed(2);
+      // The gold edge the picture draws on the cover (its near right side, with a tab at each end), turning with it.
+      set(cutGild, [[1, 0], [0.84, 0], [0.84, 0.13], [0.93, 0.17], [0.93, 0.83], [0.84, 0.87], [0.84, 1], [1, 1]].map(([u, v]) => on(coverQ, u, v)));
+      cutGild.style.opacity = under ? '0' : '1';
+      // A glint runs along the spine as the cover turns.
+      cutGlint.setAttribute('points', pts([L, B].map(at)));
       cutGlint.style.strokeDashoffset = (0.32 - 1.4 * open).toFixed(3);
       cutGlint.style.opacity = Math.sin(Math.PI * open).toFixed(3);
-      cut = [T, R, B, L];
-      covered = local >= 0.93;
+      // The ink lines grow with the push, as everything does when the camera goes in.
+      for (const [el, w] of [[cutInside, 1.1], [cutCover, 1.1], [cutThick, 1], [cutPocket, 0.8], [cutGild, 0.8], [cutPage, 0.6], [cutReceipt, 0.5], [cutLip, 1]] as const) el.style.strokeWidth = (w * g).toFixed(2);
+      cut = pocket.map(at);
+      covered = fill >= 1;
       book = true;
     } else if (beat.kind === 'open') {
       if (threeOn) {
@@ -751,7 +889,7 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
       for (let e = 0; e < 4; e++) { const [ax, ay] = cut[e], [bx, by] = cut[(e + 1) % 4]; sum += Math.sign((bx - ax) * (y - ay) - (by - ay) * (x - ax)); }
       return Math.abs(sum) === 4;
     };
-    const night = dusk > 0.5 || inkTop || (under(0, 0) && under(W, 0) && under(W / 2, 72));
+    const night = dusk > 0.5 || (under(0, 0) && under(W, 0) && under(W / 2, 72));
     if (night !== dark) { dark = night; onNight(dark); }
     // Each station's picture is asked for as the camera nears it; the props with the first one.
     if (p > 0.004) { loadArt(built[0]); loadProps(); }
@@ -785,29 +923,33 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
       if (q < st[0] - 0.06 || q > d0 - 0.02) now = -1;
       fill.style.transform = `scaleX(${clamp((q - st[0]) / (st[st.length - 1] - st[0])).toFixed(4)})`;
       stops.forEach((stop, k) => stop.classList.toggle('on', q >= st[k] - 0.002));
-      if (portrait) {
-        const states = three.items?.() ?? [];
+      // A phone has the legend all along; a wide screen has it at the table and the bank, where the phones crowd.
+      legendOn = portrait || (q >= LEGEND_FROM && q < LEGEND_TO);
+      const states = three.items?.() ?? [];
+      if (legendOn) {
         legendRows.forEach(row => {
           const item = states.find(x => x.id === row.dataset.id);
           row.classList.toggle('on', Boolean(item?.active));
           row.classList.toggle('done', Boolean(item?.done) && !item?.active);
         });
-      } else {
-        const points = three.anchors();
-        labels3d.forEach((label, k) => {
-          const id = idOf(LANDING_SAMPLE.shares[k].name);
-          const a = points.find(x => x.id === id) ?? points[k];
-          label.style.opacity = a?.visible ? '1' : '0';
-          if (a) label.style.transform = `translate(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px) translate(-50%, -100%)`;
-        });
       }
+      if (!portrait) placeLabels(q, legendOn ? [] : three.anchors(), states);
     } else {
       // The rail: from the first station's stay to the last's.
       const r0 = centre(0), r1 = centre(STATIONS.length - 1);
       fill.style.transform = `scaleX(${clamp((p - r0) / (r1 - r0)).toFixed(4)})`;
       stops.forEach((stop, k) => stop.classList.toggle('on', p >= centre(k) - 0.02));
     }
-    hud.classList.toggle('zs-legend-on', in3d && portrait);
+    hud.classList.toggle('zs-legend-on', in3d && legendOn);
+    if (!(in3d && three) && !portrait) placeLabels(0, [], []);
+    if (in3d && legendOn && !portrait) {
+      // Under the caption on a wide screen: the caption rises by half the legend so the two stay centred together.
+      const say = captions[now]?.firstElementChild as HTMLElement | undefined;
+      const sayH = say?.offsetHeight ?? 0;
+      if (sayH && Math.abs(sayH - lastSayH) > 0.5) { lastSayH = sayH; hud.style.setProperty('--zs-say-h', `${sayH}px`); }
+      const legH = legend.offsetHeight;
+      if (legH && Math.abs(legH - lastLegH) > 0.5) { lastLegH = legH; hud.style.setProperty('--zs-legend-lift', `${((legH + 24) / 2).toFixed(1)}px`); }
+    }
     show(now);
     hud.classList.toggle('zs-hud-on', now >= 0);
   };
@@ -874,7 +1016,10 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
     if (!section.getClientRects().length || box.bottom < -innerHeight || box.top > 2 * innerHeight) return;
     asked = true;
     if (!can3d()) return;
-    void LOAD3D().then(mod => mod.mountStreet(host3d, {})).then(async handle => {
+    // In the browser's idle time (the page is moving; the 3D street is not wanted before the cut), and the street mounts
+    // itself in short steps, so no long task lands in the scroll.
+    const idle = (window as Window & { requestIdleCallback?: (run: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+    const start = (): void => { void LOAD3D().then(mod => mod.mountStreet(host3d, {})).then(async handle => {
       three = handle;
       handle.setPaused(motionPaused());
       // A first second of frames: if they are slow, the drawn street stays.
@@ -884,7 +1029,8 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
       played.fill(-1);
       draw(lastP, held);
       watch();
-    }).catch(() => { three = undefined; host3d.replaceChildren(); });
+    }).catch(() => { three = undefined; host3d.replaceChildren(); }); };
+    if (idle) idle(start, { timeout: 400 }); else window.setTimeout(start, 50);
   };
 
   const boot = (): void => {

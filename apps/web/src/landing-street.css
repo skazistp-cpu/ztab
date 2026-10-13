@@ -79,6 +79,8 @@
 /* ── Phones and reduced motion: the stations one under another ── */
 .zs-stacked .zs-world { display: grid; }
 .zs-stacked .zs-cafe { order: -1; }
+/* A wide screen sizes the dinner's picture to fit under the words (landing-street.ts): centred. */
+@media (min-width: 760px) { .zs-stacked .zs-cafe { justify-self: center; max-width: 100%; } }
 .zs-stacked .zs-station { position: relative; padding: 0 var(--lz-gutter); }
 .zs-stacked .zs-station-in { display: grid; justify-items: center; gap: 4px; }
 .zs-stacked .zs-tile { width: min(100%, 560px); }
@@ -103,14 +105,26 @@
 .zs-cut-edge { fill: none; stroke: #f4b728; stroke-width: 5; stroke-linecap: round; }
 /* The folder opening like a book: its dark inside, its cover (its outside, then its inside as it turns past upright),
    the cover's gilt edge, and a glint running along the spine. */
-.zs-cut-inside { fill: #2e2d31; stroke: #1c1b1e; stroke-width: 2.5; stroke-linejoin: round; }
-.zs-cut-cover { fill: #38373a; stroke: #1c1b1e; stroke-width: 2.5; stroke-linejoin: round; }
-.zs-cut-cover.zs-cover-inner { fill: #232226; }
-.zs-cut-stitch { fill: none; stroke: #c99a2e; stroke-width: 1.6; stroke-dasharray: 7 5; stroke-linecap: round; opacity: 0; }
-.zs-cut-gild { fill: none; stroke: #f4b728; stroke-width: 4; stroke-linecap: round; }
-.zs-cut-glint { fill: none; stroke: #fff3c4; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 0.32 1.4; opacity: 0; filter: drop-shadow(0 0 6px rgba(244, 183, 40, 0.95)); }
-.zs-cutter:not(.zs-book) .zs-cut-inside, .zs-cutter:not(.zs-book) .zs-cut-cover, .zs-cutter:not(.zs-book) .zs-cut-stitch, .zs-cutter:not(.zs-book) .zs-cut-gild, .zs-cutter:not(.zs-book) .zs-cut-glint,
+/* The folder at its true size (landing-street.ts draws it in the dive): the inside's dark leather, a cream page and the
+   bill on it (thin grey lines, a gold total); the cover's soft shadow; the cover (its edge under it), outside charcoal as
+   in the picture, underside a lighter charcoal with the ink line, gold stitching and a pocket; its gold edge; a glint. */
+.zs-cut-inside { fill: #2b2a2e; stroke: #141316; stroke-width: 1.1; stroke-linejoin: round; }
+.zs-cut-page { fill: #f3ecdc; stroke: rgba(20, 19, 22, 0.4); stroke-width: 0.6; stroke-linejoin: round; }
+.zs-cut-receipt { fill: #fffdf7; stroke: rgba(120, 104, 70, 0.3); stroke-width: 0.5; stroke-linejoin: round; }
+.zs-cut-lines { fill: none; stroke: #c3bdb1; stroke-linecap: round; }
+.zs-cut-total { fill: none; stroke: #e2a419; stroke-linecap: round; }
+.zs-cut-shadow { fill: rgb(22, 18, 14); opacity: 0; }
+.zs-cut-thick { fill: #1d1c1f; stroke: #141316; stroke-width: 1; stroke-linejoin: round; }
+.zs-cut-cover { fill: #3a3a3c; stroke: #141316; stroke-width: 1.1; stroke-linejoin: round; }
+.zs-cut-pocket { fill: #2e2d31; stroke: #141316; stroke-width: 0.8; stroke-linejoin: round; opacity: 0; }
+.zs-cut-lip { fill: none; stroke: rgba(255, 255, 255, 0.18); stroke-width: 1; stroke-linecap: round; opacity: 0; }
+.zs-cut-stitch { fill: none; stroke: #d9a530; stroke-linecap: round; opacity: 0; }
+.zs-cut-gild { fill: #f0b52e; stroke: #141316; stroke-width: 0.8; stroke-linejoin: round; }
+.zs-cut-glint { fill: none; stroke: #fff3c4; stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 0.32 1.4; opacity: 0; filter: drop-shadow(0 0 4px rgba(244, 183, 40, 0.95)); }
+.zs-cutter:not(.zs-book) :is(.zs-cut-inside, .zs-cut-page, .zs-cut-receipt, .zs-cut-lines, .zs-cut-total, .zs-cut-shadow, .zs-cut-thick, .zs-cut-cover, .zs-cut-pocket, .zs-cut-lip, .zs-cut-stitch, .zs-cut-gild, .zs-cut-glint),
 .zs-cutter.zs-book .zs-cut-face, .zs-cutter.zs-book .zs-cut-edge { display: none; }
+/* While the charcoal covers the screen the 3D street comes in at once under it (no fade to be caught half way). */
+.zs-stage[data-cut="cover"] .zs-3d { transition: none; }
 .zs-pinned .zs-hud { z-index: 4; }
 .zs-pinned .lz-hero { z-index: 5; }
 /* The café's cards go as the camera dives (--zs-fade, landing-street.ts). */
@@ -131,9 +145,18 @@
 .zs-3d, .zs-3d-labels { display: none; }
 .zs-pinned .zs-3d { display: block; position: absolute; z-index: 1; inset: 0; opacity: 0; pointer-events: none; transition: opacity 240ms linear; }
 .zs-stage.zs-3d-on .zs-3d { opacity: 1; }
+/* Once the 3D street has taken over nothing drawn shows under it (not the café's picture at the street's far end at night). */
+.zs-stage.zs-3d-on .zs-world { visibility: hidden; }
 .zs-stage.zs-3d-on .zs-station, .zs-stage.zs-3d-on .zs-props { visibility: hidden; }
 .zs-stage.zs-3d-on .zs-3d-labels { display: block; position: absolute; z-index: 2; inset: 0; pointer-events: none; }
 .zs-3d-labels .zs-chip { left: 0; top: 0; font-size: 12px; transition: opacity 200ms linear; }
+/* A label that stood aside to keep clear of another: a thin gold line down to its object (landing-street.ts). */
+.zs-leaders { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.zs-leader { stroke: #e2a419; stroke-width: 1; stroke-linecap: round; opacity: 0; transition: opacity 200ms linear; }
+/* At the table and the bank a wide screen has the legend too, under the caption; the two rise together to stay centred. */
+.zs-pinned:not(.zs-portrait) .zs-hud-says { transition: transform 420ms var(--lz-ease); }
+.zs-pinned:not(.zs-portrait) .zs-hud.zs-legend-on .zs-hud-says { transform: translateY(calc(-1 * var(--zs-legend-lift, 56px))); }
+.zs-pinned:not(.zs-portrait) .zs-hud.zs-legend-on .zs-legend { top: calc(var(--zs-say-h, 90px) / 2 + 24px); bottom: auto; right: auto; width: min(100%, 340px); font-size: 14px; }
 
 /* The stage's ground at nightfall is set by landing-street.ts (white to ink); the header turns to night glass with it. */
 
@@ -188,6 +211,8 @@
 .zs-pinned .zs-stars {
   display: block; position: absolute; z-index: 0; left: 0; right: 0; top: 0; height: 48%; pointer-events: none;
   opacity: var(--zs-dusk, 0); transform: translate3d(0, calc((1 - var(--zs-dusk, 0)) * 36px), 0);
+  /* The sky is above and to the right of the street; under its near edge (lower left) is no sky, so no stars there. */
+  -webkit-mask-image: linear-gradient(to bottom left, #000 38%, transparent 72%); mask-image: linear-gradient(to bottom left, #000 38%, transparent 72%);
 }
 .zs-star { position: absolute; border-radius: 50%; background: #fff6dc; opacity: var(--to, 0.6); box-shadow: 0 0 5px rgba(255, 232, 170, 0.75); }
 @media (prefers-reduced-motion: no-preference) {
