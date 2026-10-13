@@ -1,0 +1,9 @@
+/* Demo-only layout; colours and controls follow the existing Calm tokens. */
+.demo-screen h2:first-child { margin-top: 0; }
+.demo-share { border-top: 1px solid var(--hair); padding: 1rem 0; }
+.demo-share summary { cursor: pointer; min-height: 44px; padding: 0.5rem 0; font-weight: 700; }
+.demo-share summary:hover { color: var(--gold-text); }
+.demo-memo { overflow-wrap: anywhere; padding: 1rem; background: var(--note-bg); color: var(--note-text); border-radius: var(--radius); }
+.demo-tick { display: flex; align-items: center; gap: 0.5rem; min-height: 44px; }
+.demo-tick input { flex: none; width: 1.25rem; min-height: 1.25rem; accent-color: var(--ink); }
+.demo-content .actions { flex-wrap: wrap; }

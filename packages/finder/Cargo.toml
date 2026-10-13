@@ -1,0 +1,32 @@
+# The part of Ztab's payment check that touches a viewing key. Decryption only: nothing here can spend, sign or send.
+# Built to WebAssembly with no imports; apps/web/src/find/ztab_scan.wasm is the build of this crate.
+[package]
+name = "ztab-scan"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+orchard = { version = "0.15.0", default-features = false, features = ["std"] }
+zcash_note_encryption = "0.5"
+zcash_address = { git = "https://github.com/zcash/librustzcash.git", rev = "f7b1cfb0b5bb1bdb10564079ac51b54aa18b07a1" }
+
+[dev-dependencies]
+zcash_protocol = { git = "https://github.com/zcash/librustzcash.git", rev = "f7b1cfb0b5bb1bdb10564079ac51b54aa18b07a1" }
+
+[profile.release]
+opt-level = "s"
+lto = true
+panic = "abort"
+
+# The same pins as zcash/librustzcash at the revision above (NU7 note encryption is not in a released orchard yet).
+[patch.crates-io]
+halo2_poseidon = { git = "https://github.com/zcash/halo2.git", rev = "232496b154e6332c88924e4affa8351ff92408b4" }
+incrementalmerkletree = { git = "https://github.com/zcash/incrementalmerkletree.git", rev = "af3cc3ce54daad90935c657e5d2ded3149c19a1d" }
+orchard = { git = "https://github.com/zcash/orchard.git", rev = "3cc0781df0afa3b069bd02264b479e54c74fc3d8" }
+zip32 = { git = "https://github.com/zcash/zip32.git", rev = "0399cd62dae9b3abe5dc8d5e761b8ef11b57b12a" }
+zcash_protocol = { git = "https://github.com/zcash/librustzcash.git", rev = "f7b1cfb0b5bb1bdb10564079ac51b54aa18b07a1" }

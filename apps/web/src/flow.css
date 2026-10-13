@@ -1,0 +1,325 @@
+/* Making a tab, one question at a time, and the links that come out of it.
+   The same Calm tokens as the rest of the app: ink page, paper cards, gold for the one thing to do next. */
+
+/* The create screen shows one view at a time: the opening, the steps, or the links. */
+.create, .create[data-view] { display: block; }
+/* (The old form's 30rem cap, from the opening's rules, must not reach these views.) */
+.create > .flow:not(.landing):not(.results) { max-width: 56.25rem; }
+.create > .links:not(.landing):not(.results) { max-width: 50rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ── The steps ───────────────────────────────────────────────────────────── */
+.flow { margin: 0.25rem auto 0; }
+.flow.opening-sheet { animation: flow-sheet 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes flow-sheet { from { opacity: 0; transform: translateY(1.5rem); } }
+
+/* Where you are: one bar a step, gold up to here. Every step can be opened again. */
+.flow-top { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0.4rem 0 0.2rem; }
+.flow-steps { flex: 1; display: flex; gap: 0.4rem; list-style: none; margin: 0; padding: 0; min-width: 0; }
+.flow-steps li { flex: 1 1 0; min-width: 0; }
+.flow-steps li:has([aria-current]) { flex-grow: 2.6; }
+.flow-steps button {
+  width: 100%; min-height: 44px; display: flex; align-items: flex-start; justify-content: flex-start; gap: 0.35rem;
+  padding: 0.75rem 0 0.3rem; border: 0; border-radius: 6px; background: transparent; color: var(--page-muted);
+  font-size: 0.8rem; font-weight: 650; line-height: 1.2; text-align: left; position: relative; white-space: nowrap; overflow: hidden;
+}
+.flow-steps .step-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.flow-steps button::before { content: ''; position: absolute; top: 0.3rem; left: 0; right: 0; height: 4px; border-radius: 4px; background: var(--page-line); transition: background-color 0.3s ease; }
+.flow-steps button.done::before { background: #f4b72880; }
+.flow-steps button[aria-current]::before { background: var(--gold); }
+.flow-steps button[aria-current] { color: var(--page-text); }
+.flow-steps button b { font-variant-numeric: tabular-nums; }
+.flow-steps button[aria-current] b { color: var(--gold); }
+.flow-steps button:focus-visible { outline-color: var(--gold); box-shadow: none; }
+@media (hover: hover) {
+  .flow-steps button:hover:not([aria-current]) { color: var(--page-text); }
+}
+/* On a phone only the current step keeps its name beside its number. */
+@media (max-width: 34rem) {
+  .flow-steps button:not([aria-current]) .step-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+.flow-close { flex: none; width: 44px; height: 44px; min-height: 44px; padding: 0; margin-top: 0.1rem; border: 1.5px solid var(--page-line); border-radius: 50%; background: transparent; color: var(--page-text); }
+.flow-close svg { width: 1.1rem; height: 1.1rem; }
+@media (hover: hover) {
+  .flow-close:hover { background: var(--page-text); color: var(--ink); border-color: var(--page-text); }
+}
+.flow-close:focus-visible { outline-color: var(--gold); box-shadow: none; }
+
+.flow-body { display: grid; gap: 1.5rem; align-items: start; }
+.flow-body > .hang { margin-top: 0.6rem; }
+.flow-card { animation: none; padding: 1.5rem 1.25rem 0; }
+.flow-position { margin: 0 0 0.35rem; font-size: 0.85rem; font-weight: 650; color: var(--gold-text); }
+.step-title { margin: 0; font-size: clamp(1.6rem, 6.4vw, 2.05rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
+.step-title:focus { outline: none; box-shadow: none; }
+.step-lead { margin: 0.55rem 0 0.2rem; color: var(--ink-muted); font-size: 1rem; }
+.step-note { margin: 1rem 0 0; padding: 0.75rem 0.9rem; border-radius: 12px; background: var(--paper-deep); color: var(--ink-muted); font-size: 0.95rem; }
+.flow-panel.enter-forward { animation: flow-panel-forward 0.34s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.flow-panel.enter-back { animation: flow-panel-back 0.34s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes flow-panel-forward { from { opacity: 0; transform: translateX(1.25rem); } }
+@keyframes flow-panel-back { from { opacity: 0; transform: translateX(-1.25rem); } }
+
+/* Labels say which boxes can be left empty. */
+.flow .optional-field { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 0.75rem; align-items: baseline; }
+.flow .optional-field > :not(span):not(.optional) { grid-column: 1 / -1; }
+.optional { font-style: normal; font-size: 0.8rem; font-weight: 600; color: var(--ink-muted); }
+.flow .field small, .flow .check-note { display: block; margin-top: 0.35rem; line-height: 1.45; }
+.flow .check { margin-top: 1rem; }
+.flow .check + .check-note { margin-top: 0; }
+
+/* Boxes on a phone are at least 16 px, so the page does not zoom when one is chosen. */
+.flow input, .flow select, .flow textarea { font-size: 1rem; min-height: 48px; }
+.flow textarea.mono { font-size: 1rem; line-height: 1.45; }
+.flow .check input { min-height: 0; }
+.flow input::placeholder, .flow textarea::placeholder { color: #8b8578; }
+
+/* How to split: two cards, one chosen. */
+.flow .split-mode { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; margin: 1.25rem 0 0.25rem; }
+.flow .split-mode legend { grid-column: 1 / -1; margin-bottom: 0.5rem; font-size: 0.95rem; }
+.flow .split-mode .choice { position: relative; display: block; min-height: 0; padding: 0.95rem 0.95rem 1rem; border: 1.5px solid var(--rule); border-radius: 16px; background: var(--field); color: var(--ink); cursor: pointer; transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease; }
+.flow .split-mode .choice input { position: absolute; top: 0.95rem; right: 0.95rem; width: 1.25rem; height: 1.25rem; min-height: 0; margin: 0; accent-color: var(--ink); }
+.choice-text { display: grid; gap: 0.3rem; padding-right: 1.6rem; }
+.choice-text b { font-size: 1rem; line-height: 1.25; }
+.choice-text small { font-size: 0.875rem; line-height: 1.4; color: var(--ink-muted); }
+.flow .split-mode .choice:has(:checked) { background: var(--paper-deep); border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
+.flow .split-mode .choice:has(:focus-visible) { outline: 3px solid var(--ink); outline-offset: 2px; box-shadow: 0 0 0 7px var(--gold); }
+.flow .split-mode .choice input:focus-visible { outline: none; box-shadow: none; }
+@media (hover: hover) {
+  .flow .split-mode .choice:hover { border-color: var(--ink); box-shadow: none; }
+}
+/* On a phone the two choices are full-width rows, so their notes read in one or two lines. */
+@media (max-width: 34rem) {
+  .flow .split-mode { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+  .flow .split-mode .choice { padding: 0.8rem 3rem 0.85rem 0.95rem; }
+  .flow .split-mode .choice input { top: 50%; margin-top: -0.625rem; }
+  .choice-text { gap: 0.15rem; padding-right: 0; }
+}
+
+/* The total is the figure of this step: set large, with its currency beside it. */
+.flow .pair { margin-top: 0.4rem; grid-template-columns: minmax(0, 1fr) 6.75rem; align-items: end; }
+.flow .pair.itemized { display: block; }
+.flow .total-figure { min-height: 64px; font-size: 2rem; font-weight: 750; letter-spacing: -0.03em; padding: 0.5rem 0.85rem; font-variant-numeric: tabular-nums; }
+.flow .total-figure::placeholder { color: #b7b0a1; }
+.flow .pair select { min-height: 64px; font-weight: 700; font-size: 1.05rem; }
+.flow [data-step='bill'] .field { margin-top: 1.1rem; }
+
+/* People: the count, then a row a person. */
+.flow .people-hint { display: block; margin: 0.2rem 0 0.4rem; color: var(--ink-muted); font-size: 0.95rem; line-height: 1.45; }
+.flow [data-step='people'] fieldset.group { margin: 0.9rem 0 0; padding: 0; border: 0; }
+.flow [data-step='people'] legend.eyebrow { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.flow .count-row { grid-template-columns: minmax(0, 1fr) 48px 3.75rem 48px; margin: 0.4rem 0 0.75rem; padding: 0.6rem 0.75rem; border-radius: 16px; background: var(--paper-deep); }
+.flow .count-row label { font-size: 1.05rem; }
+.flow .count-row .step { width: 48px; height: 48px; min-height: 48px; font-size: 1.35rem; background: var(--field); }
+.flow .count-row input { font-size: 1.15rem; }
+.flow .person-row { grid-template-columns: minmax(5rem, 1fr) minmax(0, 9.6rem) 44px; }
+.flow .person-row.you span { padding-left: 0.2rem; }
+.flow .remove { height: 44px; }
+@media (max-width: 22.5rem) {
+  .flow .person-row { grid-template-columns: minmax(0, 1fr) 44px; }
+}
+
+/* The shares as the engine works them out, while the tab is being made. */
+.split-preview:empty { display: none; }
+.split-preview { margin-top: 1.25rem; padding: 0.9rem 1rem 0.6rem; border-radius: 16px; background: var(--paper-deep); }
+.split-preview h2 { margin: 0 0 0.35rem; font-size: 0.9rem; line-height: 1.4; color: var(--ink-muted); font-weight: 650; letter-spacing: 0; }
+.split-preview ul { list-style: none; margin: 0; padding: 0; }
+.split-preview li, .fr-lines li { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; padding: 0.45rem 0; border-top: 1px solid var(--hair); }
+.split-preview li:first-child { border-top: 0; }
+.split-preview li > span:first-child, .fr-lines li > span:first-child { min-width: 0; overflow-wrap: anywhere; font-weight: 600; }
+.split-preview li > span:last-child, .fr-lines li > span:last-child { flex: none; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.split-preview li small, .fr-lines li small { display: block; font-size: 0.82rem; color: var(--ink-muted); }
+.split-preview li.zero > span:last-child { font-weight: 500; color: var(--ink-muted); }
+.fr-lines li.zero > span:last-child { font-weight: 500; color: var(--page-muted); }
+
+/* Items: the editor's own heading is this step's title. */
+.flow .item-editor { margin: 0.5rem 0 0; padding: 0; border: 0; }
+.flow .item-editor > h2.eyebrow { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* The editor's own first line is said by the step's lead. */
+.flow .item-editor > h2.eyebrow + .note { display: none; }
+
+/* The rate: fetching is the plain way; typing it is the other. */
+.fetch-box { margin-top: 1.25rem; }
+.flow .fetch-rate { width: 100%; min-height: 56px; border-color: var(--ink); background: var(--ink); color: var(--paper); font-size: 1.05rem; }
+.flow .fetch-rate[disabled] { opacity: 0.7; cursor: progress; }
+@media (hover: hover) {
+  .flow .fetch-rate:hover:not([disabled]) { background: #2a2e36; }
+}
+.fetch-box .note { margin: 0.6rem 0 0; font-size: 0.9rem; }
+.or { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0 0; color: var(--ink-muted); font-size: 0.9rem; font-weight: 600; }
+.or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--hair); }
+.flow [data-step='rate'] .field { margin-top: 0.5rem; }
+.flow [data-step='rate'] .rate { margin-top: 0.75rem; }
+.flow [data-step='rate'] .rate:empty { display: none; }
+
+/* Getting paid. */
+.flow [data-step='payee'] .address-kind { margin-top: 0.6rem; }
+.flow .kept-box button { min-height: 44px; }
+.flow [data-step='payee'] > .note { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--hair); }
+
+/* The two moves of every step stay in reach at the bottom of a phone screen. */
+.flow-card > .warning[role='alert']:not(:empty) { margin: 1rem 0 0; }
+.flow-actions { position: sticky; bottom: 0; z-index: 2; display: flex; gap: 0.6rem; margin: 1.5rem -1.25rem 0; padding: 0.85rem 1.25rem calc(0.85rem + env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--hair); border-radius: 0 0 var(--radius) var(--radius); }
+.flow-actions button { min-height: 52px; margin: 0; font-size: 1.05rem; }
+.flow-actions .flow-back { flex: none; padding-inline: 1.25rem; }
+.flow-actions .flow-next { flex: 1; width: auto; border-color: transparent; }
+@media (hover: hover) {
+  .flow-actions .flow-next:hover { background: #ffc94a; }
+}
+.flow-actions .flow-next:active { transform: scale(0.985); }
+
+/* On a wide screen, the tab so far stands beside the question, as a receipt. */
+.flow-receipt { display: none; }
+@media (min-width: 60rem) {
+  .flow-body { grid-template-columns: minmax(0, 34rem) 19.5rem; justify-content: center; gap: 2.75rem; }
+  .flow-card { padding: 2rem 2rem 0; }
+  .flow-actions { margin: 2rem -2rem 0; padding: 1.1rem 2rem calc(1.1rem + env(safe-area-inset-bottom)); }
+  .flow-receipt {
+    display: block; position: sticky; top: 1.5rem; margin-top: 1.8rem; padding: 1.4rem 1.4rem 1.2rem;
+    border-radius: var(--radius); background: #181b21; color: var(--page-text); border: 1px solid var(--page-line);
+  }
+}
+.fr-title { margin: 0; font-size: 1.15rem; font-weight: 750; letter-spacing: -0.015em; overflow-wrap: anywhere; }
+.fr-kind { margin: 0.15rem 0 0.9rem; padding-bottom: 0.9rem; border-bottom: 1px dashed #ffffff26; color: var(--page-muted); font-size: 0.85rem; }
+.fr-lines { list-style: none; margin: 0; padding: 0; font-size: 0.95rem; }
+.fr-lines li { border-top-color: #ffffff14; }
+.fr-lines li:first-child { border-top: 0; }
+.fr-lines li small { color: var(--page-muted); }
+.fr-lines li.you > span:first-child { color: var(--gold); }
+.fr-empty { margin: 0; color: var(--page-muted); font-size: 0.95rem; }
+.fr-total { display: flex; justify-content: space-between; align-items: baseline; margin: 0.9rem 0 0; padding-top: 0.9rem; border-top: 1px solid #ffffff26; font-weight: 650; }
+.fr-total b { font-size: 1.5rem; font-weight: 750; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.fr-meta { margin: 0.55rem 0 0; color: var(--page-muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+.fr-meta + .fr-meta { margin-top: 0.2rem; }
+
+/* ── The links ───────────────────────────────────────────────────────────── */
+.links { margin: 0 auto; }
+.links .results > section > h2:first-child { margin-top: 0; }
+.ready { position: relative; margin: 1.25rem 0 0.4rem; }
+.ready-mark { position: relative; display: block; width: 3.5rem; height: 3.5rem; }
+.ready-mark svg { display: block; width: 100%; height: 100%; }
+.ready-mark::after { content: ''; position: absolute; inset: -0.4rem; border-radius: 50%; border: 2px solid var(--gold); opacity: 0; }
+.ready-eyebrow { margin: 1rem 0 0.15rem; color: var(--gold); font-weight: 700; font-size: 0.95rem; }
+.links .ready h1 { margin: 0; color: var(--page-text); font-size: clamp(1.75rem, 7vw, 2.4rem); line-height: 1.08; letter-spacing: -0.03em; text-wrap: balance; }
+.links .ready h1:focus { outline: none; box-shadow: none; }
+.ready-lead { margin: 0.6rem 0 0; max-width: 36rem; color: var(--page-muted); }
+.ready-spark { position: absolute; left: 50%; top: 50%; width: 0.4rem; height: 0.4rem; margin: -0.2rem 0 0 -0.2rem; border-radius: 50%; background: var(--gold); opacity: 0; pointer-events: none; }
+.ready-spark:nth-child(3n) { width: 0.3rem; height: 0.3rem; background: var(--page-text); }
+.links-ready-play .ready-spark { animation: ready-spark 0.75s 0.12s cubic-bezier(0.15, 0.7, 0.3, 1) both; }
+@keyframes ready-spark {
+  0% { opacity: 0; transform: rotate(var(--turn)) translateY(0) scale(0.6); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--turn)) translateY(calc(var(--reach) * -1)) scale(1); }
+}
+.links-ready-play .ready-mark { animation: ready-pop 0.55s cubic-bezier(0.34, 1.5, 0.64, 1) both; }
+.links-ready-play .ready-mark::after { animation: ready-ring 0.9s 0.15s ease-out both; }
+@keyframes ready-pop { from { opacity: 0; transform: scale(0.4) rotate(-12deg); } }
+@keyframes ready-ring { from { opacity: 0.9; transform: scale(0.7); } to { opacity: 0; transform: scale(1.6); } }
+
+/* On a wide screen the moment and what you are paid back stand side by side. */
+@media (min-width: 60rem) {
+  .links .results > section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 2.5rem; align-items: start; }
+  .links .results > section > * { grid-column: 1 / -1; }
+  .links .results > section > .ready { grid-column: 1; align-self: center; margin-top: 1.5rem; }
+  .links .results > section > .ready-summary { grid-column: 2; }
+  .flow [data-step='people'] .split-preview, .flow [data-step='rate'] .split-preview { display: none; }
+}
+.ready-summary > .testnet { margin-top: 1.25rem; }
+
+/* Your own share and each person's card, side by side where there is room. */
+.links .cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.links .cards > *, .links .person { min-width: 0; }
+@media (min-width: 48rem) {
+  .links .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.25rem; }
+}
+.links .summary .note { margin: 0.6rem 0 0; font-size: 0.875rem; color: var(--ink-muted); }
+/* Small print on a paper card is ink, not the page's grey, so it keeps its contrast. */
+.links .card .note, .links .card .rate { color: var(--ink-muted); }
+.links .more-title { margin: 2.5rem 0 0; color: var(--page-text); font-size: 1.25rem; letter-spacing: -0.015em; }
+/* Showing one QR code at the table is a choice, not the main thing to do: a quiet button. */
+.links .table-invite .button.primary { width: auto; min-height: 44px; margin-top: 0; font-size: 1rem; background: transparent; color: var(--ink); border-color: var(--ink); }
+@media (hover: hover) {
+  .links .table-invite .button.primary:hover { background: var(--ink); color: var(--paper); }
+}
+.links .table-invite h3, .links .mine-invite h3 { font-size: 1.25rem; }
+.links-edit { margin-top: 1.5rem; }
+.links-edit button { border-color: var(--page-line); color: var(--page-text); }
+@media (hover: hover) {
+  .links-edit button.secondary:hover:not([disabled]) { background: var(--page-text); color: var(--ink); border-color: var(--page-text); }
+}
+.links-edit button:focus-visible { outline-color: var(--gold); box-shadow: none; }
+.results-changed { display: grid; gap: 0.75rem; justify-items: start; margin-top: 1.5rem; color: var(--page-text); }
+.results-changed p { margin: 0; }
+.results-changed button { border-color: var(--page-line); color: var(--page-text); }
+
+/* A drawn chevron for folded parts, instead of a character that a screen reader would read out. */
+.flow summary::before, .links summary::before,
+.links .item-breakdowns details:not([open]) > summary::before, .links details[open] > summary::before {
+  content: ''; flex: none; width: 0.5rem; height: 0.5rem; margin: 0 0.8rem 0 0.2rem;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform 0.2s ease;
+}
+.flow details[open] > summary::before, .links details[open] > summary::before { transform: translateY(-0.15rem) rotate(45deg); }
+.flow summary::-webkit-details-marker, .links summary::-webkit-details-marker { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .flow.opening-sheet, .flow-panel.enter-forward, .flow-panel.enter-back,
+  .links-ready-play .ready-mark, .links-ready-play .ready-mark::after, .links-ready-play .ready-spark { animation: none; }
+  .flow-steps button::before, .flow summary::before, .links summary::before { transition: none; }
+}
+
+/* ── Fixes after the first-run re-measure ─────────────────────────────────── */
+
+/* The app shell: every screen is drawn into #app once the script runs, so the footer under it starts below the
+   first screen instead of jumping down. The pay page's wider shell is set before the first paint too (index.html). */
+#app { min-height: 100vh; }
+@media (min-width: 60rem) { .route-pay .shell { max-width: 58rem; } }
+@media (min-width: 900px) { .route-pay .shell { max-width: 68rem; } }
+/* A broken or void link shaped like a pay link keeps its card at the usual width under the brand. */
+.route-pay #app > :not(:has(.pay)) { max-width: 28rem; }
+
+/* Your own row on People: your name, then your amount, like everyone else's row. */
+.flow .person-row.you > input:first-child { grid-column: 1; }
+.flow .person-row.you > input + input { grid-column: 2 / 4; }
+.flow .item-people .person-row.you { display: grid; }
+.flow .item-people .person-row.you > input:first-child { grid-column: 1 / -1; }
+@media (max-width: 22.5rem) {
+  .flow .person-row.you > input:first-child, .flow .person-row.you > input + input { grid-column: 1 / -1; }
+}
+.flow .you-hint { display: block; margin: 0.35rem 0 0.15rem; color: var(--ink-muted); font-size: 0.9rem; line-height: 1.45; }
+
+/* What kind of address it is, and on which network, before anything is made. */
+.flow .address-kind p { margin: 0; }
+.flow .address-kind .testnet { margin: 0 0 0.55rem; }
+
+/* Anything fixed at the bottom of a step leaves room: the box being typed in and a new item scroll clear of it. */
+html:has(.create[data-view='flow']) { scroll-padding-bottom: 7.5rem; }
+.flow .bill-item { scroll-margin-top: 1rem; scroll-margin-bottom: 7.5rem; }
+
+/* Each person's link on their card: short at a glance, its middle giving way, the whole link selected at a tap. */
+.link-text {
+  display: flex; min-width: 0; margin: 0.6rem 0 0.15rem; padding: 0.45rem 0.7rem; border-radius: 10px;
+  background: var(--paper-deep); color: var(--ink-muted); font: 500 0.82rem/1.45 var(--mono);
+  user-select: all; -webkit-user-select: all; cursor: text;
+}
+.link-start { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.link-end { flex: none; white-space: nowrap; }
+
+/* Under the links' h1, each card's name is an h2, set as the cards' names were. */
+.links .person h2 { margin: 0 0 0.7rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--hair); font-size: 1.2rem; line-height: 1.3; letter-spacing: -0.015em; }
+.links .own h2 { border-bottom-color: var(--page-line); }
+
+/* The close button sits in the card's corner, so the row of steps has the whole width: every step 44 px or more. */
+.flow-card { position: relative; }
+.flow-card > .flow-close { position: absolute; top: 0.85rem; right: 0.85rem; margin: 0; border-color: var(--rule); color: var(--ink); background: var(--paper); }
+@media (hover: hover) {
+  .flow-card > .flow-close:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+}
+.flow-card > .flow-close:focus-visible { outline-color: var(--ink); box-shadow: 0 0 0 7px var(--gold); }
+.flow-card > .flow-position { padding-right: 3.25rem; }
+.flow-steps li:has([aria-current]) { flex-grow: 1.7; }
+.flow-steps { gap: 0.3rem; }
+.flow-steps li { min-width: 44px; }
+/* On the narrowest phones the count's label takes its own line above the minus, the number and the plus. */
+@media (max-width: 22.5rem) {
+  .flow .count-row { grid-template-columns: 48px minmax(0, 1fr) 48px; row-gap: 0.5rem; }
+  .flow .count-row label { grid-column: 1 / -1; }
+}
+.flow-card .step-title { padding-right: 2.75rem; }

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.DS_Store
+coverage/
+*.log
+.env*
+
+# Public testnet demo deployment artifact: keep all keys out of Git.
+demo-receiver.json

@@ -1,0 +1,29 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { makeTab, type TabForm } from '../src/tab.ts';
+import { decodeShare, encodeShare } from '../../../packages/engine/src/index.ts';
+import { requestFor } from '../src/pay.ts';
+import { encodeTable, decodeTable, MAX_TABLE_FRAGMENT } from '../src/table-link.ts';
+const address='ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez';
+const form=(over:Partial<TabForm>={}):TabForm=>({createdAt:'2026-10-10T19:00:00Z',from:'Lena',label:'Dinner, Friday',payee:address,fiat:'USD',total:'300.00',ownShare:'',people:[{name:'Ana',amount:''},{name:'Dragan',amount:''},{name:'Tomás',amount:''},{name:'Priya',amount:''},{name:'Jonas',amount:'20.00'}],rate:{fiatPerZec:'1229.06',source:'Manual entry',observedAt:'2026-10-10T18:59:00Z'},...over});
+function fixture(over:Partial<TabForm>={}){const t=makeTab(form(over));assert.equal(t.kind,'tab');if(t.kind!=='tab')throw Error();return t;}
+function table(over:Partial<TabForm>={}){const t=fixture(over);const e=encodeTable(t.rows.map(r=>r.fragment),t.zeroPeople);assert.equal(e.kind,'fragment');if(e.kind!=='fragment')throw Error();return {t,fragment:e.fragment};}
+const unpack=(f:string)=>JSON.parse(Buffer.from(f.slice(3),'base64url').toString());
+const pack=(v:unknown)=>'g1.'+Buffer.from(JSON.stringify(v)).toString('base64url');
+test('one table preserves every original share, request, memo and rounding byte for byte',()=>{const {t,fragment}=table();const d=decodeTable(fragment);assert.equal(d.kind,'table');if(d.kind!=='table')return;assert.equal(d.rows.length,5);d.rows.forEach((r,i)=>{assert.equal(r.fragment,t.rows[i].fragment);const q=requestFor(r.share);assert.equal(q.kind,'request');if(q.kind==='request')assert.equal(q.uri,t.rows[i].uri);});assert.deepEqual(d.zeroPeople,[]);assert.equal(encodeTable(t.rows.map(r=>r.fragment),[]).kind,'fragment');});
+test('duplicate and Unicode names stay separate in their original order',()=>{const {t,fragment}=table({people:[{name:'Ana',amount:'10.00'},{name:'Ana',amount:'20.00'},{name:'Ľuboš 🍜',amount:''}]});const d=decodeTable(fragment);assert.equal(d.kind,'table');if(d.kind==='table'){assert.deepEqual(d.rows.map(r=>r.share.name),t.rows.map(r=>r.name));assert.notEqual(d.rows[0].share.fiatShare,d.rows[1].share.fiatShare);}});
+test('itemized zero shares have no payment request',()=>{const {fragment}=table({itemized:true,total:'30.00',ownShare:'10.00',people:[{name:'Ana',amount:'20.00'},{name:'Ben',amount:'0.00'}]});const d=decodeTable(fragment);assert.equal(d.kind,'table');if(d.kind==='table'){assert.equal(d.rows.length,1);assert.deepEqual(d.zeroPeople,['Ben']);}});
+test('legacy shares retain their short memo and never acquire a date',()=>{const t=fixture();const fragments=t.rows.map(r=>{const d=decodeShare(r.fragment);assert.equal(d.kind,'share');if(d.kind!=='share')throw Error();delete d.share.createdAt;delete d.share.memoBrand;const e=encodeShare(d.share);if(e.kind!=='fragment')throw Error();return e.fragment;});const e=encodeTable(fragments,[]);if(e.kind!=='fragment')throw Error();const d=decodeTable(e.fragment);assert.equal(d.kind,'table');if(d.kind==='table')d.rows.forEach((r,i)=>assert.equal(r.fragment,fragments[i]));});
+test('mixed bill, payee, date or rate cannot be bundled as one table',()=>{const a=fixture(),b=fixture({from:'Someone else'});assert.equal(encodeTable([a.rows[0].fragment,b.rows[0].fragment],[]).kind,'error');});
+test('an altered amount in an unselected row rejects the whole table',()=>{const {fragment}=table();const v=unpack(fragment);v[1][4][2]='1';assert.deepEqual(decodeTable(pack(v)),{kind:'error',error:'amounts-disagree'});});
+test('invalid common fields are rejected by existing engine validation',()=>{const {fragment}=table();for(const [index,value] of [[0,'other'],[1,'not-an-address'],[5,'0'],[7,'2026-02-31T00:00:00Z'],[8,'not-a-date']] as const){const v=unpack(fragment);v[0][index]=value;assert.equal(decodeTable(pack(v)).kind,'error');}});
+test('malformed, oversized and unsupported input is rejected without throwing',()=>{for(const f of ['', 'g2.e30','g1.%%%','g1._w','g1.e30','g1.'+'a'.repeat(MAX_TABLE_FRAGMENT),'g1.'+Buffer.from('null').toString('base64url'),pack([[],[],[]]),pack([null,[['Ana','1.00','1']],[]])])assert.equal(decodeTable(f).kind,'error');});
+test('arrays have exact shapes and bounded row counts',()=>{const {fragment}=table();for(const mutate of [(v:any)=>v.push('extra'),(v:any)=>v[0].push('extra'),(v:any)=>v[1][0].push('extra'),(v:any)=>v[1]=[],(v:any)=>v[1]=Array(50).fill(v[1][0]),(v:any)=>v[2]=[4],(v:any)=>v[2]=['x'.repeat(41)]]){const v=unpack(fragment);mutate(v);assert.equal(decodeTable(pack(v)).kind,'error');}});
+test('49 people are bounded but supported and empty tables cannot be encoded',()=>{const {fragment}=table({people:Array.from({length:49},(_,i)=>({name:'Person '+i,amount:''}))});assert.equal(decodeTable(fragment).kind,'table');assert.equal(encodeTable([],[]).kind,'error');});
+test('transparent-address tables preserve requests without a memo',()=>{const {t,fragment}=table({payee:'tmEZhbWHTpdKMw5it8YDspUXSMGQyFwovpU'});const d=decodeTable(fragment);if(d.kind!=='table')throw Error();d.rows.forEach((r,i)=>{const q=requestFor(r.share);if(q.kind!=='request')throw Error();assert.equal(q.uri,t.rows[i].uri);assert.equal(q.memo,undefined);});});
+
+test('table routes select by position, never by a duplicate name',async()=>{
+ const {readTableRoute}=await import('../src/table-link.ts');const {fragment}=table({people:[{name:'Ana',amount:'10.00'},{name:'Ana',amount:'20.00'}]});
+ for(const [suffix,view] of [['','picker'],['/qr','qr'],['/0',0],['/1',1]] as const){const r=readTableRoute(fragment+suffix);assert.equal(r.kind,'table-route');if(r.kind==='table-route')assert.equal(r.view,view);}
+ for(const suffix of ['/2','/-1','/01','/NaN','/0/1','/','/qr/1'])assert.equal(readTableRoute(fragment+suffix).kind,'error');
+});

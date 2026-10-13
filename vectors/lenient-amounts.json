@@ -1,0 +1,65 @@
+[
+  {
+    "name": "lenient_amount_decimal_comma",
+    "description": "Constructed: a comma as the decimal separator. JavaScript's parseFloat reads a number from it; ZIP-321's amount grammar (1*DIGIT [ \".\" 1*8DIGIT ]) does not allow it.",
+    "uri": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=1,5",
+    "network": "test",
+    "error": "amountInvalid",
+    "oracleSkip": false,
+    "oracleSkipReason": null
+  },
+  {
+    "name": "lenient_amount_trailing_text",
+    "description": "Constructed: text after the number. JavaScript's parseFloat reads a number from it; ZIP-321's amount grammar (1*DIGIT [ \".\" 1*8DIGIT ]) does not allow it.",
+    "uri": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=12.5ZEC",
+    "network": "test",
+    "error": "amountInvalid",
+    "oracleSkip": false,
+    "oracleSkipReason": null
+  },
+  {
+    "name": "lenient_amount_exponent",
+    "description": "Constructed: scientific notation. JavaScript's parseFloat reads a number from it; ZIP-321's amount grammar (1*DIGIT [ \".\" 1*8DIGIT ]) does not allow it.",
+    "uri": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=1e2",
+    "network": "test",
+    "error": "amountInvalid",
+    "oracleSkip": false,
+    "oracleSkipReason": null
+  },
+  {
+    "name": "lenient_amount_space_grouping",
+    "description": "Constructed: a space inside the number. JavaScript's parseFloat reads a number from it; ZIP-321's amount grammar (1*DIGIT [ \".\" 1*8DIGIT ]) does not allow it.",
+    "uri": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=1 000",
+    "network": "test",
+    "error": "amountInvalid",
+    "oracleSkip": false,
+    "oracleSkipReason": null
+  },
+  {
+    "name": "lenient_amount_hex",
+    "description": "Constructed: a hexadecimal literal. JavaScript's parseFloat reads a number from it; ZIP-321's amount grammar (1*DIGIT [ \".\" 1*8DIGIT ]) does not allow it.",
+    "uri": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0x10",
+    "network": "test",
+    "error": "amountInvalid",
+    "oracleSkip": false,
+    "oracleSkipReason": null
+  },
+  {
+    "name": "lenient_amount_leading_plus",
+    "description": "Constructed: a leading plus sign. JavaScript's parseFloat reads a number from it; ZIP-321's amount grammar (1*DIGIT [ \".\" 1*8DIGIT ]) does not allow it.",
+    "uri": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=+1",
+    "network": "test",
+    "error": "amountInvalid",
+    "oracleSkip": false,
+    "oracleSkipReason": null
+  },
+  {
+    "name": "lenient_amount_underscore_grouping",
+    "description": "Constructed: an underscore inside the number. JavaScript's parseFloat reads a number from it; ZIP-321's amount grammar (1*DIGIT [ \".\" 1*8DIGIT ]) does not allow it.",
+    "uri": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=1_000",
+    "network": "test",
+    "error": "amountInvalid",
+    "oracleSkip": false,
+    "oracleSkipReason": null
+  }
+]

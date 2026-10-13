@@ -1,0 +1,711 @@
+{
+ "madeFrom": "1c820e9",
+ "note": "What each link gave at 1c820e9. {origin} stands for the page origin.",
+ "cases": [
+  {
+   "name": "s1 sapling",
+   "kind": "pay",
+   "fragment": "s1.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiXQ",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYQ",
+    "amount": "$30.00",
+    "zec": "0.3 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Ana”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.3 ZEC",
+    "back": [],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYQ",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.3 ZEC"
+   }
+  },
+  {
+   "name": "s2 sapling",
+   "kind": "pay",
+   "fragment": "s2.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYSDCtyAkMzAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgVGFi",
+    "amount": "$30.00",
+    "zec": "0.3 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Ana · $30.00 · 10 Oct 2026 · Tab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.3 ZEC",
+    "back": [],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYSDCtyAkMzAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgVGFi",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.3 ZEC"
+   }
+  },
+  {
+   "name": "s3 sapling",
+   "kind": "pay",
+   "fragment": "s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYSDCtyAkMzAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgWnRhYg",
+    "amount": "$30.00",
+    "zec": "0.3 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Ana · $30.00 · 10 Oct 2026 · Ztab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.3 ZEC",
+    "back": [],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYSDCtyAkMzAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgWnRhYg",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.3 ZEC"
+   }
+  },
+  {
+   "name": "s3 unified, EUR",
+   "kind": "pay",
+   "fragment": "s3.WyJ0ZXN0IiwidXRlc3QxNWhwOXo0ZmN1NzNjZnI5em5tdjZ6NHl4bmdzNzRmcmw5bWVxcHd2YTBuc3Z4cXRoNm1leXIzanc3ZTg5M2F4ZTdyMjRsZTN1YXdzOGt3cWtja2E3cXc5emZhczBlbDV2a2dsbDJyZm0iLCJEaW5uZXIiLCJBbmEiLCJNaXJvIiwiMTIuNTAiLCIyNTAwMDAwMCIsIkVVUiIsIjUwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+   "expect": {
+    "request": "zcash:utest15hp9z4fcu73cfr9znmv6z4yxngs74frl9meqpwva0nsvxqth6meyr3jw7e893axe7r24le3uaws8kwqkcka7qw9zfas0el5vkgll2rfm?amount=0.25&memo=RGlubmVyIMK3IEFuYSDCtyDigqwxMi41MCDCtyAxMCBPY3QgMjAyNiDCtyBadGFi",
+    "amount": "€12.50",
+    "zec": "0.25 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroutest15h…kgll2rfm"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "utest15hp9z4fcu73cfr9znmv6z4yxngs74frl9meqpwva0nsvxqth6meyr3jw7e893axe7r24le3uaws8kwqkcka7qw9zfas0el5vkgll2rfm"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Ana · €12.50 · 10 Oct 2026 · Ztab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = €50 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.25 ZEC",
+    "back": [],
+    "copyRequest": "zcash:utest15hp9z4fcu73cfr9znmv6z4yxngs74frl9meqpwva0nsvxqth6meyr3jw7e893axe7r24le3uaws8kwqkcka7qw9zfas0el5vkgll2rfm?amount=0.25&memo=RGlubmVyIMK3IEFuYSDCtyDigqwxMi41MCDCtyAxMCBPY3QgMjAyNiDCtyBadGFi",
+    "copyAddressAndAmount": "utest15hp9z4fcu73cfr9znmv6z4yxngs74frl9meqpwva0nsvxqth6meyr3jw7e893axe7r24le3uaws8kwqkcka7qw9zfas0el5vkgll2rfm\n0.25 ZEC"
+   }
+  },
+  {
+   "name": "s3 transparent",
+   "kind": "pay",
+   "fragment": "s3.WyJ0ZXN0IiwidG1FWmhiV0hUcGRLTXc1aXQ4WURzcFVYU01HUXlGd292cFUiLCJEaW5uZXIiLCJBbmEiLCJNaXJvIiwiMzAuMDAiLCIzMDAwMDAwMCIsIlVTRCIsIjEwMCIsIk1hbnVhbCBlbnRyeSIsIjIwMjYtMTAtMTBUMTg6MDA6MDBaIiwiMjAyNi0xMC0xMFQxODowMDowMFoiXQ",
+   "expect": {
+    "request": "zcash:tmEZhbWHTpdKMw5it8YDspUXSMGQyFwovpU?amount=0.3",
+    "amount": "$30.00",
+    "zec": "0.3 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays MirotmEZhbWH…QyFwovpU"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "tmEZhbWHTpdKMw5it8YDspUXSMGQyFwovpU"
+    ],
+    "warnings": [
+     "This address is public. Anyone who sees a payment to it can see the amount."
+    ],
+    "memo": [],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.3 ZEC",
+    "back": [],
+    "copyRequest": "zcash:tmEZhbWHTpdKMw5it8YDspUXSMGQyFwovpU?amount=0.3",
+    "copyAddressAndAmount": "tmEZhbWHTpdKMw5it8YDspUXSMGQyFwovpU\n0.3 ZEC"
+   }
+  },
+  {
+   "name": "s3 no label, no names",
+   "kind": "pay",
+   "fragment": "s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIiIsIiIsIiIsIjMwLjAwIiwiMzAwMDAwMDAiLCJVU0QiLCIxMDAiLCJNYW51YWwgZW50cnkiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiIsIjIwMjYtMTAtMTBUMTg6MDA6MDBaIl0",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=QmlsbCDCtyAgwrcgJDMwLjAwIMK3IDEwIE9jdCAyMDI2IMK3IFp0YWI",
+    "amount": "$30.00",
+    "zec": "0.3 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays this addressztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if the person who sent it sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Bill · · $30.00 · 10 Oct 2026 · Ztab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.3 ZEC",
+    "back": [],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=QmlsbCDCtyAgwrcgJDMwLjAwIMK3IDEwIE9jdCAyMDI2IMK3IFp0YWI",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.3 ZEC"
+   }
+  },
+  {
+   "name": "g1 picker",
+   "kind": "picker",
+   "fragment": "g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d",
+   "expect": {
+    "rows": [
+     [
+      "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/0",
+      "Ana",
+      "$30.00"
+     ],
+     [
+      "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/1",
+      "Ben",
+      "$20.00"
+     ]
+    ],
+    "caution": [],
+    "zero": []
+   }
+  },
+  {
+   "name": "g1 table code",
+   "kind": "qr",
+   "fragment": "g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/qr",
+   "expect": {
+    "link": "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d",
+    "picker": "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d"
+   }
+  },
+  {
+   "name": "g1 person 0",
+   "kind": "pay",
+   "fragment": "g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/0",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYSDCtyAkMzAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgVGFi",
+    "amount": "$30.00",
+    "zec": "0.3 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Ana · $30.00 · 10 Oct 2026 · Tab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.3 ZEC",
+    "back": [
+     "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d"
+    ],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYSDCtyAkMzAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgVGFi",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.3 ZEC"
+   }
+  },
+  {
+   "name": "g1 person 1",
+   "kind": "pay",
+   "fragment": "g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/1",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.2&memo=RGlubmVyIMK3IEJlbiDCtyAkMjAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgVGFi",
+    "amount": "$20.00",
+    "zec": "0.2 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Ben · $20.00 · 10 Oct 2026 · Tab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.2 ZEC",
+    "back": [
+     "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d"
+    ],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.2&memo=RGlubmVyIMK3IEJlbiDCtyAkMjAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgVGFi",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.2 ZEC"
+   }
+  },
+  {
+   "name": "g1 organiser",
+   "kind": "mine",
+   "fragment": "g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/mine",
+   "expect": {
+    "rows": [
+     {
+      "name": "Ana",
+      "ticked": false,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $30.00 · 10 Oct 2026 · Tab”"
+     },
+     {
+      "name": "Ben",
+      "ticked": false,
+      "amount": "$20.00",
+      "zec": "0.2 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ben · $20.00 · 10 Oct 2026 · Tab”"
+     }
+    ],
+    "links": [
+     "{origin}/#s2.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s2.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkJlbiIsIk1pcm8iLCIyMC4wMCIsIjIwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd"
+    ],
+    "summary": "",
+    "page": "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/mine",
+    "count": "1 of 2 ticked",
+    "afterTick": "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/mine/10"
+   }
+  },
+  {
+   "name": "g1 organiser, first ticked",
+   "kind": "mine",
+   "fragment": "g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/mine/10",
+   "expect": {
+    "rows": [
+     {
+      "name": "Ana",
+      "ticked": true,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $30.00 · 10 Oct 2026 · Tab”"
+     },
+     {
+      "name": "Ben",
+      "ticked": false,
+      "amount": "$20.00",
+      "zec": "0.2 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ben · $20.00 · 10 Oct 2026 · Tab”"
+     }
+    ],
+    "links": [
+     "{origin}/#s2.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s2.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkJlbiIsIk1pcm8iLCIyMC4wMCIsIjIwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd"
+    ],
+    "summary": "",
+    "page": "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/mine/10",
+    "count": "2 of 2 ticked. Settled in your record. These are your marks, not payment confirmation.",
+    "afterTick": "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/mine/11"
+   }
+  },
+  {
+   "name": "g1 organiser, all ticked",
+   "kind": "mine",
+   "fragment": "g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/mine/11",
+   "expect": {
+    "rows": [
+     {
+      "name": "Ana",
+      "ticked": true,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $30.00 · 10 Oct 2026 · Tab”"
+     },
+     {
+      "name": "Ben",
+      "ticked": true,
+      "amount": "$20.00",
+      "zec": "0.2 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ben · $20.00 · 10 Oct 2026 · Tab”"
+     }
+    ],
+    "links": [
+     "{origin}/#s2.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s2.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkJlbiIsIk1pcm8iLCIyMC4wMCIsIjIwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd"
+    ],
+    "summary": "Dinner — organiser’s record\nTestnet: not real ZEC\nAll 2 requested shares ticked.\n1. Ana — $30.00 · 0.3 ZEC\n2. Ben — $20.00 · 0.2 ZEC\nThe organiser ticked these by hand. It is their own record, not a payment confirmation.\nZtab",
+    "page": "{origin}/#g1.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkJlbiIsIjIwLjAwIiwiMjAwMDAwMDAiXV0sW11d/mine/11",
+    "count": "2 of 2 ticked. Settled in your record. These are your marks, not payment confirmation.",
+    "afterTick": null
+   }
+  },
+  {
+   "name": "g2 picker",
+   "kind": "picker",
+   "fragment": "g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d",
+   "expect": {
+    "rows": [
+     [
+      "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/0",
+      "Ana",
+      "$30.00"
+     ],
+     [
+      "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/1",
+      "Ana",
+      "$20.00"
+     ],
+     [
+      "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/2",
+      "Cara",
+      "$30.00"
+     ]
+    ],
+    "caution": [
+     "Some names repeat. Check your share with the organiser before choosing."
+    ],
+    "zero": [
+     "Dan"
+    ]
+   }
+  },
+  {
+   "name": "g2 table code",
+   "kind": "qr",
+   "fragment": "g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/qr",
+   "expect": {
+    "link": "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d",
+    "picker": "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d"
+   }
+  },
+  {
+   "name": "g2 person 0",
+   "kind": "pay",
+   "fragment": "g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/0",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYSDCtyAkMzAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgWnRhYg",
+    "amount": "$30.00",
+    "zec": "0.3 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Ana · $30.00 · 10 Oct 2026 · Ztab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.3 ZEC",
+    "back": [
+     "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d"
+    ],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IEFuYSDCtyAkMzAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgWnRhYg",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.3 ZEC"
+   }
+  },
+  {
+   "name": "g2 person 1",
+   "kind": "pay",
+   "fragment": "g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/1",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.2&memo=RGlubmVyIMK3IEFuYSDCtyAkMjAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgWnRhYg",
+    "amount": "$20.00",
+    "zec": "0.2 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Ana · $20.00 · 10 Oct 2026 · Ztab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.2 ZEC",
+    "back": [
+     "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d"
+    ],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.2&memo=RGlubmVyIMK3IEFuYSDCtyAkMjAuMDAgwrcgMTAgT2N0IDIwMjYgwrcgWnRhYg",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.2 ZEC"
+   }
+  },
+  {
+   "name": "g2 person 2",
+   "kind": "pay",
+   "fragment": "g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/2",
+   "expect": {
+    "request": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IENhcmEgwrcgJDMwLjAwIMK3IDEwIE9jdCAyMDI2IMK3IFp0YWI",
+    "amount": "$30.00",
+    "zec": "0.3 ZEC",
+    "strip": [
+     "Testnet: not real ZEC"
+    ],
+    "pays": [
+     "Pays Miroztestsap…fska2kez"
+    ],
+    "caution": [
+     "Pay only if Miro sent you this link. Check the address with them if you are unsure."
+    ],
+    "address": [
+     "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez"
+    ],
+    "warnings": [],
+    "memo": [
+     "Note in the request: “Dinner · Cara · $30.00 · 10 Oct 2026 · Ztab”. Your wallet may not show or send it."
+    ],
+    "rate": [
+     "1 ZEC = $100 · entered by hand · 10 Oct 2026, 18:00 UTC"
+    ],
+    "fixed": [
+     "Amount fixed when this tab was made; the exchange rate may have changed."
+    ],
+    "qr": "Payment request for 0.3 ZEC",
+    "back": [
+     "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d"
+    ],
+    "copyRequest": "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=0.3&memo=RGlubmVyIMK3IENhcmEgwrcgJDMwLjAwIMK3IDEwIE9jdCAyMDI2IMK3IFp0YWI",
+    "copyAddressAndAmount": "ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez\n0.3 ZEC"
+   }
+  },
+  {
+   "name": "g2 organiser",
+   "kind": "mine",
+   "fragment": "g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/mine",
+   "expect": {
+    "rows": [
+     {
+      "name": "Ana",
+      "ticked": false,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $30.00 · 10 Oct 2026 · Ztab”"
+     },
+     {
+      "name": "Ana",
+      "ticked": false,
+      "amount": "$20.00",
+      "zec": "0.2 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $20.00 · 10 Oct 2026 · Ztab”"
+     },
+     {
+      "name": "Cara",
+      "ticked": false,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Cara · $30.00 · 10 Oct 2026 · Ztab”"
+     }
+    ],
+    "links": [
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIyMC4wMCIsIjIwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkNhcmEiLCJNaXJvIiwiMzAuMDAiLCIzMDAwMDAwMCIsIlVTRCIsIjEwMCIsIk1hbnVhbCBlbnRyeSIsIjIwMjYtMTAtMTBUMTg6MDA6MDBaIiwiMjAyNi0xMC0xMFQxODowMDowMFoiXQ"
+    ],
+    "summary": "",
+    "page": "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/mine",
+    "count": "1 of 3 ticked",
+    "afterTick": "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/mine/100"
+   }
+  },
+  {
+   "name": "g2 organiser, first ticked",
+   "kind": "mine",
+   "fragment": "g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/mine/100",
+   "expect": {
+    "rows": [
+     {
+      "name": "Ana",
+      "ticked": true,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $30.00 · 10 Oct 2026 · Ztab”"
+     },
+     {
+      "name": "Ana",
+      "ticked": false,
+      "amount": "$20.00",
+      "zec": "0.2 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $20.00 · 10 Oct 2026 · Ztab”"
+     },
+     {
+      "name": "Cara",
+      "ticked": false,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Cara · $30.00 · 10 Oct 2026 · Ztab”"
+     }
+    ],
+    "links": [
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIyMC4wMCIsIjIwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkNhcmEiLCJNaXJvIiwiMzAuMDAiLCIzMDAwMDAwMCIsIlVTRCIsIjEwMCIsIk1hbnVhbCBlbnRyeSIsIjIwMjYtMTAtMTBUMTg6MDA6MDBaIiwiMjAyNi0xMC0xMFQxODowMDowMFoiXQ"
+    ],
+    "summary": "",
+    "page": "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/mine/100",
+    "count": "2 of 3 ticked",
+    "afterTick": "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/mine/110"
+   }
+  },
+  {
+   "name": "g2 organiser, all ticked",
+   "kind": "mine",
+   "fragment": "g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/mine/111",
+   "expect": {
+    "rows": [
+     {
+      "name": "Ana",
+      "ticked": true,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $30.00 · 10 Oct 2026 · Ztab”"
+     },
+     {
+      "name": "Ana",
+      "ticked": true,
+      "amount": "$20.00",
+      "zec": "0.2 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Ana · $20.00 · 10 Oct 2026 · Ztab”"
+     },
+     {
+      "name": "Cara",
+      "ticked": true,
+      "amount": "$30.00",
+      "zec": "0.3 ZEC",
+      "memo": "Note to look for in your wallet: “Dinner · Cara · $30.00 · 10 Oct 2026 · Ztab”"
+     }
+    ],
+    "links": [
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIzMC4wMCIsIjMwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkFuYSIsIk1pcm8iLCIyMC4wMCIsIjIwMDAwMDAwIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJd",
+     "{origin}/#s3.WyJ0ZXN0IiwienRlc3RzYXBsaW5nMTB5eTJleDVkY3FrY2xoYzd6N3lybmpxMno2ZmV5amFkNTZwdHdsZmdteTc3ZG1hcXFybDlneWhwcmR4NTlxZ21zbnlmc2thMmtleiIsIkRpbm5lciIsIkNhcmEiLCJNaXJvIiwiMzAuMDAiLCIzMDAwMDAwMCIsIlVTRCIsIjEwMCIsIk1hbnVhbCBlbnRyeSIsIjIwMjYtMTAtMTBUMTg6MDA6MDBaIiwiMjAyNi0xMC0xMFQxODowMDowMFoiXQ"
+    ],
+    "summary": "Dinner — organiser’s record\nTestnet: not real ZEC\nAll 3 requested shares ticked.\n1. Ana — $30.00 · 0.3 ZEC\n2. Ana — $20.00 · 0.2 ZEC\n3. Cara — $30.00 · 0.3 ZEC\nThe organiser ticked these by hand. It is their own record, not a payment confirmation.\nZtab",
+    "page": "{origin}/#g2.W1sidGVzdCIsInp0ZXN0c2FwbGluZzEweXkyZXg1ZGNxa2NsaGM3ejd5cm5qcTJ6NmZleWphZDU2cHR3bGZnbXk3N2RtYXFxcmw5Z3locHJkeDU5cWdtc255ZnNrYTJrZXoiLCJEaW5uZXIiLCJNaXJvIiwiVVNEIiwiMTAwIiwiTWFudWFsIGVudHJ5IiwiMjAyNi0xMC0xMFQxODowMDowMFoiLCIyMDI2LTEwLTEwVDE4OjAwOjAwWiJdLFtbIkFuYSIsIjMwLjAwIiwiMzAwMDAwMDAiXSxbIkFuYSIsIjIwLjAwIiwiMjAwMDAwMDAiXSxbIkNhcmEiLCIzMC4wMCIsIjMwMDAwMDAwIl1dLFsiRGFuIl1d/mine/111",
+    "count": "3 of 3 ticked. Settled in your record. These are your marks, not payment confirmation.",
+    "afterTick": null
+   }
+  },
+  {
+   "name": "demo session",
+   "kind": "demo",
+   "fragment": "demo/1791806400000/1234567890abcdef/10",
+   "expect": {
+    "requests": [
+     "zcash:utest15hp9z4fcu73cfr9znmv6z4yxngs74frl9meqpwva0nsvxqth6meyr3jw7e893axe7r24le3uaws8kwqkcka7qw9zfas0el5vkgll2rfm?amount=0.04546&memo=RGVtbyAxMjM0NTY3ODkwYWJjZGVmIMK3IEFuYSDCtyAkNDUuNDYgwrcgMTIgT2N0IDIwMjYgwrcgWnRhYg",
+     "zcash:utest15hp9z4fcu73cfr9znmv6z4yxngs74frl9meqpwva0nsvxqth6meyr3jw7e893axe7r24le3uaws8kwqkcka7qw9zfas0el5vkgll2rfm?amount=0.02291&memo=RGVtbyAxMjM0NTY3ODkwYWJjZGVmIMK3IEJlbiDCtyAkMjIuOTEgwrcgMTIgT2N0IDIwMjYgwrcgWnRhYg"
+    ],
+    "memos": [
+     "Demo 1234567890abcdef · Ana · $45.46 · 12 Oct 2026 · Ztab",
+     "Demo 1234567890abcdef · Ben · $22.91 · 12 Oct 2026 · Ztab"
+    ],
+    "ticks": [
+     true,
+     false
+    ],
+    "url": "{origin}/?demo#demo/1791806400000/1234567890abcdef/10/d8f1c48cb9957234c125fe5f04710a4d"
+   }
+  }
+ ]
+}
