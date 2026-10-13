@@ -1,22 +1,28 @@
 # Screenshot provenance
 
-`tab-share.png` and `tab-pay.png` were captured by Maximus from the local production
-build of `073abf9d146eed3fa48f17c11c5849a14c2dc05c` on 12 October 2026 at 13:21 UTC,
-served on 127.0.0.1. This is the release candidate with the guided create flow and
-the polished pay, table, organiser and demo screens. Playwright WebKit 26.5, light
-appearance and reduced motion: `tab-share.png` is the Links ready screen at
-1280×1000 and `tab-pay.png` is Ana's pay page at 390×844, each the first screen
-without scrolling. The native share API was not replaced; WebKit exposes it, so
-Send is present. No Send action was invoked.
+`tab-share.png` and `tab-pay.png` were captured by Jarvis from
+https://ztab.sebrona.com/ on 13 October 2026 at 07:35 UTC.
+This was a documentation update after submission, using the submitted
+release tree: public commit `df10bff51047978db5f753e47a2625ce624bd0cc`,
+deployed as `703a5d5f464c94bbaeda3c7c77a277b3954f96d3`.
 
-The fixture is USD 98 “Večera, Friday”, organiser Miro, participants Ana and
-Ben, and a manually entered example rate of USD 100 per ZEC, entered through the
-guided steps. The recipient is the repository's public testnet Sapling fixture.
-The testnet banner is intentional. No wallet was opened and no funds were sent.
+Playwright WebKit 26.5, light appearance, reduced motion and en-US locale:
+Links ready at 1280×1000; Ana's pay page at 390×844. These are browser
+viewport captures, not photographs of a physical laptop or phone. The
+native share API was unchanged; Send was not pressed.
 
-Chromium 151.0.7922.34 and WebKit 26.5 both loaded only HTML and five local
-assets (script, stylesheet and three fonts, including extended Latin) on each
-screen. Local storage, session storage and cookies remained empty with Remember
-off. No page errors. The images were recompressed losslessly: a fully opaque
-alpha channel was dropped and no pixel changed.
-The screenshots show a bill split by total; they do not illustrate all modes.
+Fixture: USD 98 “Večera, Friday”, organiser Miro, participants Ana and Ben,
+a manually entered example rate of USD 100 per ZEC, and the repository's
+public testnet Sapling address. The testnet strip remains visible. No
+wallet was opened and no payment was made.
+
+Chromium 151.0.7922.34 repeated the same flow. The organiser visit loaded
+HTML, the app script and stylesheet, three local fonts and one landing
+image (seven requests). The pay visit loaded HTML, script, stylesheet and
+three local fonts (six requests). All requests were to the site's own
+origin; no Coinbase lookup or viewing-key scan was requested. Local storage,
+session storage and cookies were empty. Neither engine reported a page error.
+
+Images were recompressed losslessly, removing only a fully opaque alpha
+channel. No UI text or pixels were retouched. The screenshots show splitting
+by total and do not illustrate every supported mode.

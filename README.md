@@ -24,7 +24,8 @@ wallet handles the payment.
 <p align="center"><img src="docs/images/tab-pay.png" width="320" alt="Ana's pay page on a phone: her share, then the recipient and caution above Open in my wallet"></p>
 
 *Screenshots use public testnet data and a manually entered example rate.
-They show build `073abf9` with the Cut ribbon brand on 12 October 2026;
+Captured on 13 October 2026 from the submitted release (`df10bff`),
+with the Cut ribbon brand;
 no wallet was opened and no funds were sent.*
 
 ## How it works
