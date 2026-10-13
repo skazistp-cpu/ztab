@@ -2,6 +2,14 @@
 
 **Split the bill. Get paid back in Zcash.**
 
+Built by **Sebrona**, led by **Miroslav Striško (Miro)**, with the AI assistants
+Lagertha, Bjorn, Jarvis and Digitalac. [Team and responsibilities](#team).
+
+[Open Ztab](https://ztab.sebrona.com/) ·
+[Try the testnet sample](https://ztab.sebrona.com/?demo) ·
+[Watch the product demo](https://youtu.be/ZxDVvR5dODA) ·
+[Watch the pitch](https://youtu.be/vraYHLyCM7Q)
+
 Ztab turns one bill into a payment request for each person. Enter the total in
 fiat, split evenly, set amounts, or assign bill items and a proportional tip.
 Share individual links or one Table QR for everyone. Each payer
@@ -304,6 +312,37 @@ The web app supplies the exchange rate; the engine never fetches one.
 The package is currently consumed from source within this repository, not
 published to npm. See the [input and result types](packages/engine/src/types.ts)
 and [executable examples](packages/engine/test/split.test.ts) to integrate it.
+
+## Team
+
+Ztab is a Sebrona project led by Miroslav Striško (Miro), Sebrona's CEO.
+Miro sets the product direction, makes the release decisions and is the
+human founder behind the submission.
+
+The team uses named AI assistants under his direction:
+
+| Contributor | Work on Ztab |
+|---|---|
+| Lagertha | App development, browser checks and code review |
+| Bjorn | Product specification, claims review and pitch writing |
+| Jarvis | Engineering, wallet checks, code review and video assembly |
+| Digitalac | Submission preparation and browser coordination |
+
+These names identify AI assistants, not additional human founders. The
+videos use synthetic narration. Miro remains responsible for the project
+and its public claims.
+
+## Submission record
+
+The submitted source snapshot is
+[`df10bff`](https://github.com/skazistp-cpu/ztab/tree/df10bff51047978db5f753e47a2625ce624bd0cc).
+The demo and pitch linked above are the submitted videos. Documentation
+clarifications dated 13 October 2026 do not change that source snapshot.
+
+**Demo clarification:** the narration's “137 passed” refers to the combined
+engine test run: 70 Ztab engine tests and 67 ZIP 321 conformance-vector tests.
+It does not mean 137 conformance vectors. Six additional checks were skipped.
+The demonstrated payments use testnet between our own wallets.
 
 ## Repository and licence
 
