@@ -2,8 +2,8 @@
 // Chromium and WebKit, a phone and a laptop: the button (its name says what it will do, with no aria-pressed; where it
 // sits and how it looks), a pause that holds every element still for 1.5 s with no animation frame asked for, the
 // street held at its stills while the page is scrolled (the camera stands at the first screen or at a station), the
-// sections coming into view while paused (nothing starts, the recording stays stopped), a resize while paused, playing
-// again (the dinner, the street, the ring, the recording), a pause in the middle of the camera's move, the choice kept
+// sections coming into view while paused (nothing starts, the wallet band holds), a resize while paused, playing
+// again (the dinner, the street, the ring, the wallet band), a pause in the middle of the camera's move, the choice kept
 // for the visit and not beyond it, the keyboard, a press in the very first moments, the system's reduce-motion
 // setting, and the CSS loops that hold while their picture is off screen.
 // PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs TAB_ORIGIN=http://127.0.0.1:8764 node test/browser/landing-pause.mjs
@@ -55,7 +55,8 @@ const running = (page, root = '.landing') => page.evaluate(sel => document.query
 const camera = page => page.evaluate(() => document.querySelector('.zs-world').style.transform);
 /** Scrolls to progress p of the street's stage (0 to 1). */
 const along = (page, p) => page.evaluate(v => { const s = document.querySelector('.zs'); scrollTo(0, s.getBoundingClientRect().top + scrollY + v * Math.max(0, s.offsetHeight - innerHeight)); }, p);
-const recording = page => page.evaluate(() => { const v = document.querySelector('.ls-phone video'); return { paused: v.paused, time: v.currentTime }; });
+/** The wallet band's own drifting decoration (its lamps and the phone's tilt), where the band is built. */
+const bandLook = page => page.evaluate(() => [...document.querySelectorAll('.wb-lamp, .wb-tilt')].map(el => el.style.transform).join('|'));
 const scrollToEl = (page, selector, offset = 0) => page.evaluate(([sel, off]) => {
   const el = document.querySelector(sel);
   scrollTo(0, el.getBoundingClientRect().top + scrollY + off);
@@ -71,13 +72,13 @@ async function stays(page, where, ms = 1500) {
   await frames(page, 2);
   const a = await snapshot(page);
   const asked = await frameCount(page);
-  const video = await recording(page);
+  const band = await bandLook(page);
   await page.waitForTimeout(ms);
   const b = await snapshot(page);
   assert.deepEqual(moved(a, b), [], `${where}: nothing moves for ${ms} ms`);
   assert.equal(await frameCount(page), asked, `${where}: no animation frame is asked for`);
   assert.deepEqual(await running(page), [], `${where}: no animation runs`);
-  assert.deepEqual(await recording(page), video, `${where}: the recording holds`);
+  assert.equal(await bandLook(page), band, `${where}: the wallet band holds`);
 }
 
 let visits = 0;
@@ -211,7 +212,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       }
       if (shots) await page.screenshot({ path: `${shots}/${engine}-pause-${width}-paused.png`, clip: { x: 0, y: 0, width, height: 140 } });
 
-      // ── Scroll through while it is paused: the street at its stills, nothing starts, the figures are there, the recording stays stopped ──
+      // ── Scroll through while it is paused: the street at its stills, nothing starts, the figures are there, the wallet band holds ──
       const pinned = await page.locator('.zs.zs-pinned').count() > 0;
       if (pinned) {
         const stills = new Set();
@@ -225,9 +226,9 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
         }
         assert.ok(stills.size >= 4 && stills.size <= 7, `${at}: the camera stood only at stills: the first screen, the stations, the street at night (${stills.size})`);
       }
-      for (const section of ['.zs-links', '.ls-band', '.ls-ring', '.ls-counts', '.lz-cta']) {
+      for (const section of ['.zs-links', '.lw-band', '.ls-ring', '.ls-counts', '.lz-cta']) {
         if (section === '.zs-links' && pinned) continue;
-        await scrollToEl(page, section, section === '.ls-band' ? 360 : 0);
+        await scrollToEl(page, section, section === '.lw-band' ? 360 : 0);
         await page.waitForTimeout(150);
         assert.deepEqual(await running(page), [], `${at}: nothing eases in as ${section} comes into view while paused`);
         await page.waitForTimeout(450);
@@ -237,9 +238,10 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
           assert.deepEqual(await page.locator('.ls-ring-spin').evaluate(el => el.getAnimations().map(a => a.playState)), ['paused'], `${at}: the ring is held`);
         }
         if (section === '.ls-counts') assert.equal((await page.locator('.ls-count-num').allTextContents()).join(), '67,6,4,0', `${at}: the figures are there, none half counted`);
-        if (section === '.ls-band') {
-          assert.equal((await recording(page)).paused, true, `${at}: the recording does not start when the phone comes into view`);
-          assert.equal(await page.locator('.ls-phone video').getAttribute('poster'), '/landing/sections-pay-poster.webp', `${at}: it shows its still`);
+        if (section === '.lw-band') {
+          // Built as it came near, and standing where the scroll is (no easing, nothing drifting while paused).
+          assert.equal(await page.locator('.wb').count(), 1, `${at}: the wallet band is built`);
+          assert.ok(await page.locator('.wb-li').first().evaluate(el => getComputedStyle(el).opacity !== ''), `${at}: its story stands at the scroll`);
         }
         if (section === '.lz-cta') {
           assert.equal(await page.locator('.lz-cta').evaluate(el => el.classList.contains('lz-in')), false, `${at}: the Z does not assemble while paused`);
@@ -311,17 +313,19 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await press(page);
       await page.waitForTimeout(600);
       assert.notEqual(await turn(), ringHeld, `${at}: the ring turns on from there`);
-      // The recording plays when seen; a pause stops it and it holds its place; playing carries on.
-      await scrollToEl(page, '.ls-band', 360);
-      await page.waitForFunction(() => { const v = document.querySelector('.ls-phone video'); return v && !v.paused && v.currentTime > 0.2; }, null, { timeout: 9000 });
+      // The wallet band's lamps drift while it is seen; a pause holds them (no frame asked for), playing carries on.
+      await scrollToEl(page, '.lw-band', 360);
+      await page.locator('.wb').waitFor({ timeout: 4000 });
+      await page.waitForTimeout(400);
+      const drift0 = await bandLook(page);
+      await page.waitForTimeout(700);
+      assert.notEqual(await bandLook(page), drift0, `${at}: the band's lamps drift while it is seen`);
       await press(page);
-      await frames(page, 2);
-      const stopped = await recording(page);
-      assert.equal(stopped.paused, true, `${at}: the recording is stopped by the pause`);
-      await page.waitForTimeout(1200);
-      assert.deepEqual(await recording(page), stopped, `${at}: and holds its place`);
+      await stays(page, `${at} paused in the wallet band`, 1000);
+      const held = await bandLook(page);
       await press(page);
-      await page.waitForFunction(was => { const v = document.querySelector('.ls-phone video'); return !v.paused && v.currentTime > was + 0.3; }, stopped.time, { timeout: 9000 });
+      await page.waitForTimeout(700);
+      assert.notEqual(await bandLook(page), held, `${at}: and drift on from there when motion plays`);
 
       // ── The choice is for this visit: it stays when the steps are opened and closed, and a new visit starts with motion ──
       await scrollToEl(page, '.landing', 0);

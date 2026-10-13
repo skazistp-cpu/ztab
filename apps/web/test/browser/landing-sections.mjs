@@ -1,8 +1,8 @@
-// The sections after the street: the band of night with the recording of the pay page, the ring of link cards and the
-// counts. Chromium and WebKit, a phone and a laptop, light and dark, with and without motion: the approved sentences
-// word for word, the figures against the app's own code, the recording fetched only when near, loops that stop off
-// screen, a still picture with reduced motion, the light fading into and out of the band, no sideways scroll, and no
-// request to another origin.
+// The sections after the street: the band of night (the wallet band: Ana's pay page, the tap, a wallet's Send sheet
+// filling from the request), the ring of link cards and the counts. Chromium and WebKit, a phone and a laptop, light and
+// dark, with and without motion: the approved sentences word for word, the figures against the app's own code, the band
+// built only when near, loops that stop off screen, a still picture with reduced motion, the light fading into and out
+// of the band, no sideways scroll, and no request to another origin.
 // PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs TAB_ORIGIN=http://127.0.0.1:8764 node test/browser/landing-sections.mjs
 import assert from 'node:assert/strict';
 import { pathToFileURL } from 'node:url';
@@ -38,6 +38,7 @@ const scrollToEl = (page, selector, offset = 0) => page.evaluate(([sel, off]) =>
   const el = document.querySelector(sel);
   scrollTo(0, el.getBoundingClientRect().top + scrollY + off);
 }, [selector, offset]);
+const innerHeightOf = width => (width < 600 ? 844 : 800);
 const noSideways = async (page, where) => {
   const [scroll, inner] = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   assert.ok(scroll <= inner, `${where}: no sideways scroll (${scroll} > ${inner})`);
@@ -60,44 +61,62 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
           const requests = [];
           page.on('request', r => requests.push(r.url()));
           await page.goto(origin + '/');
-          await page.locator('.ls-band').waitFor();
+          await page.locator('.lw-band').waitFor();
           await page.evaluate(() => document.fonts.ready);
 
-          // The recording: muted, inline, looped, nothing fetched for it on arrival.
-          const video = page.locator('.ls-phone video');
-          assert.deepEqual(await video.evaluate(v => [v.muted, v.hasAttribute('playsinline'), v.loop, v.autoplay, v.preload, v.controls]), [true, true, true, false, 'none', false], `${at}: the recording's settings`);
-          assert.ok(!requests.some(url => /\/landing\/sections-pay/.test(url)), `${at}: the recording waits until the band is near`);
-
-          // The words, exactly; no em dash anywhere in them.
-          assert.deepEqual((await page.locator('.ls-line').allTextContents()).map(flat), LINES, `${at}: the band's two lines`);
-          assert.equal(await page.locator('.ls-band h2').count(), 1, `${at}: the band's heading is its first line`);
-          const words = flat(await page.locator('.ls-band, .ls-ring, .ls-counts').allInnerTexts().then(list => list.join(' ')));
+          // The band is built only as it comes near (its pay page uses the app's monospace face): on arrival there is
+          // nothing of it but its two sentences, for a screen reader, and the face is not fetched.
+          assert.equal(await page.locator('.wb').count(), 0, `${at}: the band waits until it is near`);
+          assert.deepEqual((await page.locator('.lw-words-sr > *').allTextContents()).map(flat), LINES, `${at}: its two sentences, for a screen reader`);
+          assert.equal(await page.locator('.lw-words-sr h2').count(), 1, `${at}: the first a heading`);
+          assert.ok(!requests.some(url => /jetbrains/i.test(url)), `${at}: no monospace face on arrival`);
+          // Built once it is near: the same words, exactly; no em dash anywhere in the sections' words.
+          await scrollToEl(page, '.lw-band', -innerHeightOf(width) * 0.5);
+          await page.locator('.wb').waitFor({ timeout: 4000 });
+          assert.equal(flat(await page.locator('.wb-s1').textContent()), LINES[0], `${at}: the band's first sentence`);
+          assert.equal(flat(await page.locator('.wb-s2').textContent()), LINES[1], `${at}: the band's second sentence`);
+          assert.equal(await page.locator('.lw-words-sr').count(), 0, `${at}: the screen reader's copy goes once the band is built`);
+          assert.equal(await page.locator('.wb').getAttribute('aria-labelledby'), 'wb-s1', `${at}: the band is named by its first sentence`);
+          // (The phone's screen is the app's own pay page, drawn: a picture, inert and hidden from a screen reader.)
+          const words = flat(await page.locator('.wb-words, .ls-ring, .ls-counts').allInnerTexts().then(list => list.join(' ')));
           assert.ok(!/[—–]/.test(words), `${at}: no dashes`);
 
           // The ring: twelve friends of three tabs, by the engine; only the ring takes the focus (to stop it).
           const ring = await page.locator('.ls-ring-card').evaluateAll(list => list.map(c => `${c.querySelector('.ls-ring-name').textContent} ${c.querySelector('.ls-ring-amount').textContent}`));
           assert.deepEqual(ring, RING, `${at}: the ring's cards`);
-          assert.deepEqual(await page.locator('.ls-band [tabindex], .ls-ring [tabindex], .ls-counts [tabindex]').evaluateAll(list => list.map(el => el.classList.contains('ls-ring-stage'))), [true], `${at}: only the ring takes the focus`);
+          assert.deepEqual(await page.locator('.lw-band [tabindex], .ls-ring [tabindex], .ls-counts [tabindex]').evaluateAll(list => list.map(el => el.classList.contains('ls-ring-stage'))), [true], `${at}: only the ring takes the focus`);
           assert.ok((await page.locator('.ls-ring-stage').getAttribute('aria-label')).length > 40, `${at}: the ring is named`);
-          assert.ok((await page.locator('.ls-phone').getAttribute('aria-label')).length > 40, `${at}: the recording is named`);
+          assert.ok((await page.locator('.wb-phone').getAttribute('aria-label')).length > 40, `${at}: the phone is named`);
+          assert.ok(await page.locator('.wb-screen').evaluate(el => el.inert && el.getAttribute('aria-hidden') === 'true'), `${at}: the page on the phone is a picture (inert)`);
 
           // The counts: four facts, each counted up to its figure once the strip is seen (at once with reduced motion).
           assert.deepEqual(await page.locator('.ls-count-label').allTextContents(), ['ZIP 321 conformance tests passed', 'currencies', 'wallets tried', 'accounts'], `${at}: the counts' words`);
           await scrollToEl(page, '.ls-counts', -200);
           await page.waitForFunction(() => [...document.querySelectorAll('.ls-count-num')].map(n => n.textContent).join() === '67,6,4,0', null, { timeout: 4000 });
           assert.deepEqual((await page.locator('.ls-count').allTextContents()).map(flat), ['6767 ZIP 321 conformance tests passed', '66 currencies', '44 wallets tried', '00 accounts'], `${at}: each figure also said once, in full`);
+          // Each figure's own picture, hidden from a screen reader: 67 ticks (all on once counted), the six currencies'
+          // signs from the app's codes, the four wallets' names, and the ghost of an account.
+          assert.equal(await page.locator('.ls-dial').count(), 4, `${at}: four figures`);
+          assert.ok(await page.locator('.ls-viz').evaluateAll(list => list.length >= 4 && list.every(el => el.getAttribute('aria-hidden') === 'true')), `${at}: their pictures hidden from a screen reader`);
+          await page.waitForFunction(() => document.querySelectorAll('.ls-viz-ticks .ls-tick.on').length === 67, null, { timeout: 4000 });
+          assert.equal(await page.locator('.ls-viz-ticks .ls-tick').count(), 67, `${at}: 67 ticks`);
+          assert.deepEqual(await page.locator('.lk-orbit-front .ls-sign').evaluateAll(list => list.map(el => el.dataset.t)), ['$', '€', '£', 'Kč', 'zł', 'CHF'], `${at}: the six currencies' signs`);
+          assert.deepEqual(await page.locator('.ls-mark').evaluateAll(list => list.map(el => el.dataset.t)), ['Zodl', 'Zingo', 'YWallet', 'Zkool'], `${at}: the four wallets' names`);
+          assert.equal(await page.locator('.ls-viz-ghost .ls-ghost-card').count(), 1, `${at}: an account's ghost`);
+          // The brand band: the six links of the sample dinner round the Z (hidden from a screen reader with the Z).
+          assert.deepEqual(await page.locator('.lz-mark .lk-orbit-front .lz-sat-card .lz-tag-name').allTextContents(), LANDING_SAMPLE.shares.map(s => s.name), `${at}: the six links round the Z`);
+          assert.equal(await page.locator('.lz-mark').getAttribute('aria-hidden'), 'true', `${at}: the constellation is hidden from a screen reader`);
 
           // The light: the band begins in ink (the street before it ends at night) and fades out to white in its own
           // padding at its foot, where there are no words; the words on ink.
-          const ground = await page.locator('.ls-band').evaluate(el => [getComputedStyle(el).backgroundImage, parseFloat(getComputedStyle(el).paddingBottom)]);
+          const ground = await page.locator('.lw-band').evaluate(el => [getComputedStyle(el).backgroundImage, parseFloat(getComputedStyle(el).paddingBottom)]);
           assert.match(ground[0], /^linear-gradient\(rgb\(11, 12, 15\).*rgb\(11, 12, 15\).*rgb\(255, 255, 255\)/, `${at}: ink to white`);
           assert.ok(ground[1] >= 100, `${at}: the fade sits in the band's padding (${ground[1]})`);
-          // The wallets of the second line, by name only, beside the phone (a screen reader has them in the line).
-          assert.deepEqual(await page.locator('.ls-wallet-chip').allTextContents(), ['Zodl', 'Zingo', 'YWallet', 'Zkool'], `${at}: the four names`);
-          assert.equal(await page.locator('.ls-wallets').getAttribute('aria-hidden'), 'true', `${at}: hidden from a screen reader`);
-          assert.equal(await page.locator('.ls-wallets img, .ls-wallets svg:not(.ls-chip-check)').count(), 0, `${at}: no logos`);
-          assert.deepEqual(await page.locator('.ls-chip-check path').evaluateAll(list => [...new Set(list.map(p => p.getAttribute('d')))]), ['M2.4 6.3l2.4 2.4 4.8-5.2'], `${at}: each name has only a check to draw`);
-          assert.equal(await page.locator('.ls-line').first().evaluate(el => getComputedStyle(el).color), 'rgb(242, 245, 247)', `${at}: the lines are light`);
+          // The wallets of the second sentence, by name only (no logos), and the words that light in the first.
+          assert.deepEqual(await page.locator('.wb-wallet').evaluateAll(list => list.map(el => el.firstChild.textContent)), ['Zodl', 'Zingo', 'YWallet', 'Zkool'], `${at}: the four names`);
+          assert.equal(await page.locator('.wb img, .wb-words img').count(), 0, `${at}: no logos`);
+          assert.deepEqual(await page.locator('.wb-key').allTextContents(), ['the address', 'the amount', 'the note'], `${at}: the words that light`);
+          assert.equal(await page.locator('.wb-s1').evaluate(el => getComputedStyle(el).color), 'rgb(242, 245, 247)', `${at}: the words are light on the ink`);
           // The figure that is seen: the odometer's wheels with motion (each resting on its digit), the plain figure without.
           const seenFigure = await page.evaluate(() => {
             const odo = document.querySelector('.ls-counts.ls-odo-on .ls-odo');
@@ -109,18 +128,16 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
           if (motion !== 'reduce') assert.equal(seenFigure.digits, '67,6,4,0', `${at}: the wheels rest on the figures`);
 
           if (motion === 'reduce') {
-            // The band does not hold the screen; both lines are there to read; nothing runs; no video is fetched.
-            assert.ok(await page.locator('.ls-band.ls-still').count(), `${at}: the band is still`);
-            assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.ls-band-stage')).position), 'relative', `${at}: no sticky stage`);
-            await scrollToEl(page, '.ls-band');
+            // The band does not hold the screen: it is the module's still, every line, field and name in its end state.
+            assert.ok(await page.locator('.lw-band.lw-still .wb.wb-static').count(), `${at}: the band is still`);
+            assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.lw-stage')).position), 'relative', `${at}: no sticky stage`);
+            await scrollToEl(page, '.lw-band');
             await page.waitForTimeout(150);
-            assert.deepEqual(await page.locator('.ls-line').evaluateAll(list => list.map(el => getComputedStyle(el).opacity)), ['1', '1'], `${at}: every line shown`);
-            assert.equal(await page.locator('.ls-wallet-chip.on').count(), 4, `${at}: every name lit`);
+            assert.ok(await page.locator('.wb-li').evaluateAll(list => list.every(el => getComputedStyle(el).opacity === '1')), `${at}: every line shown`);
+            assert.equal(await page.locator('.wb-wallet.lit').count(), 4, `${at}: every name lit`);
+            assert.equal(await page.locator('.wb-key.lit').count(), 3, `${at}: the three words lit`);
             assert.equal(await page.evaluate(() => document.getAnimations().length), 0, `${at}: nothing runs`);
             await noSideways(page, `${at} band`);
-            await page.waitForFunction(() => document.querySelector('.ls-phone video')?.getAttribute('poster'), null, { timeout: 4000 });
-            assert.deepEqual(await video.evaluate(v => [v.paused, v.querySelectorAll('source').length]), [true, 0], `${at}: the recording is a still`);
-            assert.ok(!requests.some(url => /\/landing\/sections-pay\.(webm|mp4)$/.test(url)), `${at}: no video is fetched`);
           } else {
             // The ring turns while it is seen, turns slowly under a mouse (its front card comes forward), and stops off screen.
             await scrollToEl(page, '.ls-ring', -60);
@@ -137,39 +154,32 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
             await page.waitForTimeout(150);
             assert.equal(await pace(), 1, `${at}: and at its own pace again when the pointer leaves`);
             assert.equal(await page.locator('.ls-ring-card.ls-lift').count(), 0, `${at}: the card goes back`);
-            // The band: it holds the screen while its lines light in turn, and the recording plays while it is seen.
-            const track = await page.evaluate(() => { const r = document.querySelector('.ls-track').getBoundingClientRect(); return { top: r.top + scrollY, height: r.height }; });
+            // The band: it holds the screen over its span while its story follows the scroll: the sentence first, the
+            // fields filling with their words lit, then the second sentence with each wallet's name lit by the end.
+            const track = await page.evaluate(() => { const r = document.querySelector('.lw-track').getBoundingClientRect(); return { top: r.top + scrollY, height: r.height }; });
             const view = await page.evaluate(() => innerHeight);
             const seen = [];
-            for (const part of [0.15, 0.85]) {
+            for (const part of [0.15, 0.62, 1]) {
               await page.evaluate(y => scrollTo(0, y), track.top + (track.height - view) * part);
               await page.waitForTimeout(700);
               seen.push({
-                state: await page.evaluate(() => document.querySelector('.ls-band').dataset.state),
-                now: await page.locator('.ls-line.now').count(),
-                sticky: await page.evaluate(() => Math.round(document.querySelector('.ls-band-stage').getBoundingClientRect().top)),
+                sticky: await page.evaluate(() => Math.round(document.querySelector('.lw-stage').getBoundingClientRect().top)),
+                keys: await page.locator('.wb-key.lit').count(),
+                wallets: await page.locator('.wb-wallet.lit').count(),
+                s2: await page.locator('.wb-s2').evaluate(el => Number(getComputedStyle(el).opacity)),
               });
               await noSideways(page, `${at} band ${part}`);
             }
-            assert.deepEqual(seen.map(s => [s.state, s.now]), [['0', 1], ['1', 1]], `${at}: the lines follow the scroll`);
-            // The heading came up through its mask and is there to read (not left clipped).
-            assert.ok(await page.locator('.ls-band h2').evaluate(h2 => !h2.classList.contains('lz-masked') && getComputedStyle(h2.firstElementChild ?? h2).clipPath === 'none'), `${at}: the band's heading is not left masked`);
             assert.ok(seen.every(s => s.sticky === 0), `${at}: the band holds the screen (${seen.map(s => s.sticky)})`);
-            await page.waitForFunction(() => { const v = document.querySelector('.ls-phone video'); return v && !v.paused && v.currentTime > 0.2; }, null, { timeout: 8000 });
-            assert.equal(await video.getAttribute('poster'), '/landing/sections-pay-poster.webp', `${at}: the recording's still`);
-            assert.ok(requests.some(url => /\/landing\/sections-pay\.(webm|mp4)$/.test(url)), `${at}: the recording is fetched when the band is near`);
-            // The phone stands large: its top under the header, most of it on the screen (its foot runs into the ink).
-            const frame = await page.evaluate(() => { const r = document.querySelector('.ls-phone').getBoundingClientRect(); return [r.top, r.bottom, r.left, r.right]; });
+            assert.deepEqual(seen.map(s => [s.keys, s.wallets, s.s2 > 0.99]), [[0, 0, false], [1, 0, false], [3, 4, true]], `${at}: the story follows the scroll (${JSON.stringify(seen)})`);
+            // The phone stands on the screen under the header: whole on a laptop; on a phone, under the words, most of it
+            // on the screen (its foot runs into the ink).
+            const frame = await page.evaluate(() => { const r = document.querySelector('.wb-phone').getBoundingClientRect(); return [r.top, r.bottom, r.left, r.right]; });
             const shown = (Math.min(frame[1], view) - Math.max(frame[0], 0)) / (frame[1] - frame[0]);
-            assert.ok(frame[0] >= 56 && shown >= 0.7 && frame[2] >= 0 && frame[3] <= width, `${at}: the phone's top and most of it on the screen (${frame.map(Math.round)}, ${shown.toFixed(2)})`);
-            // While the band holds the screen, the gold reaches each wallet's name in turn: all four lit by the end.
-            assert.equal(await page.locator('.ls-wallet-chip.on').count(), 4, `${at}: every name lit at the end of the hold`);
-            // The phone is straight once the band holds the screen.
-            assert.equal(await page.locator('.ls-tilt').evaluate(el => el.style.getPropertyValue('--rx')), '0.00deg', `${at}: the phone is straight`);
-            // Off screen it stops; so does the ring.
+            assert.ok(frame[0] >= 56 && shown >= (width < 600 ? 0.6 : 0.99) && frame[2] >= 0 && frame[3] <= width, `${at}: the phone on the screen, under the header (${frame.map(Math.round)}, ${shown.toFixed(2)})`);
+            // Off screen the ring stops.
             await page.evaluate(() => scrollTo(0, 0));
             await page.waitForTimeout(500);
-            assert.equal(await video.evaluate(v => v.paused), true, `${at}: the recording stops off screen`);
             assert.equal(await page.evaluate(() => document.querySelector('.ls-ring-spin').getAnimations().length), 0, `${at}: the ring stops off screen`);
           }
 
@@ -187,11 +197,4 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
   }
 }
 
-// The recording's files: each video at most 350 KB, the still at most 400 KB.
-for (const [file, most] of [['sections-pay.webm', 350_000], ['sections-pay.mp4', 350_000], ['sections-pay-poster.webp', 400_000]]) {
-  const response = await fetch(`${origin}/landing/${file}`);
-  assert.equal(response.status, 200, file);
-  const size = (await response.arrayBuffer()).byteLength;
-  assert.ok(size > 1000 && size <= most, `${file}: ${size} bytes`);
-}
 console.log(`landing-sections: ${checks} visits passed`);

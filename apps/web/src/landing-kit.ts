@@ -272,3 +272,22 @@ export function maskReveal(el: HTMLElement): void {
   seen.observe(el);
   onMotionPause(paused => { if (paused) el.classList.remove('lz-masked'); });
 }
+
+/**
+ * Things going round an ellipse, in two layers: each thing twice, the same, once in a layer behind what they go round
+ * (shown only above the ellipse's middle line: its far half) and once in a layer in front of it (shown only below the
+ * line: its near half). Each copy swings across on a sine and, a quarter turn later, up and down and in depth (two
+ * animations, both on the compositor, no custom property in a keyframe); its own perspective makes the near ones a
+ * little larger. One level of 3D only, so every engine draws it alike. The radii are --orb-rx and --orb-ry from CSS, the
+ * period --orb-t; with reduced motion each stands still at its place (landing-kit.css).
+ */
+export function orbitLayers(make: (k: number) => HTMLElement, n: number, cls: string): [HTMLElement, HTMLElement] {
+  const layer = (front: boolean): HTMLElement => h('span', { class: `lk-orbit ${front ? 'lk-orbit-front' : 'lk-orbit-back'} ${cls}`, 'aria-hidden': 'true' },
+    h('i', { class: 'lk-orbit-ring' }),
+    ...Array.from({ length: n }, (_, k) => {
+      const item = h('span', { class: 'lk-ox' }, h('span', { class: 'lk-oyz' }, make(k)));
+      item.style.setProperty('--orb-k', (k / n).toFixed(4));
+      return item;
+    }));
+  return [layer(false), layer(true)];
+}

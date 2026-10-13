@@ -1,0 +1,12 @@
+{
+  "name": "@tab/band-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "../web/node_modules/.bin/vite --config vite.config.ts",
+    "build": "../web/node_modules/.bin/vite build --config vite.config.ts",
+    "preview": "../web/node_modules/.bin/vite preview --config vite.config.ts",
+    "typecheck": "../web/node_modules/.bin/tsc --noEmit -p tsconfig.json",
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}

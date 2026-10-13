@@ -4,6 +4,7 @@ import { LANDING_SAMPLE } from './landing-sample.ts';
 import { motionPaused, onMotionPause } from './landing-motion.ts';
 import { TICKER, tickerLine } from './landing-ticker.ts';
 import { ribbon, TALL, WIDE, type Ribbon, type Scene } from './landing-scene.ts';
+import { orbitLayers } from './landing-kit.ts';
 
 /*
  * The opening's first screen and its last band.
@@ -346,11 +347,41 @@ export function heroScene(): HTMLElement {
 }
 
 /** The Cut-ribbon Z, drawn large for the last band, in a soft gold light; light runs slowly along its gold. */
+/**
+ * The six links of the sample dinner going slowly round the Z, a constellation in the night: each card a person and
+ * their share, the near ones in front of the Z and the far ones behind it and dimmer, a faint orbit, a few stars. Still
+ * with reduced motion; held by Pause motion and off screen (landing.css).
+ */
+function constellation(): [HTMLElement, HTMLElement, HTMLElement, HTMLElement] {
+  const card = (k: number): HTMLElement => {
+    const share = LANDING_SAMPLE.shares[k];
+    return h('span', { class: 'lz-sat-card' },
+      h('i', { class: 'lz-tag-rail' }),
+      h('span', { class: 'lz-tag-name' }, share.name),
+      h('span', { class: 'lz-tag-amt' }, formatFiat(share.fiatShare, LANDING_SAMPLE.fiat)),
+      share.own ? undefined : linkMark());
+  };
+  let seed = 11;
+  const rand = (): number => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+  const stars = h('span', { class: 'lz-cta-stars' }, ...Array.from({ length: 22 }, () => {
+    const star = h('i', { class: 'lz-cta-star' });
+    star.style.cssText = `left:${(rand() * 100).toFixed(1)}%;top:${(rand() * 100).toFixed(1)}%;--tw:${(3 + rand() * 4).toFixed(2)}s;--td:${(-rand() * 6).toFixed(2)}s;--s:${(1.2 + rand() * 1.6).toFixed(2)}px`;
+    return star;
+  }));
+  const [back, front] = orbitLayers(card, LANDING_SAMPLE.shares.length, 'lz-orbit');
+  // The night's veil over the orbit's far half: the far cards, behind the Z, are dimmer.
+  return [stars, back, h('i', { class: 'lz-veil' }), front];
+}
+
 export function bigMark(): HTMLElement {
   const holder = h('span', { class: 'lz-mark', 'aria-hidden': 'true' });
   // Fixed markup: the brand mark's own paths.
-  holder.innerHTML = '<i class="lz-mark-glow"></i><svg viewBox="0 0 89 110" focusable="false"><defs><clipPath id="lz-bar"><path d="M8 24H81L64 40H8Z"/></clipPath><linearGradient id="lz-shine" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.8"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path class="lz-m2" d="M62 40H81L29 86H8Z" fill="#FBF8F1"/><path class="lz-m3" d="M29 70H81V86H8Z" fill="#FBF8F1"/><g clip-path="url(#lz-bar)"><path class="lz-m1" d="M8 24H81L64 40H8Z" fill="#F4B728"/><rect class="lz-m-blade" x="-4" y="18" width="1.6" height="28" fill="#fff"/><rect class="lz-m-shine" x="-30" y="20" width="24" height="24" fill="url(#lz-shine)"/></g></svg>';
-  // The light along the gold is a loop of CSS: this class holds it while the Z is off screen (landing.css).
+  holder.innerHTML = '<i class="lz-mark-glow"><i></i></i><svg viewBox="0 0 89 110" focusable="false"><defs><clipPath id="lz-bar"><path d="M8 24H81L64 40H8Z"/></clipPath><linearGradient id="lz-shine" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.8"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path class="lz-m2" d="M62 40H81L29 86H8Z" fill="#FBF8F1"/><path class="lz-m3" d="M29 70H81V86H8Z" fill="#FBF8F1"/><g clip-path="url(#lz-bar)"><path class="lz-m1" d="M8 24H81L64 40H8Z" fill="#F4B728"/><rect class="lz-m-blade" x="-4" y="18" width="1.6" height="28" fill="#fff"/><rect class="lz-m-shine" x="-30" y="20" width="24" height="24" fill="url(#lz-shine)"/></g></svg>';
+  // Behind the Z: the stars, the orbit's far half and its veil; in front of it, the near half.
+  const [stars, back, veil, front] = constellation();
+  holder.prepend(stars, back, veil);
+  holder.append(front);
+  // The light along the gold is a loop of CSS: this class holds it (and the constellation) while the Z is off screen.
   if (!calm() && 'IntersectionObserver' in window) {
     new IntersectionObserver(entries => { holder.classList.toggle('lz-off', !entries[entries.length - 1].isIntersecting); }).observe(holder);
   }

@@ -1036,6 +1036,10 @@ export function street(words: HTMLElement, cafe: HTMLElement, onNight: (dark: bo
   const boot = (): void => {
     if (!section.isConnected) { requestAnimationFrame(boot); return; }
     layout();
+    // Off the screen the stage's sky stops twinkling.
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(entries => { stage.classList.toggle('zs-off', !entries[entries.length - 1].isIntersecting); }).observe(stage);
+    }
     // One under another (phones, reduced motion), each picture is asked for when its station comes near the screen.
     if ('IntersectionObserver' in window) {
       const near = new IntersectionObserver(entries => {

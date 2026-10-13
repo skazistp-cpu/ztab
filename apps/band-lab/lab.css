@@ -1,0 +1,35 @@
+/* The lab around the band: the opening's display face (Geist, the app's own file), a dark page like the night the band
+   comes after, a tall span with the band pinned in it, and a small HUD. */
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('../web/src/fonts/geist-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0020-007E, U+00A0-017F, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20A0-20C0, U+2122, U+2190-2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+html { background: #0b0c0f; }
+body { margin: 0; background: #0b0c0f; color: #f2f5f7; font: 16px / 1.5 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; overflow-x: clip; }
+.lab-head { max-width: 640px; padding: 96px 24px 56px; }
+.lab-kicker { margin: 0 0 12px; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(242, 245, 247, 0.5); }
+.lab-head h1 { margin: 0 0 12px; font-size: 32px; font-weight: 500; letter-spacing: -0.02em; }
+.lab-head p { margin: 0; color: rgba(242, 245, 247, 0.62); }
+.lab-track { position: relative; height: 420vh; }
+.lab-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+@supports (height: 100svh) { .lab-stage { height: 100svh; } }
+.lab-host { position: absolute; inset: 0; }
+.lab-static .lab-track { height: auto; }
+.lab-static .lab-stage { position: static; height: auto; overflow: visible; }
+.lab-static .lab-host { position: static; }
+.lab-foot { padding: 30vh 24px 80px; color: rgba(242, 245, 247, 0.5); }
+.lab-foot p { margin: 0; }
+
+.lab-hud { position: fixed; z-index: 9; right: 10px; bottom: 10px; display: grid; gap: 8px; min-width: 230px; padding: 10px 12px; border-radius: 10px; background: rgba(16, 18, 22, 0.86); color: #f2f2f2; font: 12px / 1.4 ui-monospace, Menlo, monospace; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.lab-hud[hidden] { display: none; }
+.lab-stats { white-space: pre; }
+.lab-hud input[type='range'] { width: 100%; margin: 0; }
+.lab-row { display: flex; align-items: center; gap: 12px; }
+.lab-hud button { min-height: 0; padding: 4px 10px; border: 0; border-radius: 6px; background: #f4b728; color: #101216; font: inherit; font-weight: 600; cursor: pointer; }
+.lab-hud label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.lab-hud input[type='checkbox'] { width: 14px; height: 14px; min-height: 0; margin: 0; accent-color: #f4b728; }

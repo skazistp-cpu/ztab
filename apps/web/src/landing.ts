@@ -2,7 +2,7 @@ import './landing.css';
 import { h } from './dom.ts';
 import { bigMark, heroScene, ticker } from './landing-hero.ts';
 import { street } from './landing-street.ts';
-import { band, counts, ring } from './landing-sections.ts';
+import { counts, ring, walletBand } from './landing-sections.ts';
 import { motionPaused, onMotionPause, setMotionPaused } from './landing-motion.ts';
 import { maskReveal } from './landing-kit.ts';
 import { scrub } from './landing-scroll.ts';
@@ -72,8 +72,19 @@ export function landing(start: () => void): HTMLElement {
   const foot = h('div', { class: 'lz-foot' }, strip, h('p', { class: 'lz-small' }, 'Amounts are examples.'));
   // The page's progress: a hairline of gold under the header, following the scroll.
   const progress = h('i', { class: 'lz-progress', 'aria-hidden': 'true' });
-  const section = h('div', { class: 'landing' }, nav, progress, road.section, band(), ring(), counts(), cta, foot);
+  const section = h('div', { class: 'landing' }, nav, progress, road.section, walletBand(), ring(), counts(), cta, foot);
   maskReveal(cta.querySelector('h2') as HTMLElement);
+  // Under a mouse the constellation round the Z moves with the pointer, its near cards more than its far ones.
+  {
+    const fineCta = matchMedia('(hover: hover) and (pointer: fine)');
+    cta.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse' || !fineCta.matches || calm() || motionPaused()) return;
+      const r = cta.getBoundingClientRect();
+      mark.style.setProperty('--px', ((e.clientX - r.left) / r.width * 2 - 1).toFixed(3));
+      mark.style.setProperty('--py', ((e.clientY - r.top) / r.height * 2 - 1).toFixed(3));
+    });
+    cta.addEventListener('pointerleave', () => { mark.style.removeProperty('--px'); mark.style.removeProperty('--py'); });
+  }
   if (!calm()) {
     scrub({
       range: () => [0, Math.max(1, document.documentElement.scrollHeight - innerHeight)],

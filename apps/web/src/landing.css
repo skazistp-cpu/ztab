@@ -286,13 +286,60 @@ html.lz-night .landing .lz-nav .lz-motion { background: rgba(242, 245, 247, 0.12
 .lz-mark { position: relative; display: block; width: clamp(132px, 13.5vw, 196px); margin: 0 auto; transform: scale(var(--lz-grow, 1)); }
 .lz-mark svg { position: relative; display: block; width: 100%; height: auto; overflow: visible; }
 .lz-mark path, .lz-mark rect { transform-box: fill-box; transform-origin: center; }
-.lz-mark-glow {
-  position: absolute; left: 50%; top: 52%; width: 300%; aspect-ratio: 1; margin: -150% 0 0 -150%; border-radius: 50%; pointer-events: none;
+.lz-mark-glow { position: absolute; left: 50%; top: 52%; width: 300%; aspect-ratio: 1; margin: -150% 0 0 -150%; pointer-events: none; }
+/* The light itself, inside: it breathes; the holder comes up once (two elements, so both run on the compositor). */
+.lz-mark-glow > i {
+  position: absolute; inset: 0; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(244, 183, 40, 0.34), rgba(244, 183, 40, 0.12) 46%, rgba(244, 183, 40, 0) 74%);
 }
+/* The constellation round the Z (landing-hero.ts): the six links of the sample dinner going round it (landing-kit.ts
+   orbitLayers): the far half behind the Z under the night's veil, the near half in front of it; a faint dashed orbit and
+   a few stars. The pointer shifts the orbit a little (--px, --py from landing.ts). */
+.lz-mark { --orb-rx: clamp(190px, 25vw, 360px); --orb-ry: clamp(52px, 5.4vw, 80px); --orb-t: 84s; }
+.lz-orbit, .lz-veil { translate: calc(var(--px, 0) * 12px) calc(var(--py, 0) * 6px); }
+.lz-orbit .lk-orbit-ring { display: block; border: 1px dashed rgba(244, 183, 40, 0.26); }
+.lz-veil {
+  position: absolute; left: 50%; top: calc(50% - var(--orb-ry) - 48px); width: calc(var(--orb-rx) * 2 + 180px); height: calc(var(--orb-ry) + 48px);
+  margin-left: calc(var(--orb-rx) * -1 - 90px); pointer-events: none;
+  background: radial-gradient(ellipse 50% 100% at 50% 0%, rgba(11, 12, 15, 0.66), rgba(11, 12, 15, 0.42) 55%, rgba(11, 12, 15, 0) 100%);
+}
+.lz-cta-stars {
+  position: absolute; left: 50%; top: 50%; width: calc(var(--orb-rx) * 2.6); height: calc(var(--orb-rx) * 1.5); margin: calc(var(--orb-rx) * -0.75) 0 0 calc(var(--orb-rx) * -1.3);
+  pointer-events: none; translate: calc(var(--px, 0) * -3px) calc(var(--py, 0) * -2px);
+}
+.lz-cta-star { position: absolute; width: var(--s, 2px); height: var(--s, 2px); border-radius: 50%; background: #fff4d6; opacity: 0.5; box-shadow: 0 0 5px rgba(255, 232, 170, 0.6); }
+@media (prefers-reduced-motion: no-preference) {
+  .lz-orbit, .lz-veil, .lz-cta-stars { transition: translate 700ms var(--lz-ease); }
+  /* A third of them twinkle (each twinkle is an animation the page runs). */
+  .lz-cta-star:nth-child(3n) { animation: lz-cta-twinkle var(--tw, 4s) ease-in-out var(--td, 0s) infinite alternate; }
+  /* The links, the orbit and the stars come out once the Z has come together (each on its own: an opacity on the 3D
+     orbit itself would flatten it). */
+  .lz-cta .lz-sat-card, .lz-cta .lk-orbit-ring, .lz-cta .lz-cta-stars { opacity: 0; transition: opacity 1200ms var(--lz-ease) 1600ms; }
+  .lz-cta.lz-in .lz-sat-card, .lz-cta.lz-in .lk-orbit-ring, .lz-cta.lz-in .lz-cta-stars,
+  .landing.lz-paused .lz-cta .lz-sat-card, .landing.lz-paused .lz-cta .lk-orbit-ring, .landing.lz-paused .lz-cta .lz-cta-stars { opacity: 1; }
+}
+@keyframes lz-cta-twinkle { from { opacity: 0.12; transform: scale(0.7); } to { opacity: 0.75; transform: scale(1.1); } }
+.lz-mark.lz-off :is(.lk-ox, .lk-oyz), .lz-mark.lz-off .lz-cta-star { animation-play-state: paused; }
+.lz-sat-card {
+  position: absolute; left: 0; top: 0; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 0.7em; padding: 0.62em 0.85em 0.55em;
+  transform: translate(-50%, -50%); border-radius: 0.95em; background: #ffffff; color: #101216; white-space: nowrap; text-align: left;
+  box-shadow: 0 0 0 1px rgba(244, 183, 40, 0.18), 0 14px 30px -12px rgba(0, 0, 0, 0.6), 0 0 24px rgba(244, 183, 40, 0.16);
+  font: 400 clamp(10.5px, 0.9vw, 12.5px) / 1.2 var(--lz-ui); font-variant-numeric: tabular-nums;
+}
+.lz-sat-card .lz-tag-rail { position: absolute; top: 0; left: 0.85em; right: 0.85em; height: 0.2em; border-radius: 0 0 0.2em 0.2em; background: #f4b728; }
+.lz-sat-card .lz-tag-name { grid-column: 1; font-weight: 650; font-size: 0.95em; color: rgba(16, 18, 22, 0.66); }
+.lz-sat-card .lz-tag-amt { grid-column: 1; font-weight: 750; font-size: 1.32em; letter-spacing: -0.02em; }
+.lz-sat-card .lz-tag-link { grid-column: 2; grid-row: 1 / span 2; width: 1.35em; height: 1.35em; fill: none; stroke: #b47c08; stroke-width: 1.6; stroke-linecap: round; }
+@media (max-width: 759px) {
+  .lz-mark { --orb-rx: 34vw; --orb-ry: 44px; }
+  .lz-sat-card { font-size: 9.5px; padding: 0.55em 0.75em 0.5em; }
+}
 /* The glow comes up once the ribbon is cut, then breathes. */
-.lz-mark-glow { opacity: 0.75; transform: scale(0.94); }
-@media (prefers-reduced-motion: no-preference) { .lz-cta.lz-in .lz-mark-glow { animation: lz-glow-in 900ms ease-out 1500ms backwards, lz-breathe 7s ease-in-out 2400ms infinite alternate; } }
+.lz-mark-glow > i { opacity: 0.75; transform: scale(0.94); }
+@media (prefers-reduced-motion: no-preference) {
+  .lz-cta.lz-in .lz-mark-glow { animation: lz-glow-in 900ms ease-out 1500ms backwards; }
+  .lz-cta.lz-in .lz-mark-glow > i { animation: lz-breathe 7s ease-in-out 2400ms infinite alternate; }
+}
 @keyframes lz-glow-in { from { opacity: 0; transform: scale(0.6); } }
 @keyframes lz-breathe { from { opacity: 0.75; transform: scale(0.94); } to { opacity: 1; transform: scale(1.06); } }
 .lz-cta h2 { position: relative; max-width: 17em; margin: clamp(40px, 4.4vw, 64px) auto 0; font: 500 var(--lz-h2) / 1.12 var(--lz-display); letter-spacing: -0.03em; text-wrap: balance; color: var(--lz-night-text); }
@@ -324,7 +371,7 @@ html.lz-night .landing .lz-nav .lz-motion { background: rgba(242, 245, 247, 0.12
    the next. The animations made in script are held by the parts that make them. */
 .landing.lz-paused *, .landing.lz-paused *::before, .landing.lz-paused *::after { animation-play-state: paused !important; transition: none !important; }
 /* The loops of CSS that run on their own are held while their picture is off screen (lz-off, set by observers). */
-.lz-scene.lz-off .lz-tag-in, .lz-scene.lz-off .lz-lamp, .lz-cta .lz-mark.lz-off .lz-m-shine, .lz-cta .lz-mark.lz-off .lz-mark-glow { animation-play-state: paused; }
+.lz-scene.lz-off .lz-tag-in, .lz-scene.lz-off .lz-lamp, .lz-cta .lz-mark.lz-off .lz-m-shine, .lz-cta .lz-mark.lz-off .lz-mark-glow, .lz-cta .lz-mark.lz-off .lz-mark-glow > i { animation-play-state: paused; }
 
 /* ── Phones ── */
 @media (max-width: 759px) {

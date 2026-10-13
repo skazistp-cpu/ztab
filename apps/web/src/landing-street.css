@@ -214,11 +214,12 @@
   /* The sky is above and to the right of the street; under its near edge (lower left) is no sky, so no stars there. */
   -webkit-mask-image: linear-gradient(to bottom left, #000 38%, transparent 72%); mask-image: linear-gradient(to bottom left, #000 38%, transparent 72%);
 }
-.zs-star { position: absolute; border-radius: 50%; background: #fff6dc; opacity: var(--to, 0.6); box-shadow: 0 0 5px rgba(255, 232, 170, 0.75); }
+.zs-star { position: absolute; border-radius: 50%; background: rgba(255, 246, 220, var(--to, 0.6)); box-shadow: 0 0 5px rgba(255, 232, 170, calc(0.75 * var(--to, 0.6))); }
 @media (prefers-reduced-motion: no-preference) {
-  .zs-stage.zs-night .zs-star { animation: zs-twinkle var(--tw, 4s) ease-in-out var(--td, 0s) infinite alternate; }
+  /* A third of them twinkle, and only while the street is on the screen (each twinkle is an animation the page runs). */
+  .zs-stage.zs-night:not(.zs-off) .zs-star:nth-child(3n) { animation: zs-twinkle var(--tw, 4s) ease-in-out var(--td, 0s) infinite alternate; }
 }
-@keyframes zs-twinkle { from { opacity: calc(var(--to, 0.6) * 0.25); transform: scale(0.7); } to { opacity: var(--to, 0.6); transform: scale(1.1); } }
+@keyframes zs-twinkle { from { opacity: 0.25; transform: scale(0.7); } to { opacity: 1; transform: scale(1.1); } }
 .zs-shooter { display: none; }
 .zs-pinned .zs-shooter {
   display: block; position: absolute; z-index: 0; right: 10%; top: 9%; width: 140px; height: 2px; border-radius: 2px; opacity: 0; pointer-events: none;

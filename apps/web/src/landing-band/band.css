@@ -1,0 +1,197 @@
+/* ── The wallet band: the night after the street ─────────────────────────────────────────────────────────────────
+   Two sentences on the left, a phone on the right with Ana's real pay page and the wallet's Send sheet over it. The
+   band fills its host (the pinned, viewport-sized box of its span); .wb-static is the still, a block of its own height.
+   Everything that moves is transform and opacity (and the typed text of the sheet's fields). No transitions: the
+   story is drawn for each progress, so paused it is simply still. The --lz tokens are the opening's; without them
+   (the lab) the fallbacks are the same values. */
+
+.wb {
+  --wb-gold: var(--lz-gold, #f4b728);
+  --wb-night: var(--lz-night, #0b0c0f);
+  --wb-white: var(--lz-night-text, #f2f5f7);
+  --wb-muted: var(--lz-night-muted, rgba(242, 245, 247, 0.6));
+  --wb-display: var(--lz-display, 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+  --wb-ui: var(--lz-ui, 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+  --wb-mono: var(--lz-mono, 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace);
+  --wb-bar: var(--lz-bar, 72px);
+  --wb-gutter: clamp(20px, 4vw, 56px);
+  /* The phone's width: never wider than 392 px, never more than a third of the screen, and always whole on it. */
+  --pw: min(392px, 29vw, calc((100vh - 150px) * 0.47));
+  --wb-rim: calc(var(--pw) * 0.012);
+  --wb-bezel: calc(var(--pw) * 0.027);
+  position: relative; width: 100%; height: 100%; min-height: 540px; overflow: clip; isolation: isolate;
+  background: var(--wb-night); color: var(--wb-white); color-scheme: dark;
+  font-family: var(--wb-display); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+}
+@supports (height: 100svh) { .wb { --pw: min(392px, 29vw, calc((100svh - 150px) * 0.47)); } }
+/* The night's depth: darker at the edges, a breath of warmth round the phone. */
+.wb::before {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 30% 42% at 72% 52%, rgba(244, 183, 40, 0.06), rgba(244, 183, 40, 0) 70%),
+    radial-gradient(ellipse 72% 64% at 60% 46%, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.42) 100%);
+}
+
+/* ── The lamps: out-of-focus discs of gold, each at its own depth (landing-band/index.ts drifts them) ── */
+.wb-sky {
+  position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.25) 36%, #000 52%); mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.25) 36%, #000 52%);
+}
+.wb-lamp {
+  position: absolute; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); border-radius: 50%; will-change: transform; mix-blend-mode: screen;
+  --soft: 0.7;
+  background:
+    radial-gradient(circle, rgba(255, 230, 175, calc(var(--a) * 1.2)) 0%, rgba(248, 194, 66, var(--a)) calc(36% - 16% * var(--soft)), rgba(244, 183, 40, calc(var(--a) * 0.9)) calc(60% - 12% * var(--soft)), rgba(255, 226, 160, calc(var(--a) * 0.95)) calc(64% - 5% * var(--soft)), rgba(244, 183, 40, calc(var(--a) * 0.3)) calc(67% + 2% * var(--soft)), rgba(244, 183, 40, 0) calc(69% + 9% * var(--soft))),
+    radial-gradient(circle, rgba(244, 183, 40, calc(var(--a) * 0.45)) 0%, rgba(244, 183, 40, 0) 50%);
+  background-size: 100% 100%, 190% 190%; background-position: 50% 50%, 50% 50%; background-repeat: no-repeat;
+}
+
+/* ── The stage: words on the left, centred; the phone on the right ── */
+.wb-stage {
+  position: relative; z-index: 2; height: 100%; margin: 0; padding: var(--wb-bar) 0 0;
+  display: grid; grid-template-columns: calc(min(64%, 50% + 220px) - var(--pw) / 2) var(--pw); column-gap: 0; align-items: center;
+}
+.wb-words { justify-self: end; min-width: 0; max-width: 34rem; margin-right: 80px; padding-bottom: 3vh; }
+
+/* The first sentence: display copy, each line coming up through its own mask. */
+.wb-s1 { margin: 0; font: 500 clamp(30px, 3.2vw, 46px) / 1.12 var(--wb-display); letter-spacing: -0.03em; color: var(--wb-white); text-wrap: nowrap; }
+.wb-ln { display: block; overflow: hidden; padding: 0.12em 0 0.18em; margin: -0.12em 0 -0.18em; white-space: nowrap; }
+.wb-li { display: block; transform: translate3d(0, 110%, 0); opacity: 0; will-change: transform; }
+.wb-key { --k: 0; color: color-mix(in srgb, var(--wb-gold) calc(var(--k) * 100%), var(--wb-white)); text-shadow: 0 0 calc(26px * var(--k)) rgba(244, 183, 40, calc(0.42 * var(--k))); }
+.wb-key.lit { color: var(--wb-gold); }
+.wb-quiet { color: var(--wb-muted); }
+
+/* The second sentence, smaller and muted; each wallet's name lights gold with a small check drawn beside it. */
+.wb-s2 {
+  margin: clamp(26px, 4vh, 44px) 0 0; max-width: 26em; font: 450 clamp(20px, 1.6vw, 24px) / 1.4 var(--wb-display); letter-spacing: -0.012em; color: var(--wb-muted);
+  opacity: 0; transform: translate3d(0, 14px, 0); text-wrap: pretty;
+}
+.wb-wn { white-space: nowrap; }
+.wb-wallet { --k: 0; position: relative; white-space: nowrap; color: color-mix(in srgb, var(--wb-gold) calc(var(--k) * 100%), var(--wb-muted)); }
+.wb-wallet.lit { color: var(--wb-gold); }
+.wb-ul { --d: 1; position: absolute; left: -0.02em; right: -0.02em; bottom: -0.17em; height: 0.26em; overflow: visible; fill: none; stroke: var(--wb-gold); stroke-width: 2px; stroke-linecap: round; pointer-events: none; }
+.wb-ck { --d: 1; position: absolute; right: -0.46em; top: -0.3em; width: 0.4em; height: 0.4em; overflow: visible; fill: none; stroke: var(--wb-gold); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0.92; pointer-events: none; }
+.wb-ul path, .wb-ck path { stroke-dasharray: 1 1; stroke-dashoffset: var(--d); }
+
+/* ── The theatre: the floor's glow and the phone ── */
+.wb-theatre-wrap { position: relative; align-self: center; }
+.wb-theatre { position: relative; width: var(--pw); height: calc(var(--pw) * 2.077); margin: 0 auto; }
+.wb-floor {
+  position: absolute; z-index: 0; left: -70%; right: -70%; bottom: -16%; height: 50%; pointer-events: none;
+  background: radial-gradient(ellipse 48% 50% at 50% 58%, rgba(244, 183, 40, 0.36), rgba(244, 183, 40, 0.1) 44%, rgba(244, 183, 40, 0) 70%);
+}
+.wb-reflect {
+  --wb-rc: rgba(250, 244, 232, 0.3); --wb-rg: 0;
+  position: absolute; z-index: 0; left: calc(var(--wb-rim) + var(--wb-bezel)); right: calc(var(--wb-rim) + var(--wb-bezel)); top: calc(100% + 6px); height: 36%; pointer-events: none;
+  border-radius: calc(var(--pw) * 0.12) calc(var(--pw) * 0.12) 0 0;
+  background: linear-gradient(180deg, var(--wb-rc) 0%, rgba(244, 183, 40, var(--wb-rg)) 30%, rgba(244, 183, 40, 0) 100%);
+  filter: blur(9px); opacity: 0;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.5) 40%, transparent 80%); mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.5) 40%, transparent 80%);
+}
+.wb-tilt { position: relative; z-index: 1; width: 100%; height: 100%; will-change: transform; transform-origin: 50% 72%; }
+
+/* The device: a titanium edge lit from above left, the side buttons, a thin black bezel, the screen. */
+.wb-phone {
+  position: relative; width: 100%; height: 100%; border-radius: calc(var(--pw) * 0.158);
+  background: conic-gradient(from 200deg at 50% 50%, #8e9096, #d6d7db 10%, #6d6f75 24%, #c3c4c8 42%, #7b7d83 58%, #dcdde1 74%, #74767c 90%, #8e9096);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.55), 0 50px 100px -30px rgba(0, 0, 0, 0.9), 0 24px 70px -24px rgba(244, 183, 40, 0.18);
+}
+.wb-sb { position: absolute; width: calc(var(--pw) * 0.011); border-radius: 2px; background: linear-gradient(90deg, #5f6167, #c9cacf 45%, #6a6c72); }
+.wb-sb-action { left: calc(var(--pw) * -0.0095); top: 17.5%; height: 3.6%; }
+.wb-sb-up { left: calc(var(--pw) * -0.0095); top: 23.5%; height: 6.4%; }
+.wb-sb-down { left: calc(var(--pw) * -0.0095); top: 31.4%; height: 6.4%; }
+.wb-sb-power { right: calc(var(--pw) * -0.0095); top: 25.5%; height: 10.4%; background: linear-gradient(270deg, #5f6167, #c9cacf 45%, #6a6c72); }
+.wb-bezel { position: absolute; inset: var(--wb-rim); border-radius: calc(var(--pw) * 0.146); background: #050607; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04); }
+.wb-screen { position: absolute; inset: var(--wb-bezel); border-radius: calc(var(--pw) * 0.12); overflow: hidden; isolation: isolate; background: #000; pointer-events: none; transform: translateZ(0); }
+/* The 390-point space the page is laid out in, scaled to the drawn screen (--wb-ss is measured). */
+.wb-fit { position: absolute; left: 0; top: 0; width: 390px; height: 844px; transform-origin: 0 0; transform: scale(var(--wb-ss, 1)); background: #000; container-type: inline-size; font-family: var(--wb-ui); }
+
+/* The page: the app's own pay page under the status bar; it recedes as the sheet is presented over it. */
+.wb-back { position: absolute; inset: 0; z-index: 1; overflow: hidden; background: #101216; transform-origin: 50% 0; will-change: transform; }
+.wb-pagepad { zoom: 1.24; padding: 36px 13px 40px; }
+.wb-dim { position: absolute; inset: 0; background: #000; opacity: 0; }
+/* The app's card, as it is, but still (no entrance), one column, and its shadow drawn without a filter. */
+.wb .hang { margin-top: 0.8rem; filter: none; }
+.wb .card.pay { display: block; animation: none; box-shadow: 0 1.1rem 1.5rem #00000052; }
+.wb .card.pay .amount { font-size: clamp(2.75rem, 2.1rem + 2.8cqw, 3.5rem); }
+.wb .card.pay > .button.primary { position: relative; overflow: hidden; transform: scale(var(--press, 1)); transition: none; will-change: transform; }
+/* The tap: a soft bloom spreading from under the finger, inside the button. */
+.wb-ripple {
+  position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.22) 45%, rgba(255, 255, 255, 0) 72%);
+  transform: scale(var(--rs, 0)); opacity: var(--ro, 0);
+}
+
+/* The wallet's Send sheet: no name on it, three fields and Review. */
+.wb-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 0 16px 36px; border-radius: 26px 26px 0 0; background: #1a1d23; color: var(--wb-white);
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.09), 0 -24px 60px rgba(0, 0, 0, 0.55); transform: translate3d(0, 100%, 0); will-change: transform;
+}
+.wb-grab { position: absolute; left: 50%; top: 8px; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: #3b3f48; }
+.wb-sheet-title { margin: 26px 0 18px; text-align: center; font: 600 17px / 1.2 var(--wb-ui); letter-spacing: -0.01em; color: var(--wb-white); }
+.wb-field {
+  --g: 0; --f: 0;
+  position: relative; box-sizing: border-box; height: 64px; margin: 10px 0 0; padding: 11px 16px 0; border-radius: 14px; background: #23262e;
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 183, 40, calc(0.42 * var(--f) + 0.58 * var(--g))),
+    inset 0 0 0 1px rgba(255, 255, 255, calc(0.08 * (1 - var(--f)))),
+    0 0 0 calc(3px * var(--g)) rgba(244, 183, 40, 0.16),
+    0 0 calc(30px * var(--g)) calc(1px * var(--g)) rgba(244, 183, 40, calc(0.45 * var(--g)));
+}
+.wb-field[data-f='to'] { margin-top: 0; }
+.wb-field[data-f='note'] { height: 84px; }
+.wb-label { display: block; font: 500 12px / 1 var(--wb-ui); letter-spacing: 0.01em; color: #8d919c; }
+.wb-valrow { display: flex; align-items: baseline; margin-top: 7px; min-height: 22px; white-space: pre-wrap; }
+.wb-val { font: 500 15px / 1.35 var(--wb-mono); letter-spacing: -0.01em; color: var(--wb-white); overflow-wrap: anywhere; }
+.wb-field[data-f='amount'] .wb-val { display: inline-flex; align-items: baseline; font: 600 22px / 1.2 var(--wb-ui); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.wb-dg { display: inline-block; min-width: 0.6em; text-align: center; will-change: transform; }
+.wb-dot { min-width: 0.32em; }
+.wb-unit { margin-left: 3px; font: 500 14px / 1 var(--wb-ui); letter-spacing: 0; color: #8d919c; opacity: 0; }
+.wb-field[data-f='note'] .wb-val { font: 450 15px / 1.35 var(--wb-ui); letter-spacing: -0.005em; }
+.wb-caret { display: inline-block; align-self: center; width: 2px; height: 1.1em; margin-left: 2px; border-radius: 1px; background: var(--wb-gold); opacity: 0; }
+.wb-review {
+  --r: 0; --h: 0;
+  height: 52px; margin-top: 20px; display: flex; align-items: center; justify-content: center; border-radius: 999px;
+  font: 600 17px / 1 var(--wb-ui); letter-spacing: -0.01em;
+  background: rgba(242, 245, 247, calc(0.09 + 0.91 * var(--r))); color: color-mix(in srgb, #101216 calc(var(--r) * 100%), #8d919c);
+  box-shadow: 0 0 0 calc(1.5px * var(--h)) rgba(244, 183, 40, calc(0.75 * var(--h))), 0 0 calc(40px * var(--h)) calc(3px * var(--h)) rgba(244, 183, 40, calc(0.38 * var(--h)));
+}
+
+/* Over everything on the screen: the home indicator, the status bar, the island; then the glass. */
+.wb-home { position: absolute; z-index: 5; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #fff; opacity: 0.95; }
+.wb-status { position: absolute; z-index: 6; left: 0; top: 0; display: block; width: 390px; height: 54px; }
+.wb-time { position: absolute; z-index: 6; left: 42px; top: 16px; width: 50px; text-align: center; font: 600 17px / 1.2 var(--wb-ui); letter-spacing: -0.02em; color: #fff; }
+.wb-island { position: absolute; z-index: 7; top: 11px; left: 132px; width: 126px; height: 37px; border-radius: 20px; background: #000; }
+.wb-glass {
+  position: absolute; z-index: 8; top: -10%; bottom: -10%; left: -45%; width: 190%; pointer-events: none; will-change: transform;
+  background: linear-gradient(108deg, rgba(255, 255, 255, 0) 34%, rgba(255, 255, 255, 0.085) 43%, rgba(255, 255, 255, 0.035) 49%, rgba(255, 255, 255, 0) 58%);
+}
+
+/* ── Phones: the words above, the phone below, its foot running into the night ── */
+@media (max-width: 759px) {
+  .wb { --pw: min(286px, 76vw, calc((100vh - 372px) * 0.72)); min-height: 0; }
+  @supports (height: 100svh) { .wb { --pw: min(286px, 76vw, calc((100svh - 372px) * 0.72)); } }
+  .wb::before { background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.4) 100%); }
+  .wb-sky { -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 8%, rgba(0, 0, 0, 0.3) 36%, #000 52%); mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 8%, rgba(0, 0, 0, 0.3) 36%, #000 52%); }
+  .wb-reflect { display: none; }
+  .wb-stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); row-gap: 14px; padding: calc(var(--wb-bar) + 10px) 20px 0; column-gap: 0; align-items: start; }
+  .wb-words { justify-self: stretch; max-width: none; margin-right: 0; padding: 0; }
+  .wb-s1 { font-size: clamp(24px, 6.5vw, 28px); line-height: 1.1; }
+  .wb-s2 { font-size: 17px; margin-top: 14px; }
+  .wb-theatre-wrap { height: 100%; min-height: 0; overflow: hidden; align-self: stretch; }
+  .wb-theatre-wrap::after { content: ''; position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 18%; pointer-events: none; background: linear-gradient(180deg, rgba(11, 12, 15, 0), var(--wb-night) 90%); }
+  .wb-theatre { margin: 6px auto 0; }
+  .wb-floor { display: none; }
+  .wb-sheet { top: 200px; }
+  .wb-lamp { width: calc(var(--s) * 0.72); height: calc(var(--s) * 0.72); margin: calc(var(--s) * -0.36) 0 0 calc(var(--s) * -0.36); }
+}
+
+/* ── The still: a block of its own height, every line and field in its final state ── */
+.wb-static { height: auto; min-height: 0; }
+.wb-static .wb-stage { height: auto; padding-top: clamp(72px, 10vh, 120px); padding-bottom: clamp(72px, 10vh, 120px); }
+.wb-static .wb-words { padding-bottom: 0; }
+.wb-static .wb-li, .wb-static .wb-lamp, .wb-static .wb-tilt, .wb-static .wb-glass, .wb-static .wb-dg, .wb-static .wb-sheet, .wb-static .wb-back { will-change: auto; }
+@media (max-width: 759px) {
+  .wb-static .wb-stage { grid-template-rows: auto auto; }
+  .wb-static .wb-theatre-wrap { height: calc(var(--pw) * 2.077 * 0.8); }
+}

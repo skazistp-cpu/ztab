@@ -123,8 +123,9 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     // A quiet visit: this site's own files only (the page, its script and style, two faces and the picture), nothing kept.
     assert.ok(requests.every(url => url.startsWith(origin) || url.startsWith('data:') || url.startsWith('blob:')), 'nothing from another site');
     assert.ok(!requests.some(url => /demo-|wire-|wasm/.test(url)));
-    // (The street's pictures and the 3D street come with the scroll of How it works; landing-street*.mjs test them.)
-    const visit = files(requests, origin).filter(f => !/^\/landing\/(street-|sections-pay)/.test(f) && !/^\/assets\/street3d-/.test(f));
+    // (The street's pictures and the 3D street come with the scroll of How it works, and the wallet band, its code and
+    // the app's monospace face with the scroll down to Start a tab now; landing-street*.mjs and landing-sections.mjs test them.)
+    const visit = files(requests, origin).filter(f => !/^\/landing\/street-/.test(f) && !/^\/assets\/(jetbrains-mono|street3d|wallet-band)-/.test(f));
     for (const file of BASE) assert.ok(visit.some(f => file.test(f)), `${engine}: ${file}`);
     assert.deepEqual(visit.filter(f => !BASE.some(file => file.test(f))).map(f => f.replace(/-\d+\.(avif|webp)$/, '')), ['/landing/dinner-wide'], `${engine}: one picture of the dinner (${visit.join(' ')})`);
     assert.deepEqual(await page.evaluate(() => [localStorage.length, sessionStorage.length, document.cookie]), [0, 0, '']);

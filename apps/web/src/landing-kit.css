@@ -129,3 +129,20 @@
 .lz-mw-in { display: inline-block; }
 .lz-mask-in { display: block; }
 .lz-masked .lz-mask-in { clip-path: inset(0 0 100% 0); }
+
+/* An orbit in two layers (landing-kit.ts orbitLayers()): the far half behind what it goes round, the near half in front,
+   each layer clipped at the ellipse's middle line. --orb-k is a thing's place on it (0 at the far left; a quarter on, at
+   the front; a half, at the right; three quarters, at the back). */
+.lk-orbit { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+.lk-orbit-back { clip-path: polygon(-4000px -4000px, 4000px -4000px, 4000px 0px, -4000px 0px); }
+.lk-orbit-front { clip-path: polygon(-4000px 0px, 4000px 0px, 4000px 4000px, -4000px 4000px); }
+.lk-orbit-ring { position: absolute; left: calc(var(--orb-rx) * -1); top: calc(var(--orb-ry) * -1); width: calc(var(--orb-rx) * 2); height: calc(var(--orb-ry) * 2); border-radius: 50%; display: none; }
+.lk-ox { --orb-a: calc(var(--orb-k) * 360deg); position: absolute; left: 0; top: 0; width: var(--orb-rx); height: 0; transform: translateX(calc(-100% * cos(var(--orb-a)))); }
+.lk-oyz { position: absolute; left: 0; top: 0; width: 0; height: var(--orb-ry); transform-origin: 0 0;
+  transform: perspective(900px) translate3d(0, calc(100% * sin(var(--orb-a))), calc(60px * sin(var(--orb-a)))); }
+@media (prefers-reduced-motion: no-preference) {
+  .lk-ox { animation: lk-ox calc(var(--orb-t) / 2) cubic-bezier(0.37, 0, 0.63, 1) calc(var(--orb-k) * var(--orb-t) * -1) infinite alternate; }
+  .lk-oyz { animation: lk-oyz calc(var(--orb-t) / 2) cubic-bezier(0.37, 0, 0.63, 1) calc((var(--orb-k) + 0.25) * var(--orb-t) * -1) infinite alternate; }
+}
+@keyframes lk-ox { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+@keyframes lk-oyz { from { transform: perspective(900px) translate3d(0, -100%, -60px); } to { transform: perspective(900px) translate3d(0, 100%, 60px); } }

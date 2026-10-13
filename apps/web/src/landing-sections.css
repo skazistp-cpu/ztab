@@ -1,116 +1,24 @@
 /* ── After settling up: the band of night with the recording, the ring of link cards, the counts ────────────────── */
 
-/* ── The band of night: a product theatre ── */
+/* ── The band of night: the wallet (landing-band/, built as it comes near) ── */
 /* It begins in ink (the street before it ends at night) and fades to white at its foot, where there are no words. */
-.ls-band {
-  --lz-fade: min(36vh, 320px);
-  position: relative; padding: min(10vh, 96px) 0 var(--lz-fade); color: var(--lz-night-text); color-scheme: dark;
+.lw-band {
+  --lz-fade: min(30vh, 280px);
+  position: relative; padding-bottom: var(--lz-fade); color: var(--lz-night-text); color-scheme: dark;
   background: linear-gradient(180deg, var(--lz-night) 0, var(--lz-night) calc(100% - var(--lz-fade)), var(--lz-white) 100%);
 }
-.ls-track { position: relative; height: 260vh; }
-.ls-band-stage {
-  --pw: min(436px, 31vw, calc((100vh - 120px) * 0.53));
-  position: sticky; top: 0; height: 100vh; max-width: 1216px; margin: 0 auto; padding: calc(var(--lz-bar) + 28px) var(--lz-gutter) 0;
-  display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); column-gap: clamp(24px, 4vw, 64px); overflow: clip;
-}
-@supports (height: 100svh) { .ls-band-stage { --pw: min(436px, 31vw, calc((100svh - 120px) * 0.53)); height: 100svh; } }
-.ls-band-words { align-self: center; display: grid; gap: clamp(28px, 5vh, 56px); max-width: 32rem; padding-bottom: 6vh; }
-.ls-line {
-  margin: 0; color: var(--lz-night-text); text-wrap: pretty;
-  font: 500 clamp(26px, 2.6vw, 38px) / 1.2 var(--lz-display); letter-spacing: -0.026em;
-  opacity: 0.46; transition: opacity 520ms var(--lz-ease);
-}
-.ls-line.now { opacity: 1; }
-
-/* The theatre: the phone (its top a little under the header, its foot running into the ink), on a gold grid in a gold light. */
-.ls-theatre { position: relative; align-self: stretch; min-height: calc(var(--pw) * 1.5); }
-.ls-theatre::after {
-  content: ''; position: absolute; z-index: 4; left: -40%; right: -40%; bottom: 0; height: 22%; pointer-events: none;
-  background: linear-gradient(180deg, rgba(11, 12, 15, 0), var(--lz-night) 86%);
-}
-.ls-floor {
-  position: absolute; left: -30%; right: -30%; top: calc(var(--pw) * 0.62); height: calc(var(--pw) * 2.2); pointer-events: none;
-  transform: perspective(900px) rotateX(66deg); transform-origin: 50% 0;
-  background-image: linear-gradient(rgba(244, 183, 40, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(244, 183, 40, 0.2) 1px, transparent 1px);
-  background-size: 58px 58px; background-position: 50% 0;
-  -webkit-mask-image: radial-gradient(ellipse 46% 60% at 58% 22%, #000 18%, transparent 72%); mask-image: radial-gradient(ellipse 46% 60% at 58% 22%, #000 18%, transparent 72%);
-}
-.ls-underglow {
-  position: absolute; left: 58%; top: calc(var(--pw) * 0.1); width: calc(var(--pw) * 2.6); height: calc(var(--pw) * 2.2); transform: translateX(-50%); pointer-events: none;
-  background:
-    radial-gradient(ellipse 34% 30% at 50% 74%, rgba(244, 183, 40, 0.3), rgba(244, 183, 40, 0.08) 55%, rgba(244, 183, 40, 0) 100%),
-    radial-gradient(ellipse 42% 36% at 50% 30%, rgba(244, 183, 40, 0.12), rgba(244, 183, 40, 0) 100%);
-}
-.ls-band-phone { position: absolute; z-index: 2; left: calc(58% - var(--pw) / 2); top: 0; width: var(--pw); }
-/* The phone's light on the gold grid, as on a polished floor: the grid brightens near the phone, in a soft pool of its light
-   (the same plane as .ls-floor, so its lines lie on the floor's lines). */
-.ls-reflect {
-  position: absolute; z-index: 1; left: -30%; right: -30%; top: calc(var(--pw) * 0.62); height: calc(var(--pw) * 2.2); pointer-events: none;
-  transform: perspective(900px) rotateX(66deg); transform-origin: 50% 0; mix-blend-mode: screen;
-  background-image: radial-gradient(ellipse 18% 24% at 55% 4%, rgba(255, 240, 205, 0.26), rgba(255, 240, 205, 0) 100%),
-    linear-gradient(rgba(255, 222, 140, 0.75) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 222, 140, 0.75) 1px, transparent 1px);
-  background-size: 100% 100%, 58px 58px, 58px 58px; background-position: 0 0, 50% 0, 50% 0;
-  -webkit-mask-image: radial-gradient(ellipse 22% 34% at 55% 2%, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 100%); mask-image: radial-gradient(ellipse 22% 34% at 55% 2%, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 100%);
-}
-.ls-tilt {
-  transform: perspective(1600px) translate3d(0, var(--ty, 0px), 0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--sc, 1));
-  transform-origin: 50% 80%; will-change: transform;
-}
-.ls-phone { position: relative; width: 100%; }
-.ls-bezel {
-  position: relative; padding: 10px; border-radius: 58px; background: linear-gradient(145deg, #2a2d35, #15171c 46%, #1c1f26);
-  box-shadow: inset 0 0 0 1.5px #3a3e48, inset 0 0 0 5px #15171c, inset 1px 1px 0 6px rgba(244, 183, 40, 0.1),
-    0 60px 120px -50px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(244, 183, 40, 0.16), 0 0 80px -20px rgba(244, 183, 40, 0.25);
-}
-/* The phone's side buttons: two on the left, one on the right. */
-.ls-bezel::before, .ls-bezel::after { content: ''; position: absolute; width: 3px; border-radius: 2px; background: #2b2f37; }
-.ls-bezel::before { left: -3px; top: 17%; height: 22%; background: linear-gradient(#2b2f37 0 44%, transparent 44% 56%, #2b2f37 56%); }
-.ls-bezel::after { right: -3px; top: 27%; height: 15%; }
-.ls-screen { position: relative; aspect-ratio: 390 / 844; border-radius: 48px; overflow: hidden; background: #101216; }
-/* The island sits in the screen's own status bar: the recording starts under it (its foot is cut instead), so nothing
-   of the page ever passes beneath the island. */
-.ls-island { position: absolute; z-index: 3; top: 1.6%; left: 50%; width: 31%; height: 3.6%; border-radius: 999px; background: #000; transform: translateX(-50%); }
-.ls-glare { position: absolute; z-index: 2; inset: 0; pointer-events: none; background: linear-gradient(118deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 30%, rgba(255, 255, 255, 0) 46%); }
-/* The scan line over the screen (landing-sections.ts moves it with the story: --sy in % of the screen's height). */
-.ls-scan { position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: 100%; pointer-events: none; opacity: 0; transform: translate3d(0, calc(var(--sy, 0) * 1%), 0); }
-.ls-scan::before { content: ''; position: absolute; left: 6%; right: 6%; top: 0; height: 2px; border-radius: 2px; background: #f4b728; box-shadow: 0 0 12px 2px rgba(244, 183, 40, 0.75); }
-.ls-scan::after { content: ''; position: absolute; left: 6%; right: 6%; top: -38px; height: 38px; background: linear-gradient(180deg, rgba(244, 183, 40, 0), rgba(244, 183, 40, 0.16)); }
-.ls-video {
-  position: absolute; left: 0; right: 0; top: calc(5.2% + 10px); bottom: 0; display: block; width: 100%; height: auto;
-  object-fit: cover; object-position: 50% 0; background: #101216;
-}
-
-/* The wallets' names on an arc to the left of the phone, round its request; lit when the gold reaches them. */
-.ls-wallets { position: absolute; z-index: 3; inset: 0; pointer-events: none; }
-.ls-wallet-chip {
-  position: absolute; display: inline-flex; align-items: center; gap: 9px; height: 36px; padding: 0 15px 0 12px; border-radius: 999px; transform: translate(-50%, -50%);
-  background: rgba(242, 245, 247, 0.06); color: rgba(242, 245, 247, 0.62); box-shadow: inset 0 0 0 1px rgba(242, 245, 247, 0.14);
-  font: 500 15px / 1 var(--lz-display); letter-spacing: -0.005em; white-space: nowrap;
-  transition: background-color 360ms var(--lz-ease), color 360ms var(--lz-ease), box-shadow 360ms var(--lz-ease);
-}
-.ls-chip-mark { position: relative; display: inline-grid; place-items: center; width: 12px; height: 12px; }
-.ls-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(242, 245, 247, 0.3); transition: background-color 360ms var(--lz-ease), box-shadow 360ms var(--lz-ease), opacity 260ms var(--lz-ease), transform 260ms var(--lz-ease); }
-/* When the gold reaches a name, its dot gives way to a check that draws itself. */
-.ls-chip-check { position: absolute; inset: 0; width: 12px; height: 12px; fill: none; stroke: #f4b728; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.ls-chip-check path { stroke-dasharray: 1 1; stroke-dashoffset: 1; transition: stroke-dashoffset 420ms var(--lz-ease) 90ms; }
-.ls-wallet-chip.on .ls-chip-check path { stroke-dashoffset: 0; }
-.ls-wallet-chip.on .ls-chip-dot { opacity: 0; transform: scale(0.4); }
-.ls-wallet-chip.on { background: rgba(244, 183, 40, 0.12); color: var(--lz-night-text); box-shadow: inset 0 0 0 1px rgba(244, 183, 40, 0.6), 0 0 26px -6px rgba(244, 183, 40, 0.55); }
-
-.ls-w0 { left: calc(58% - var(--pw) * 0.61); top: calc(var(--pw) * 0.35); }
-.ls-w1 { left: calc(58% - var(--pw) * 0.74); top: calc(var(--pw) * 0.65); }
-.ls-w2 { left: calc(58% - var(--pw) * 0.72); top: calc(var(--pw) * 0.97); }
-.ls-w3 { left: calc(58% - var(--pw) * 0.57); top: calc(var(--pw) * 1.26); }
-.ls-wires { position: absolute; z-index: 3; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.ls-wire { fill: none; stroke: rgba(244, 183, 40, 0.7); stroke-width: 1.5; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
-.ls-packet { fill: #f6c443; stroke: #b47c08; stroke-width: 0.8; opacity: 0; filter: drop-shadow(0 0 6px rgba(244, 183, 40, 0.9)); }
-
-/* With reduced motion the band is a still picture: no hold, every line and every name lit, the phone straight and whole. */
-.ls-band.ls-still .ls-track { height: auto; }
-.ls-band.ls-still .ls-band-stage { position: relative; height: auto; padding-block: clamp(96px, 10vw, 150px); }
-.ls-band.ls-still .ls-theatre { min-height: calc(var(--pw) * 2.2); }
-.ls-band.ls-still .ls-theatre::after { display: none; }
-.ls-band.ls-still .ls-line { opacity: 1; }
+/* The span it holds the screen over, and the held, screen-sized box the band fills. */
+.lw-track { position: relative; height: 240vh; }
+.lw-stage { position: sticky; top: 0; height: 100vh; overflow: clip; }
+@supports (height: 100svh) { .lw-stage { height: 100svh; } }
+.lw-host { position: absolute; inset: 0; }
+/* With reduced motion the band is the module's still, a block of its own height: no span, no hold. */
+.lw-band.lw-still .lw-track { height: auto; }
+.lw-band.lw-still .lw-stage { position: relative; height: auto; overflow: visible; }
+.lw-band.lw-still .lw-host { position: relative; inset: auto; }
+.lw-band.lw-still:not(:has(.wb)) .lw-track { min-height: 100vh; }
+/* Its two sentences, for a screen reader, until the band is built. */
+.lw-words-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* ── The ring: twelve link cards on a cylinder, turning once in 48 s; the far cards out of focus ── */
 .ls-ring { position: relative; background: var(--lz-white); color: var(--lz-slate); padding: var(--lz-gap) 0 0; overflow: clip; }
@@ -133,17 +41,25 @@
   background: radial-gradient(closest-side, rgba(16, 18, 22, 0.16), rgba(16, 18, 22, 0.05) 55%, rgba(16, 18, 22, 0) 100%);
   box-shadow: 0 0 0 1px rgba(244, 183, 40, 0.24), 0 0 0 10px rgba(244, 183, 40, 0.04);
 }
-.ls-ring-spin {
+.ls-ring-axis {
   position: absolute; left: 50%; top: 36px; width: var(--ls-cw); height: var(--ls-ch); margin-left: calc(var(--ls-cw) / -2);
-  transform-style: preserve-3d; transform: translateZ(calc(-1 * var(--ls-r))) rotateY(0deg);
+  transform-style: preserve-3d; transform: translateZ(calc(-1 * var(--ls-r)));
 }
+.ls-ring-spin { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateY(0deg); }
 .ls-ring-card {
-  position: absolute; inset: 0; box-sizing: border-box; padding: 26px 22px 18px; border-radius: 20px; background: var(--ls-paper, #fbf8f1); color: #101216;
-  font: 400 15px / 1.35 var(--lz-ui); font-variant-numeric: tabular-nums;
-  box-shadow: 0 1px 2px rgba(16, 18, 22, 0.06), 0 22px 44px -18px rgba(16, 18, 22, 0.32), 0 0 0 1px rgba(16, 18, 22, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  position: absolute; inset: 0; color: #101216; font: 400 15px / 1.35 var(--lz-ui); font-variant-numeric: tabular-nums;
   transform: rotateY(calc(var(--i) * 30deg)) translateZ(var(--ls-r)); backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  opacity: var(--ls-still-o, 1); filter: blur(var(--ls-still-b, 0px));
+  opacity: var(--ls-still-o, 1);
 }
+.ls-ring-face {
+  position: absolute; inset: 0; box-sizing: border-box; padding: 26px 22px 18px; border-radius: 20px; background: var(--ls-paper, #fbf8f1);
+  box-shadow: 0 1px 2px rgba(16, 18, 22, 0.06), 0 22px 44px -18px rgba(16, 18, 22, 0.32), 0 0 0 1px rgba(16, 18, 22, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  opacity: calc(1 - var(--ls-still-b, 0));
+}
+/* The same face out of focus: blurred once (a still filter, not animated), shown as the card turns away. */
+.ls-ring-face.ls-ring-blurred { filter: blur(2.6px); opacity: 1; box-shadow: none; }
+/* The sharp face lies over it (and alone animates: it gives way as the card turns away). */
+.ls-ring-face:not(.ls-ring-blurred) { z-index: 1; }
 .ls-ring-card p { margin: 0; }
 .ls-ring-card .ls-rail { left: 22px; right: 22px; height: 4px; }
 .ls-ring-tab { font-size: 13px; font-weight: 600; color: #575245; }
@@ -163,87 +79,164 @@
 .ls-ring-stage:focus-within .ls-ring-spin, .ls-ring-stage:focus-within .ls-ring-card,
 .ls-ring-stage:focus .ls-ring-spin, .ls-ring-stage:focus .ls-ring-card { animation-play-state: paused; }
 /* The card at the front, under a mouse: it comes forward, a glint along its gold edge. */
-.ls-ring-card { transition: transform 460ms var(--lz-ease), box-shadow 460ms var(--lz-ease); }
-.ls-ring-card.ls-lift { transform: rotateY(calc(var(--i) * 30deg)) translateZ(calc(var(--ls-r) + 54px)); box-shadow: 0 1px 2px rgba(16, 18, 22, 0.06), 0 34px 60px -22px rgba(16, 18, 22, 0.42), 0 0 0 1px rgba(244, 183, 40, 0.35); }
+.ls-ring-card { transition: transform 460ms var(--lz-ease); }
+.ls-ring-face { transition: box-shadow 460ms var(--lz-ease); }
+.ls-ring-card.ls-lift { transform: rotateY(calc(var(--i) * 30deg)) translateZ(calc(var(--ls-r) + 54px)); }
+.ls-ring-card.ls-lift .ls-ring-face { box-shadow: 0 1px 2px rgba(16, 18, 22, 0.06), 0 34px 60px -22px rgba(16, 18, 22, 0.42), 0 0 0 1px rgba(244, 183, 40, 0.35); }
 .ls-ring-card .ls-rail { overflow: hidden; }
 .ls-ring-card .ls-rail::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -40%; background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 252, 235, 0.95), rgba(255, 255, 255, 0)); opacity: 0; }
-@media (prefers-reduced-motion: no-preference) { .ls-ring-card.ls-lift .ls-rail::after { animation: ls-rail-glint 900ms cubic-bezier(0.45, 0, 0.25, 1) 120ms both; } }
+@media (prefers-reduced-motion: no-preference) { .ls-ring-card.ls-lift .ls-ring-face:not(.ls-ring-blurred) .ls-rail::after { animation: ls-rail-glint 900ms cubic-bezier(0.45, 0, 0.25, 1) 120ms both; } }
 @keyframes ls-rail-glint { 0% { opacity: 0; transform: translateX(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateX(350%); } }
 @keyframes ls-spin {
-  from { transform: translateZ(calc(-1 * var(--ls-r))) rotateY(0deg); }
-  to { transform: translateZ(calc(-1 * var(--ls-r))) rotateY(-360deg); }
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(-360deg); }
 }
 /* Fading and going out of focus with depth: sharp and whole at the front, gone by a quarter turn round, back again. */
 @keyframes ls-depth {
-  0% { opacity: 1; filter: blur(0); } 8% { opacity: 0.92; filter: blur(0.4px); } 16% { opacity: 0.6; filter: blur(1.6px); }
-  23% { opacity: 0.14; filter: blur(3.2px); } 26% { opacity: 0; filter: blur(4px); }
-  74% { opacity: 0; filter: blur(4px); } 77% { opacity: 0.14; filter: blur(3.2px); } 84% { opacity: 0.6; filter: blur(1.6px); }
-  92% { opacity: 0.92; filter: blur(0.4px); } 100% { opacity: 1; filter: blur(0); }
+  0% { opacity: 1; } 8% { opacity: 0.92; } 16% { opacity: 0.6; } 23% { opacity: 0.14; } 26% { opacity: 0; }
+  74% { opacity: 0; } 77% { opacity: 0.14; } 84% { opacity: 0.6; } 92% { opacity: 0.92; } 100% { opacity: 1; }
 }
+/* The focus: the sharp face gives way to the blurred one as the card turns away, and comes back as it turns to the front. */
+@keyframes ls-focus-sharp { 0% { opacity: 1; } 5% { opacity: 1; } 18% { opacity: 0; } 82% { opacity: 0; } 95% { opacity: 1; } 100% { opacity: 1; } }
+.ls-ring-on .ls-ring-face:not(.ls-ring-blurred) { animation: ls-focus-sharp 48s linear infinite; animation-delay: var(--ls-phase, 0s); }
+.ls-ring-stage:focus-within .ls-ring-face, .ls-ring-stage:focus .ls-ring-face { animation-play-state: paused; }
 
-/* ── The counts: four figures in Geist, each counting up once inside a thin gold arc that fills with it ── */
-.ls-counts { background: var(--lz-white); color: var(--lz-slate); padding: clamp(48px, 5vw, 80px) 0 var(--lz-gap); }
-.ls-counts-in { max-width: 1120px; margin: 0 auto; padding: 0 var(--lz-gutter); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.ls-count { display: grid; align-content: start; justify-items: center; gap: 14px; margin: 0; padding: 8px 12px; text-align: center; }
-.ls-dial { position: relative; display: grid; place-items: center; width: clamp(150px, 15vw, 212px); aspect-ratio: 1; }
-.ls-gauge { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.ls-gauge-track { fill: none; stroke: var(--lz-hair); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 0.75 1; }
-.ls-gauge-fill { fill: none; stroke: var(--lz-gold); stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 0.75 1; stroke-dashoffset: 0.75; filter: drop-shadow(0 0 4px rgba(244, 183, 40, 0.35)); }
+/* ── The counts: four figures, each with its own small living picture, on cards with depth (landing-sections.ts) ── */
+.ls-counts {
+  position: relative; color: var(--lz-slate); padding: clamp(56px, 6vw, 96px) 0 var(--lz-gap);
+  background: radial-gradient(ellipse 70% 60% at 50% 46%, #fff8ea 0%, rgba(255, 248, 234, 0) 70%), var(--lz-white);
+}
+.ls-counts-in { max-width: 1180px; margin: 0 auto; padding: 0 var(--lz-gutter); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 1.6vw, 24px); }
+.ls-count { position: relative; display: grid; margin: 0; }
+.ls-card {
+  position: relative; display: grid; align-content: start; justify-items: center; gap: 10px; padding: 24px 14px 26px; text-align: center;
+  border-radius: 28px; background: linear-gradient(180deg, #ffffff 0%, #fcf9f3 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 0 0 1px rgba(16, 18, 22, 0.05), 0 2px 4px rgba(16, 18, 22, 0.04),
+    0 28px 50px -30px rgba(16, 18, 22, 0.32), 0 60px 90px -60px rgba(176, 124, 8, 0.28);
+  transform: perspective(900px) rotateX(var(--lean-x, 0deg)) rotateY(var(--lean-y, 0deg)); transform-style: preserve-3d;
+}
+@media (prefers-reduced-motion: no-preference) { .ls-card { transition: transform 520ms var(--lz-ease); } }
+/* Under a mouse a soft light where the pointer is. */
+.ls-card::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 400ms var(--lz-ease);
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 30%), rgba(255, 249, 232, 0.55), rgba(255, 249, 232, 0) 55%);
+}
+.ls-card.ls-lean::after { opacity: 1; }
+.ls-dial { position: relative; display: grid; place-items: center; width: 100%; max-width: 236px; height: clamp(150px, 13.5vw, 176px); transform-style: preserve-3d; }
 .ls-count-num {
-  position: relative; display: inline-block; padding-top: 0.04em; font: 500 clamp(60px, 6.7vw, 96px) / 1 var(--lz-display); letter-spacing: -0.055em;
-  font-variant-numeric: tabular-nums; color: var(--lz-slate);
+  position: relative; z-index: 2; display: inline-block; padding-top: 0.04em; font: 500 clamp(56px, 5.8vw, 88px) / 1 var(--lz-display); letter-spacing: -0.055em;
+  font-variant-numeric: tabular-nums; color: var(--lz-slate); transform: translateZ(34px);
 }
 /* The odometer over the figure (with motion): a wheel of digits per place, rolled by landing-sections.ts. */
 .ls-odo { display: none; }
 .ls-odo-on .ls-count-num { color: transparent; }
 .ls-odo-on .ls-odo {
-  position: relative; display: inline-flex; grid-area: 1 / 1; height: 1em; overflow: hidden; color: var(--lz-slate);
-  font: 500 clamp(60px, 6.7vw, 96px) / 1 var(--lz-display); letter-spacing: -0.055em; font-variant-numeric: tabular-nums;
+  position: relative; z-index: 2; display: inline-flex; grid-area: 1 / 1; height: 1em; overflow: hidden; color: var(--lz-slate); transform: translateZ(34px);
+  font: 500 clamp(56px, 5.8vw, 88px) / 1 var(--lz-display); letter-spacing: -0.055em; font-variant-numeric: tabular-nums;
   -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
 }
 .ls-odo-col { position: relative; display: block; width: 1ch; height: 1em; overflow: hidden; margin-right: -0.055em; }
 .ls-odo-strip { position: absolute; left: 0; top: 0; display: block; width: 100%; will-change: transform; }
 .ls-odo-strip::before { content: '0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9\A 0'; white-space: pre; display: block; text-align: center; line-height: 1; }
 .ls-dial > .ls-count-num { grid-area: 1 / 1; }
-.ls-gauge-glint { fill: none; stroke: #fff5d6; stroke-width: 3.2; stroke-linecap: round; stroke-dasharray: 0.06 2; stroke-dashoffset: 0; opacity: 0; filter: drop-shadow(0 0 4px rgba(244, 183, 40, 0.95)); }
 .ls-count-label { max-width: 12em; font: 400 clamp(15px, 1.15vw, 17px) / 1.35 var(--lz-display); color: var(--lz-muted); }
+.ls-viz { position: absolute; inset: 0; z-index: 1; display: block; pointer-events: none; transform: translateZ(14px); }
+
+/* 67: the tests as ticks, filling in with the count; once all are in, now and then a light runs through them (one band,
+   seen only through the ticks' shape: a mask, on the compositor). */
+.ls-ticks-in { position: absolute; inset: 6% 2%;
+  -webkit-mask-image: radial-gradient(ellipse 30% 34% at 50% 52%, rgba(0, 0, 0, 0.12), #000 100%); mask-image: radial-gradient(ellipse 30% 34% at 50% 52%, rgba(0, 0, 0, 0.12), #000 100%); }
+.ls-ticks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ls-tick { fill: none; stroke: rgba(68, 71, 91, 0.14); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ls-tick.on { stroke: #e2a419; }
+.ls-glint { position: absolute; inset: 0; overflow: hidden; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-position: center; mask-position: center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.ls-glint-band { position: absolute; top: -30%; bottom: -30%; left: -45%; width: 45%; opacity: 0;
+  background: linear-gradient(90deg, rgba(255, 249, 226, 0), rgba(255, 249, 226, 0.95) 50%, rgba(255, 249, 226, 0)); transform: translateX(0) skewX(-18deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .ls-tick { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
+  .ls-ticks:not(.ls-drawn) .ls-tick.on { animation: ls-tick-in 420ms var(--lz-ease) both; }
+  .ls-counts-live .ls-viz-ticks.ls-done .ls-glint-band { animation: ls-glint 7s cubic-bezier(0.45, 0, 0.3, 1) 1.4s infinite; }
+}
+@keyframes ls-tick-in { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ls-glint { 0% { opacity: 1; transform: translateX(0) skewX(-18deg); } 24% { opacity: 1; transform: translateX(330%) skewX(-18deg); } 25%, 100% { opacity: 0; transform: translateX(330%) skewX(-18deg); } }
+
+/* 6: the currencies' signs going round the figure (landing-kit.ts orbitLayers): the far half behind it, under a veil the
+   colour of the card, the near half in front of it. */
+.ls-viz-orbit { --orb-rx: clamp(64px, 6.4vw, 96px); --orb-ry: clamp(20px, 2vw, 30px); --orb-t: 27s; }
+/* Both halves at the figure's own depth (one plane: drawn in page order, behind it and in front of it, and seamless where
+   a sign crosses the middle line). */
+.ls-viz.ls-viz-orbit { transform: translateZ(34px); }
+.ls-viz-front { z-index: 3; }
+.lk-orbit.ls-orbit { top: 54%; }
+.ls-veil {
+  position: absolute; left: 50%; top: calc(54% - var(--orb-ry) - 16px); width: calc(var(--orb-rx) * 2 + 64px); height: calc(var(--orb-ry) + 16px);
+  margin-left: calc(var(--orb-rx) * -1 - 32px); background: radial-gradient(ellipse 50% 100% at 50% 0%, rgba(254, 252, 248, 0.82), rgba(254, 252, 248, 0.5) 55%, rgba(254, 252, 248, 0) 100%);
+}
+.ls-sign {
+  position: absolute; left: 0; top: 0; margin: -0.6em 0 0 -1.2em; width: 2.4em; text-align: center; white-space: nowrap;
+  font: 600 clamp(16px, 1.35vw, 20px) / 1.2 var(--lz-display); color: #a8770d; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+.ls-sign::before { content: attr(data-t); }
+.ls-counts:not(.ls-counts-live) :is(.lk-ox, .lk-oyz) { animation-play-state: paused; }
+
+/* 4: the wallets' names, quiet, each lighting gold in turn (a lit copy over it fades in and out). */
+.ls-mark {
+  position: absolute; z-index: 1; padding: 5px 10px 6px; border-radius: 999px; white-space: nowrap;
+  font: 600 clamp(11.5px, 0.95vw, 13px) / 1 var(--lz-display); letter-spacing: 0.01em;
+  color: rgba(68, 71, 91, 0.42); border: 1px solid rgba(68, 71, 91, 0.12); background: rgba(255, 255, 255, 0.85);
+}
+.ls-mark::before, .ls-mark-lit::before { content: attr(data-t); }
+.ls-mark-lit {
+  position: absolute; inset: -1px; padding: inherit; border-radius: inherit; color: #7a4f00; text-align: center;
+  border: 1px solid rgba(244, 183, 40, 0.8); background: #fffcf4; box-shadow: 0 0 16px rgba(244, 183, 40, 0.32); opacity: 1;
+}
+.ls-mark-0 { left: 2%; top: 7%; } .ls-mark-1 { right: 2%; top: 12%; } .ls-mark-2 { left: 5%; bottom: 10%; } .ls-mark-3 { right: 4%; bottom: 6%; }
+@media (prefers-reduced-motion: no-preference) {
+  .ls-mark-lit { opacity: 0; }
+  .ls-counts-live .ls-mark-lit { animation: ls-mark 6.4s ease-in-out calc(var(--i) * 1.6s) infinite; }
+}
+@keyframes ls-mark { 0%, 30%, 100% { opacity: 0; } 7%, 22% { opacity: 1; } }
+
+/* 0: an account's ghost (a sign-up card: a face, two fields, a button, no words) forms and falls to dust. */
+.ls-ghost { position: absolute; left: 50%; top: 52%; width: min(70%, 150px); transform: translate(-50%, -50%); }
+.ls-ghost-card { display: block; width: 100%; height: auto; overflow: visible; opacity: 0.22;
+  fill: none; stroke: rgba(68, 71, 91, 0.55); stroke-width: 1.4; stroke-dasharray: 3 3; }
+.ls-ghost-card .ls-ghost-button { fill: rgba(244, 183, 40, 0.14); stroke: rgba(176, 124, 8, 0.6); }
+.ls-drift {
+  position: absolute; left: 50%; top: 52%; width: min(70%, 150px); height: auto; aspect-ratio: 120 / 84; overflow: visible; fill: rgba(68, 71, 91, 0.5); opacity: 0;
+  margin: calc(min(70%, 150px) * -0.35) 0 0 calc(min(70%, 150px) * -0.5);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ls-ghost-card { opacity: 0; stroke-dasharray: none; }
+  .ls-counts-live .ls-ghost-card { animation: ls-ghost 9s ease-in-out infinite; }
+  .ls-counts-live .ls-drift-0 { animation: ls-drift-0 9s ease-out infinite; }
+  .ls-counts-live .ls-drift-1 { animation: ls-drift-1 9s ease-out 0.15s infinite; }
+  .ls-counts-live .ls-drift-2 { animation: ls-drift-2 9s ease-out 0.3s infinite; }
+}
+@keyframes ls-ghost { 0%, 6% { opacity: 0; transform: translateY(6px); } 20%, 44% { opacity: 0.62; transform: none; } 54%, 100% { opacity: 0; transform: scale(1.03); } }
+@keyframes ls-drift-0 { 0%, 44% { opacity: 0; transform: none; } 50% { opacity: 0.85; } 78%, 100% { opacity: 0; transform: translate(-10px, -30px); } }
+@keyframes ls-drift-1 { 0%, 44% { opacity: 0; transform: none; } 50% { opacity: 0.75; } 78%, 100% { opacity: 0; transform: translate(9px, -36px); } }
+@keyframes ls-drift-2 { 0%, 44% { opacity: 0; transform: none; } 50% { opacity: 0.9; } 78%, 100% { opacity: 0; transform: translate(3px, -22px); } }
 .ls-vh { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ls-band *, .ls-ring *, .ls-counts * { transition: none !important; animation: none !important; }
+  .ls-ring *, .ls-counts * { transition: none !important; animation: none !important; }
 }
 
 /* ── Phones ── */
 @media (max-width: 759px) {
-  .ls-track { height: 250vh; }
-  .ls-band-stage {
-    --pw: min(300px, 76vw, calc((100svh - 300px) * 0.6));
-    grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-items: start;
-    padding: calc(var(--lz-bar) + 16px) 16px 0; row-gap: 14px;
-  }
-  .ls-band-words { justify-self: stretch; display: grid; gap: 0; min-height: 5.2em; padding: 0; }
-  .ls-line { grid-area: 1 / 1; font-size: clamp(21px, 5.6vw, 24px); opacity: 0; transform: translate3d(0, 8px, 0); transition: opacity 420ms var(--lz-ease), transform 420ms var(--lz-ease); }
-  .ls-line.now { opacity: 1; transform: none; }
-  .ls-theatre { min-height: calc(var(--pw) * 1.6); }
-  .ls-band-phone { left: calc(50% - var(--pw) / 2); top: 58px; }
-  .ls-underglow { left: 50%; top: 40px; }
-  .ls-floor, .ls-reflect { top: calc(58px + var(--pw) * 0.62); }
-  .ls-reflect { -webkit-mask-image: radial-gradient(ellipse 26% 30% at 50% 2%, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 100%); mask-image: radial-gradient(ellipse 26% 30% at 50% 2%, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 100%); }
-  .ls-wallets { inset: 0 0 auto; height: 40px; display: flex; justify-content: center; gap: 6px; }
-  .ls-wallet-chip { position: relative; left: auto !important; top: auto !important; transform: none; height: 32px; padding: 0 11px 0 9px; gap: 7px; font-size: 13.5px; }
-  .ls-bezel { padding: 8px; border-radius: 44px; }
-  .ls-screen { border-radius: 36px; }
-  .ls-band.ls-still .ls-band-stage { padding-block: 72px; }
-  .ls-band.ls-still .ls-band-words { gap: 18px; }
-  .ls-band.ls-still .ls-line { grid-area: auto; transform: none; }
-  .ls-band.ls-still .ls-theatre { min-height: calc(58px + var(--pw) * 2.2); }
 
   .ls-ring-stage { --ls-cw: 196px; --ls-ch: 168px; --ls-r: 400px; perspective: 1100px; height: calc(var(--ls-ch) + 120px); }
-  .ls-ring-card { padding: 19px 15px 13px; border-radius: 16px; }
+  .ls-ring-face { padding: 19px 15px 13px; border-radius: 16px; }
   .ls-ring-name { font-size: 15px; }
   .ls-ring-amount { font-size: 27px; }
   .ls-ring-chip { font-size: 10.5px; margin-top: 11px !important; }
-  .ls-counts-in { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 32px; padding: 0 16px; }
-  .ls-dial { width: min(150px, 38vw); }
-  .ls-count-num, .ls-odo-on .ls-odo { font-size: clamp(48px, 13vw, 60px); }
+  .ls-counts-in { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0 16px; }
+  .ls-card { padding: 16px 8px 18px; border-radius: 22px; gap: 6px; }
+  .ls-dial { height: 126px; }
+  .ls-count-num, .ls-odo-on .ls-odo { font-size: clamp(44px, 12vw, 56px); }
+  .ls-count-label { font-size: 13.5px; }
+  .ls-viz-orbit { --orb-rx: 56px; --orb-ry: 18px; }
+  .ls-sign { font-size: 14px; }
+  .ls-mark { font-size: 10px; padding: 4px 7px 5px; }
 }

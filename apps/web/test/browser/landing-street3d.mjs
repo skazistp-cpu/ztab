@@ -103,7 +103,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.zs-world')).visibility), 'hidden', `${at}: nothing drawn (not the café's picture) under the street at night`);
       assert.equal(await page.locator('.zs-hud-say.on').count(), 0, `${at}: no caption at night`);
       // The band after the street begins in the same ink: no white between them.
-      assert.match(await page.locator('.ls-band').evaluate(el => getComputedStyle(el).backgroundImage), /^linear-gradient\(rgb\(11, 12, 15\)/, `${at}: the band begins in ink`);
+      assert.match(await page.locator('.lw-band').evaluate(el => getComputedStyle(el).backgroundImage), /^linear-gradient\(rgb\(11, 12, 15\)/, `${at}: the band begins in ink`);
       // Pause motion: the 3D street is held: no frame is asked for while it is paused, and its picture does not change.
       await page.evaluate(() => document.querySelector('.lz-motion').click());
       await page.waitForTimeout(300);

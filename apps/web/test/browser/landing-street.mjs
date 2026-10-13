@@ -135,7 +135,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await along(page, 1, 1800);
       assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.zs-stage')).backgroundColor), 'rgb(11, 12, 15)', `${at}: night at the end`);
       assert.ok(await page.evaluate(() => document.documentElement.classList.contains('lz-night')), `${at}: night glass on the header`);
-      assert.match(await page.locator('.ls-band').evaluate(el => getComputedStyle(el).backgroundImage), /^linear-gradient\(rgb\(11, 12, 15\)/, `${at}: the band begins in ink`);
+      assert.match(await page.locator('.lw-band').evaluate(el => getComputedStyle(el).backgroundImage), /^linear-gradient\(rgb\(11, 12, 15\)/, `${at}: the band begins in ink`);
       await page.evaluate(() => { const s = document.querySelector('.zs'); scrollTo(0, s.getBoundingClientRect().top + scrollY + s.offsetHeight); });
       await page.waitForTimeout(400);
       assert.ok(await page.evaluate(() => document.querySelector('.zs-stage').getBoundingClientRect().bottom <= 1), `${at}: the stage has gone up with the page`);
