@@ -17,7 +17,7 @@ for(const engine of (process.env.BROWSERS||'chromium,webkit').split(',')){
   const preview=await page.getByRole('link',{name:'Preview',exact:true}).first().getAttribute('href');
   const table=await page.getByRole('link',{name:'Show Table QR',exact:true}).getAttribute('href');
   const uri=await page.locator('.person .qr').first().getAttribute('aria-label');assert.equal(uri,'Payment request for Ana');
-  const initial=[...requests];assert.equal(initial.length,6);
+  const initial=[...requests];assert.equal(initial.length,7,'the opening and the steps: the page, a script, a stylesheet, three faces (Geist on the opening, Inter and JetBrains Mono in the steps) and the picture of the dinner');
   await page.evaluate(()=>{window.storageCalls=0;for(const m of ['getItem','setItem','removeItem','clear'])Storage.prototype[m]=()=>{window.storageCalls++;throw Error('unexpected storage');};});
   async function check(kind,selector,payload){
    const qr=page.locator(selector).first();await qr.waitFor();

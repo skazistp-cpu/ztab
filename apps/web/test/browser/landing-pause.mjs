@@ -1,26 +1,23 @@
 // Pause motion (WCAG 2.2.2): one button in the opening's navigation holds everything that moves and plays it again.
 // Chromium and WebKit, a phone and a laptop: the button (its name says what it will do, with no aria-pressed; where it
 // sits and how it looks), a pause that holds every element still for 1.5 s with no animation frame asked for, the
+// street held at its stills while the page is scrolled (the camera stands at the first screen or at a station), the
 // sections coming into view while paused (nothing starts, the recording stays stopped), a resize while paused, playing
-// again (the hero, the tiles, the ring, the recording), a pause in the middle of a running tile, the choice kept for
-// the visit and not beyond it, the keyboard, a press in the very first moments, the system's reduce-motion setting,
-// and the CSS loops that hold while their picture is off screen.
+// again (the dinner, the street, the ring, the recording), a pause in the middle of the camera's move, the choice kept
+// for the visit and not beyond it, the keyboard, a press in the very first moments, the system's reduce-motion
+// setting, and the CSS loops that hold while their picture is off screen.
 // PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs TAB_ORIGIN=http://127.0.0.1:8764 node test/browser/landing-pause.mjs
 import assert from 'node:assert/strict';
 import { mkdirSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { splitItems } from '../../src/items.ts';
-import { DEMO_ITEMS } from '../../src/demo.ts';
 
 const module = process.env.PLAYWRIGHT_MODULE;
 const pw = await import(module ? (module.startsWith('/') ? pathToFileURL(module).href : module) : 'playwright');
 const origin = (process.env.TAB_ORIGIN || 'http://127.0.0.1:8764').replace(/\/$/, '');
 const shots = process.env.SHOTS;
+const flat = text => text.replace(/\s+/g, ' ').trim();
 if (shots) mkdirSync(shots, { recursive: true });
 
-const dinner = splitItems(['Lena', 'Ana', 'Ben'], DEMO_ITEMS, '10');
-assert.equal(dinner.kind, 'split');
-const TICKS = DEMO_ITEMS.reduce((sum, item) => sum + item.people.length, 0);
 
 // ── What the page reports ──
 /** Counts the animation frames the page's own code asks for. */
@@ -54,9 +51,10 @@ const moved = (a, b) => (a.length !== b.length ? ['the number of elements change
 const running = (page, root = '.landing') => page.evaluate(sel => document.querySelector(sel).getAnimations({ subtree: true })
   .filter(a => a.playState === 'running')
   .map(a => a.animationName || (a.transitionProperty ? `transition ${a.transitionProperty}` : `script ${a.effect?.target?.className || a.effect?.target?.tagName}`)), root);
-/** The depth the cards are given by the pointer and the scroll: the transforms of the hero's layers, the translate of a tile's cards. */
-const depthOfHero = page => page.locator('.lz-layer').evaluateAll(list => list.map(el => getComputedStyle(el).transform));
-const depthOfTile = page => page.locator('.ls-a .ls-app').evaluateAll(list => list.map(el => getComputedStyle(el).translate));
+/** Where the street's camera stands: the transform of its world. */
+const camera = page => page.evaluate(() => document.querySelector('.zs-world').style.transform);
+/** Scrolls to progress p of the street's stage (0 to 1). */
+const along = (page, p) => page.evaluate(v => { const s = document.querySelector('.zs'); scrollTo(0, s.getBoundingClientRect().top + scrollY + v * Math.max(0, s.offsetHeight - innerHeight)); }, p);
 const recording = page => page.evaluate(() => { const v = document.querySelector('.ls-phone video'); return { paused: v.paused, time: v.currentTime }; });
 const scrollToEl = (page, selector, offset = 0) => page.evaluate(([sel, off]) => {
   const el = document.querySelector(sel);
@@ -92,6 +90,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       for (const motion of ['no-preference', 'reduce']) {
         const at = `${engine} ${width} ${motion}`;
         const context = await browser.newContext({ viewport: { width, height }, reducedMotion: motion, locale: 'en-US' });
+        await context.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
         const page = await context.newPage();
         await page.goto(origin + '/');
         await page.locator('.landing h1').waitFor();
@@ -139,6 +138,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     for (const width of [390, 1280]) {
       const at = `${engine} ${width} reduce`;
       const context = await browser.newContext({ viewport: { width, height: width < 600 ? 844 : 800 }, reducedMotion: 'reduce', locale: 'en-US' });
+      await context.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
       const page = await context.newPage();
       const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
       await page.goto(origin + '/');
@@ -164,16 +164,19 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     for (const width of [390, 1280]) {
       const at = `${engine} ${width}`;
       const height = width < 600 ? 844 : 800;
+      const wide = width >= 760;
+      // The stage is held on a phone too where the 3D street can be tried (WebGL 2), as in both engines here.
       const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'no-preference', locale: 'en-US' });
+      await context.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
       await context.addInitScript(countFrames);
       const page = await context.newPage();
       const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
       await page.goto(origin + '/');
       await page.locator('.landing h1').waitFor();
       await page.evaluate(() => document.fonts.ready);
-      // The phone's five screens are in and turning: everything of the first screen is moving.
-      await page.waitForFunction(() => [...document.querySelectorAll('.lz-shot')].every(img => img.getAnimations().length > 0), null, { timeout: 8000 });
-      await page.waitForTimeout(1900); // the entrance of the first screen is over
+      // The dinner's intro is over and its calm loop runs: everything of the first screen is moving.
+      await page.waitForFunction(() => [...document.querySelectorAll('.lz-tag-in')].every(el => getComputedStyle(el).opacity === '1'), null, { timeout: 8000 });
+      await page.waitForTimeout(2600);
       const pause = page.getByRole('button', { name: 'Pause motion', exact: true });
       const play = page.getByRole('button', { name: 'Play motion', exact: true });
       assert.deepEqual(await pictured(pause), [false, false], `${at}: no aria-pressed, and two bars while it moves`);
@@ -184,9 +187,9 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await page.waitForTimeout(600);
       assert.notDeepEqual(moved(s1, await snapshot(page)), [], `${at}: the opening moves before it is paused`);
       const before = await running(page);
-      for (const wanted of ['lz-marquee', 'lz-float']) assert.ok(before.includes(wanted), `${at}: ${wanted} runs (${[...new Set(before)].join(', ')})`);
+      for (const wanted of ['lz-marquee', 'lz-bob', 'lz-twinkle']) assert.ok(before.includes(wanted), `${at}: ${wanted} runs (${[...new Set(before)].join(', ')})`);
       assert.ok(before.some(name => name.startsWith('script')), `${at}: and so do the animations made in script`);
-      const coin = () => page.locator('.lz-coin').first().evaluate(el => { const m = new DOMMatrixReadOnly(getComputedStyle(el).transform); return [m.m41, m.m42]; });
+      const loopTime = () => page.locator('.lz-pack').first().evaluate(el => el.getAnimations().find(a => a.effect.getTiming().iterations === Infinity)?.currentTime ?? -1);
 
       // ── Pause, at the top ──
       if (shots) await page.screenshot({ path: `${shots}/${engine}-pause-${width}-running.png`, clip: { x: 0, y: 0, width, height: 140 } });
@@ -197,52 +200,39 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       assert.equal(await page.getByRole('button', { name: 'Pause motion', exact: true }).count(), 0, `${at}: Pause motion is gone while it is paused`);
       assert.ok(await page.evaluate(() => document.querySelector('.landing').classList.contains('lz-paused')), `${at}: the root class is on`);
       await stays(page, `${at} paused at the top`);
-      // The page scrolls, and the hero's cards keep the depth they had: the scroll no longer moves them against each other.
-      const layers = await depthOfHero(page);
-      await page.evaluate(() => scrollBy(0, 150));
-      await page.waitForTimeout(400);
-      assert.deepEqual(await depthOfHero(page), layers, `${at}: the hero's cards ignore the scroll while paused`);
-      await page.evaluate(() => scrollTo(0, 0));
-      await page.waitForTimeout(200);
-      if (width >= 760) {
-        // How it works goes there at once while paused (a smooth scroll is still on its way after 120 ms).
+      const heldAt = await loopTime();
+      if (wide) {
+        // How it works goes to the first station at once while paused, and the camera stands there.
         await page.getByRole('button', { name: 'How it works', exact: true }).click();
-        await page.waitForTimeout(120);
-        const top = await page.evaluate(() => Math.round(document.querySelector('#how-it-works').getBoundingClientRect().top));
-        assert.ok(Math.abs(top) < 4, `${at}: How it works jumps, it does not scroll smoothly, while paused (${top} px from the top)`);
+        await page.waitForTimeout(150);
+        assert.equal(flat(await page.locator('.zs-hud-say.on').innerText()), 'Split it equally or by item, with a tip.', `${at}: How it works jumps to the first station while paused`);
         await page.evaluate(() => scrollTo(0, 0));
         await page.waitForTimeout(200);
       }
       if (shots) await page.screenshot({ path: `${shots}/${engine}-pause-${width}-paused.png`, clip: { x: 0, y: 0, width, height: 140 } });
 
-      // ── Scroll through while it is paused: nothing starts, each tile is a still, the figures are there, the recording stays stopped ──
-      for (const section of ['.ls-a', '.ls-b', '.ls-c', '.ls-d', '.ls-e', '.ls-ring', '.ls-counts', '.ls-band', '.lz-cta']) {
-        await scrollToEl(page, section, section === '.ls-band' || section === '.lz-cta' ? 0 : -40);
+      // ── Scroll through while it is paused: the street at its stills, nothing starts, the figures are there, the recording stays stopped ──
+      const pinned = await page.locator('.zs.zs-pinned').count() > 0;
+      if (pinned) {
+        const stills = new Set();
+        for (const p of [0.05, 0.2, 0.33, 0.47, 0.6, 0.74, 0.88, 0.97]) {
+          await along(page, p);
+          await page.waitForTimeout(150);
+          assert.deepEqual(await running(page), [], `${at}: nothing eases in at ${p} of the street while paused`);
+          await page.waitForTimeout(250);
+          await stays(page, `${at} paused at ${p} of the street`, 700);
+          stills.add(await camera(page));
+        }
+        assert.ok(stills.size >= 4 && stills.size <= 7, `${at}: the camera stood only at stills: the first screen, the stations, the street at night (${stills.size})`);
+      }
+      for (const section of ['.zs-links', '.ls-band', '.ls-ring', '.ls-counts', '.lz-cta']) {
+        if (section === '.zs-links' && pinned) continue;
+        await scrollToEl(page, section, section === '.ls-band' ? 360 : 0);
         await page.waitForTimeout(150);
         assert.deepEqual(await running(page), [], `${at}: nothing eases in as ${section} comes into view while paused`);
         await page.waitForTimeout(450);
         await stays(page, `${at} paused at ${section}`, 1000);
-        if (section === '.ls-a') {
-          const cards = await depthOfTile(page);
-          await page.evaluate(() => scrollBy(0, 90));
-          await page.waitForTimeout(300);
-          assert.deepEqual(await depthOfTile(page), cards, `${at}: the tile's cards ignore the scroll while paused`);
-          await page.evaluate(() => scrollBy(0, -90));
-          await page.waitForTimeout(200);
-          assert.equal(await page.locator('.ls-a .ls-pick.on').count(), TICKS, `${at}: the items tile is its still, every line has its people`);
-          assert.equal(await page.locator('.ls-a .ls-grand .ls-fig span:last-child').textContent(), `$${dinner.total}`, `${at}: and the app's own total`);
-        }
-        if (section === '.ls-b') {
-          // Playing with the tile in view starts it from the beginning; pausing again holds it where it has got to.
-          assert.equal(await page.locator('.ls-b .ls-btn-ink.done').count(), 0, `${at}: the links tile is its still`);
-          await press(page);
-          await page.waitForSelector('.ls-b .ls-btn-ink.done', { timeout: 9000 });
-          await press(page);
-          await stays(page, `${at} paused again in the middle of the links tile`, 800);
-        }
-        if (section === '.ls-c') assert.equal(await page.locator('.ls-c .ls-pr.on').count(), 1, `${at}: one name chosen on the picker`);
-        if (section === '.ls-d') assert.deepEqual(await page.locator('.ls-d .ls-pay-in').evaluate(el => [el.classList.contains('ls-away'), getComputedStyle(el).opacity]), [false, '1'], `${at}: the pay page is shown`);
-        if (section === '.ls-e') assert.equal(await page.locator('.ls-e .ls-receipt').evaluate(el => new DOMMatrixReadOnly(getComputedStyle(el).transform).m42), 0, `${at}: the receipt is printed`);
+        if (section === '.zs-links') assert.ok(await page.locator('.zs-links .zs-chip').evaluateAll(list => list.every(c => getComputedStyle(c).opacity === '1')), `${at}: the station is its still, the six cards named`);
         if (section === '.ls-ring') {
           assert.deepEqual(await page.locator('.ls-ring-spin').evaluate(el => el.getAnimations().map(a => a.playState)), ['paused'], `${at}: the ring is held`);
         }
@@ -265,7 +255,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
         }
       }
 
-      // ── A resize while paused makes the hero lay itself out again; what it makes does not move ──
+      // ── A resize while paused lays the street out again; what it makes does not move ──
       await scrollToEl(page, '.landing', 0);
       await page.setViewportSize({ width: width - 40, height });
       await page.waitForTimeout(900);
@@ -275,57 +265,45 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await stays(page, `${at} paused after the size is back`, 1000);
 
       // ── Play ──
-      const held = await coin();
       await play.click();
       await page.mouse.move(1, 1);
       assert.equal(await pause.count(), 1, `${at}: the button reads Pause motion again`);
       assert.deepEqual(await pictured(pause), [false, false], `${at}: with no aria-pressed, and two bars`);
       assert.equal(await page.evaluate(() => document.querySelector('.landing').classList.contains('lz-paused')), false, `${at}: the root class is off`);
       await frames(page, 3);
-      // The orbit carries on from where it stopped; it does not jump ahead by the time it was held.
-      const [x0, y0] = held, [x1, y1] = await coin();
-      assert.ok(Math.hypot(x1 - x0, y1 - y0) < 25, `${at}: the orbit carries on from where it stopped (${Math.round(Math.hypot(x1 - x0, y1 - y0))} px)`);
-      const layersNow = await depthOfHero(page);
-      await page.evaluate(() => scrollBy(0, 150));
-      await page.waitForTimeout(500);
-      assert.notDeepEqual(await depthOfHero(page), layersNow, `${at}: the hero's cards follow the scroll again`);
-      await page.evaluate(() => scrollTo(0, 0));
-      await page.waitForTimeout(300);
+      // The dinner's loop carries on from where it stopped; it does not jump ahead by the time it was held.
+      const playedAt = await loopTime();
+      assert.ok(heldAt >= 0 && Math.abs(playedAt - heldAt) < 400, `${at}: the dinner's loop carries on from where it stopped (${Math.round(heldAt)} -> ${Math.round(playedAt)})`);
       const asked = await frameCount(page);
       const t1 = await snapshot(page);
       await page.waitForTimeout(900);
       assert.notDeepEqual(moved(t1, await snapshot(page)), [], `${at}: it moves again`);
-      assert.ok(await frameCount(page) > asked, `${at}: the parallax and the orbit ask for frames again`);
       const again = await running(page);
-      for (const wanted of ['lz-marquee', 'lz-float']) assert.ok(again.includes(wanted), `${at}: ${wanted} runs again`);
+      for (const wanted of ['lz-marquee', 'lz-bob', 'lz-twinkle']) assert.ok(again.includes(wanted), `${at}: ${wanted} runs again`);
       assert.ok(again.some(name => name.startsWith('script')), `${at}: and so do the animations made in script`);
-      // The tiles that were stills start from the beginning when they are seen again; the ring turns; the recording plays.
-      await scrollToEl(page, '.ls-a', -40);
-      await page.waitForFunction(ticks => { const on = document.querySelectorAll('.ls-a .ls-pick.on').length; return on > 0 && on < ticks; }, TICKS, { timeout: 9000, polling: 40 });
-      const cardsNow = await depthOfTile(page);
-      await page.evaluate(() => scrollBy(0, 90));
-      await page.waitForTimeout(400);
-      assert.notDeepEqual(await depthOfTile(page), cardsNow, `${at}: the tile's cards follow the scroll again`);
+      if (wide) {
+        // The street follows the scroll again, easing; paused in the middle of the move, the camera goes to a still and holds.
+        // (0.445 is in the second station's stay; 0.53 is on the way to the third, nearer the third.)
+        await along(page, 0.445);
+        await page.waitForTimeout(120);
+        assert.ok(await frameCount(page) > asked, `${at}: the camera asks for frames again`);
+        await page.waitForTimeout(1200);
+        const settled = await camera(page);
+        await along(page, 0.53);
+        await page.waitForTimeout(60);
+        await press(page);
+        await frames(page, 3);
+        const still = await camera(page);
+        assert.notEqual(still, settled, `${at}: the move was under way`);
+        await stays(page, `${at} paused in the middle of the camera's move`, 900);
+        await press(page);
+        await page.waitForTimeout(1400);
+        assert.notEqual(await camera(page), still, `${at}: played, the camera goes on to where the scroll is`);
+      }
+      // The ring turns again; paused while it turns, it is held, and it turns on from there.
       await scrollToEl(page, '.ls-ring', -60);
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(600);
       assert.deepEqual(await page.locator('.ls-ring-spin').evaluate(el => el.getAnimations().map(a => a.playState)), ['running'], `${at}: the ring turns again`);
-      await scrollToEl(page, '.ls-band', 0);
-      await page.waitForFunction(() => { const v = document.querySelector('.ls-phone video'); return v && !v.paused && v.currentTime > 0.2; }, null, { timeout: 9000 });
-
-      // ── Pause in the middle of things (pressed from where it cannot be seen: a keyboard shortcut, a screen reader) ──
-      await scrollToEl(page, '.ls-a', -40);
-      await page.waitForFunction(() => document.querySelectorAll('.ls-a .ls-pick.on').length > 0, null, { timeout: 9000 });
-      const tile = () => page.evaluate(() => [...document.querySelectorAll('.ls-a .ls-pick')].map(p => +p.classList.contains('on')).join('') + document.querySelector('.ls-a .ls-grand .ls-fig').textContent);
-      await press(page);
-      await stays(page, `${at} paused in the middle of the items tile`);
-      const frozen = await tile();
-      await press(page);
-      await page.waitForFunction(was => {
-        const now = [...document.querySelectorAll('.ls-a .ls-pick')].map(p => +p.classList.contains('on')).join('') + document.querySelector('.ls-a .ls-grand .ls-fig').textContent;
-        return now !== was;
-      }, frozen, { timeout: 12000 });
-      await scrollToEl(page, '.ls-ring', -60);
-      await page.waitForTimeout(500);
       const turn = () => page.locator('.ls-ring-spin').evaluate(el => getComputedStyle(el).transform);
       await press(page);
       await stays(page, `${at} paused while the ring turns`);
@@ -333,7 +311,8 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       await press(page);
       await page.waitForTimeout(600);
       assert.notEqual(await turn(), ringHeld, `${at}: the ring turns on from there`);
-      await scrollToEl(page, '.ls-band', 0);
+      // The recording plays when seen; a pause stops it and it holds its place; playing carries on.
+      await scrollToEl(page, '.ls-band', 360);
       await page.waitForFunction(() => { const v = document.querySelector('.ls-phone video'); return v && !v.paused && v.currentTime > 0.2; }, null, { timeout: 9000 });
       await press(page);
       await frames(page, 2);
@@ -346,12 +325,16 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
 
       // ── The choice is for this visit: it stays when the steps are opened and closed, and a new visit starts with motion ──
       await scrollToEl(page, '.landing', 0);
+      await page.waitForTimeout(300);
       await pause.click();
       await page.getByRole('button', { name: 'Start a tab', exact: true }).first().click();
       await page.waitForFunction(() => document.activeElement?.matches('.flow .step-title'));
       await page.goBack();
       await page.locator('.landing').waitFor();
       assert.equal(await play.count(), 1, `${at}: still reads Play motion after the steps are opened and closed`);
+      // (The pointer is left over Start a tab by the click; its hover is not motion: move it away first.)
+      await page.mouse.move(1, 1);
+      await page.waitForTimeout(150);
       await stays(page, `${at} paused after Back`);
       assert.deepEqual(await page.evaluate(() => [localStorage.length, sessionStorage.length, document.cookie]), [0, 0, ''], `${at}: nothing is kept in the browser`);
       await page.reload();
@@ -360,13 +343,14 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       assert.deepEqual(errors, [], `${at}: no errors`);
       await context.close();
       visits++;
-      console.log(`ok ${at}: pause, scroll, resize, play, pause mid-turn, the visit`);
+      console.log(`ok ${at}: pause, the street at its stills, scroll, resize, play, pause mid-move, the visit`);
     }
 
     // ── The keyboard: the button comes after Sample dinner and before Open Ztab, shows its focus, and works with Enter and Space ──
     for (const width of [390, 1280]) {
       const at = `${engine} ${width} keyboard`;
       const context = await browser.newContext({ viewport: { width, height: width < 600 ? 844 : 800 }, reducedMotion: 'no-preference', locale: 'en-US' });
+      await context.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
       const page = await context.newPage();
       await page.goto(origin + '/');
       await page.locator('.landing h1').waitFor();
@@ -395,6 +379,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     {
       const at = `${engine} first moments`;
       const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'no-preference', locale: 'en-US' });
+      await context.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
       await context.addInitScript(countFrames);
       let midway = false;
       let page;
@@ -411,20 +396,21 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       }
       assert.ok(midway, `${at}: pressed while the headline was still coming in`);
       await frames(page, 3);
-      const look = await page.evaluate(() => ['.lz-key', '.lz-ticker', '.lz-hero .lz-actions', '.lz-stage'].map(sel => {
+      const look = await page.evaluate(() => ['.lz-key', '.lz-ticker', '.lz-hero .lz-actions', '.lz-art'].map(sel => {
         const cs = getComputedStyle(document.querySelector(sel));
         // An animation that has reached its end still reports its transform as a matrix: the identity is "in place".
         const inPlace = cs.transform === 'none' || cs.transform === 'matrix(1, 0, 0, 1, 0, 0)';
         return [sel, cs.opacity, inPlace, sel === '.lz-key' ? cs.color : '', sel === '.lz-key' ? cs.textShadow.replace(/rgba?\([^)]*\)\s*/, '') : ''];
       }));
       assert.deepEqual(look, [
-        ['.lz-key', '1', true, 'rgb(43, 47, 58)', '0px 0px 0px'],
+        ['.lz-key', '1', true, 'rgb(68, 71, 91)', '0px 0px 0px'],
         ['.lz-ticker', '1', true, '', ''],
         ['.lz-hero .lz-actions', '1', true, '', ''],
-        ['.lz-stage', '1', true, '', ''],
+        ['.lz-art', '1', true, '', ''],
       ], `${at}: nothing is left half drawn`);
-      // The loops the hero makes after the press (the phone's screens come in a moment after the page has loaded) are made paused.
-      await page.waitForFunction(() => [...document.querySelectorAll('.lz-shot')].every(img => img.getAnimations().length > 0), null, { timeout: 9000 });
+      // The dinner's cards and ribbons are there whole: the intro was brought to its end.
+      assert.ok(await page.locator('.lz-tag-in').evaluateAll(list => list.every(el => getComputedStyle(el).opacity === '1')), `${at}: every card is there`);
+      assert.ok(await page.locator('.lz-line').evaluateAll(list => list.every(p => Math.abs(parseFloat(getComputedStyle(p).strokeDashoffset)) < 1)), `${at}: every ribbon is drawn`);
       await stays(page, `${at} paused`);
       assert.equal(await page.getByRole('button', { name: 'Play motion', exact: true }).count(), 1, `${at}: it reads Play motion`);
       await context.close();
@@ -436,26 +422,28 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     for (const width of [390, 1280]) {
       const at = `${engine} ${width} loops`;
       const context = await browser.newContext({ viewport: { width, height: width < 600 ? 844 : 800 }, reducedMotion: 'no-preference', locale: 'en-US' });
+      await context.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
       const page = await context.newPage();
       await page.goto(origin + '/');
       await page.locator('.landing h1').waitFor();
       const states = (selector) => page.evaluate(sel => [...document.querySelectorAll(sel)].flatMap(el => el.getAnimations()).map(a => a.playState), selector);
-      const floats = await states('.lz-float');
-      assert.ok(floats.length >= 4 && floats.every(s => s === 'running'), `${at}: the floating cards run while the stage is on screen (${floats})`);
+      const loops = async () => [...await states('.lz-tag-in'), ...await states('.lz-lamp')];
+      const floats = await loops();
+      assert.ok(floats.length >= 10 && floats.every(s => s === 'running'), `${at}: the cards' float and the lamps run while the dinner is on screen (${floats})`);
       // (A picture that is exactly edge to edge with the screen still counts as seen: go a little past it.)
-      await scrollToEl(page, '.ls-bento', 40);
+      await scrollToEl(page, '.ls-ring', 0);
       await page.waitForTimeout(500);
-      assert.ok((await states('.lz-float')).every(s => s === 'paused'), `${at}: and are held when it is off screen`);
-      await scrollToEl(page, '.lz-cta', 0);
+      assert.ok((await loops()).every(s => s === 'paused'), `${at}: and are held when it is off screen`);
+      await scrollToEl(page, '.lz-cta', 300);
       await page.waitForFunction(() => document.querySelector('.lz-cta').classList.contains('lz-in'), null, { timeout: 5000 });
       await page.waitForTimeout(500);
       assert.deepEqual(await states('.lz-m-shine'), ['running'], `${at}: the light along the Z runs while the Z is on screen`);
-      await scrollToEl(page, '.ls-bento', 40);
+      await scrollToEl(page, '.ls-ring', 0);
       await page.waitForTimeout(500);
       assert.deepEqual(await states('.lz-m-shine'), ['paused'], `${at}: and is held when the Z is off screen`);
       await scrollToEl(page, '.landing', 0);
       await page.waitForTimeout(500);
-      assert.ok((await states('.lz-float')).every(s => s === 'running'), `${at}: the floats run again when the stage is back`);
+      assert.ok((await loops()).every(s => s === 'running'), `${at}: the dinner's loops run again when it is back`);
       await context.close();
       visits++;
       console.log(`ok ${at}`);

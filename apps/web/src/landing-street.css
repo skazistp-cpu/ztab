@@ -1,0 +1,203 @@
+/* ── The Ztab street ─────────────────────────────────────────────────────────────────────────────────────────────
+   Wide screens (zs-pinned): a stage held on the screen while the page scrolls; the street under it moves as a camera
+   (one transform on .zs-world, set by landing-street.ts). Phones and reduced motion (zs-stacked): the café, then the
+   stations one under another, each with its caption. Motion is transform, opacity and stroke only. */
+
+.zs { position: relative; }
+.zs-stage { position: relative; }
+.zs-world { position: relative; }
+.zs-tile { position: relative; aspect-ratio: 1; container-type: inline-size; }
+.zs-art, .zs-art picture, .zs-art img, .zs-art > svg, .zs-lines-wrap, .zs-lines, .zs-over { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.zs-art img { object-fit: contain; user-select: none; }
+/* A station's picture waits for its files (landing-street.ts) without showing an empty frame. */
+.zs-art img:not([src]):not([srcset]) { visibility: hidden; }
+.zs-lines { overflow: visible; }
+.zs-over { pointer-events: none; }
+
+/* The scenes' pieces, in the picture's own pixels (the SVG) or in % of the picture (the cards), drawn as the art is:
+   cream with a charcoal outline, gold for what moves. */
+.zs-strip { fill: #fbf6ea; stroke: #1f2126; stroke-width: 3; stroke-linejoin: round; opacity: 0; }
+.zs-ribbon { fill: none; stroke: #f4b728; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; }
+.zs-beam { fill: #f4b728; opacity: 0; }
+.zs-coin { opacity: 0; }
+.zs-coin ellipse { fill: #f6c443; stroke: #1f2126; stroke-width: 3; }
+.zs-coin .zs-coin-edge { fill: #d39710; }
+.zs-glow { fill: #ffe39a; opacity: 0; }
+.zs-tickglow { fill: #ffd65e; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.zs-ring { fill: none; stroke: #ffd65e; stroke-width: 15; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
+.zs-tagname { position: absolute; z-index: 1; transform: translate(-50%, -50%); opacity: 0; white-space: nowrap; color: #1f2126; font: 650 clamp(8px, 2.05cqw, 15px) / 1 var(--lz-ui); }
+.zs-chip {
+  position: absolute; z-index: 1; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 0.7em; padding: 0.7em 0.95em 0.62em;
+  border-radius: 1em; background: #ffffff; color: #101216; white-space: nowrap; opacity: 0; transform: translate(-50%, -50%);
+  box-shadow: 0 1px 2px rgba(16, 18, 22, 0.08), 0 12px 26px -12px rgba(16, 18, 22, 0.32), 0 0 0 1px rgba(16, 18, 22, 0.05);
+  font: 400 clamp(9px, 1.35cqw, 15px) / 1.2 var(--lz-ui); font-variant-numeric: tabular-nums;
+}
+.zs-chip > b { grid-column: 1; font-weight: 650; font-size: 0.95em; color: rgba(16, 18, 22, 0.7); }
+.zs-chip > span { grid-column: 1; font-weight: 750; font-size: 1.35em; letter-spacing: -0.025em; }
+.zs-chip-rail { position: absolute; top: 0; left: 0.9em; right: 0.9em; height: 0.22em; border-radius: 0 0 0.2em 0.2em; background: #f4b728; }
+.zs-chip-link { grid-column: 2; grid-row: 1 / span 2; width: 1.5em; height: 1.5em; border-radius: 50%; background: #fdf3d6; box-shadow: inset 0 0 0 0.42em #fdf3d6, inset 0 0 0 0.56em #b47c08; }
+.zs-table .zs-chip { grid-template-columns: auto; padding: 0.55em 0.9em 0.5em; }
+
+/* The captions: one per station, on the stage (wide) or under the station (phones). */
+.zs-say, .zs-hud-say { margin: 0; color: var(--lz-slate); font: 500 clamp(26px, 2.6vw, 38px) / 1.18 var(--lz-display); letter-spacing: -0.026em; text-wrap: balance; }
+.zs-say-in { display: block; }
+
+/* ── Wide screens: the stage held on the screen, the camera over the street ── */
+.zs-pinned { height: calc(var(--zs-len, 7) * 100vh); }
+@supports (height: 100svh) { .zs-pinned { height: calc(var(--zs-len, 7) * 100svh); } }
+.zs-pinned .zs-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+@supports (height: 100svh) { .zs-pinned .zs-stage { height: 100svh; } }
+.zs-pinned .zs-world { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; will-change: transform; }
+.zs-pinned .zs-cafe { position: absolute; left: 0; top: 0; }
+.zs-pinned .zs-cafe .lz-scene { width: 100%; margin: 0; }
+/* The café's cards drift outward as the camera goes into the table (--zs-drift, 0 to 1). */
+.zs-pinned .zs-cafe .lz-tag { translate: calc(var(--dx, 0) * var(--zs-drift, 0) * 1px) calc(var(--dy, 0) * var(--zs-drift, 0) * 1px); }
+.zs-pinned .zs-station { position: absolute; }
+.zs-pinned .zs-say { display: none; }
+.zs-pinned .lz-hero { position: absolute; z-index: 2; left: 0; right: 0; top: 0; }
+.zs-hud { display: none; }
+.zs-pinned .zs-hud { display: block; position: absolute; z-index: 3; inset: 0; pointer-events: none; }
+/* Under the captions the street fades to the page's white, so the words read over whatever the camera passes: white
+   to a little past the words' right edge, then a soft fade. */
+.zs-hud::before {
+  --zs-words: calc(var(--lz-edge) + min(31vw, 440px));
+  content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 500ms var(--lz-ease);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0, rgba(255, 255, 255, 0.96) calc(var(--zs-words) + 28px), rgba(255, 255, 255, 0) calc(var(--zs-words) + 200px));
+}
+.zs-hud-on::before { opacity: 1; }
+.zs-hud-says { position: absolute; left: var(--lz-edge); top: 50%; width: min(31vw, 440px); height: 0; }
+.zs-hud-say { position: absolute; left: 0; right: 0; bottom: 0; overflow: hidden; padding-bottom: 0.08em; opacity: 0; transform: translateY(50%); }
+.zs-hud-say.on { opacity: 1; }
+.zs-rail { position: absolute; left: 50%; bottom: clamp(24px, 4.4vh, 44px); width: min(560px, 56vw); height: 14px; transform: translateX(-50%); opacity: 0; transition: opacity 400ms var(--lz-ease); }
+.zs-hud-on .zs-rail { opacity: 1; }
+.zs-rail-line { position: absolute; left: 0; right: 0; top: 6px; height: 2px; border-radius: 2px; background: rgba(68, 71, 91, 0.16); overflow: hidden; }
+.zs-rail-fill { position: absolute; inset: 0; background: #f4b728; transform-origin: 0 50%; transform: scaleX(0); }
+.zs-stop { position: absolute; top: 2px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #ffffff; box-shadow: inset 0 0 0 2px rgba(68, 71, 91, 0.3); transition: box-shadow 300ms var(--lz-ease), background-color 300ms var(--lz-ease); }
+.zs-stop:nth-child(2) { left: 0; } .zs-stop:nth-child(3) { left: 25%; } .zs-stop:nth-child(4) { left: 50%; } .zs-stop:nth-child(5) { left: 75%; } .zs-stop:nth-child(6) { left: 100%; }
+.zs-stop.on { background: #f4b728; box-shadow: inset 0 0 0 2px #d39710, 0 0 0 4px rgba(244, 183, 40, 0.18); }
+
+/* ── Phones and reduced motion: the stations one under another ── */
+.zs-stacked .zs-world { display: grid; }
+.zs-stacked .zs-cafe { order: -1; }
+.zs-stacked .zs-station { position: relative; padding: 0 var(--lz-gutter); }
+.zs-stacked .zs-station-in { display: grid; justify-items: center; gap: 4px; }
+.zs-stacked .zs-tile { width: min(100%, 560px); }
+.zs-stacked .zs-say { max-width: 22em; text-align: center; font-size: clamp(22px, 5.6vw, 30px); }
+@media (prefers-reduced-motion: no-preference) {
+  /* Each station is held on the screen for a moment while its scene plays. */
+  .zs-stacked .zs-station { height: 150vh; }
+  .zs-stacked .zs-station-in { position: sticky; top: calc(var(--lz-bar) + 8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zs-stacked .zs-station { padding-block: 28px; }
+}
+.zs-stacked .zs-stations-end { height: 0; }
+
+/* On a phone the dinner comes nearer as the first screen goes (landing-street.ts): it grows from the bill. */
+.zs-stacked .zs-cafe .lz-scene { transform-origin: 51% 57%; }
+
+/* The cut: a drawn copy of the bill folder's top (the picture's charcoal, its gold edge), grown over the screen. */
+.zs-cutter { display: none; }
+.zs-pinned .zs-cutter { display: block; position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; visibility: hidden; }
+.zs-cut-face { fill: #2e2d31; stroke: #1c1b1e; stroke-width: 2.5; stroke-linejoin: round; }
+.zs-cut-edge { fill: none; stroke: #f4b728; stroke-width: 5; stroke-linecap: round; }
+/* The folder opening like a book: its dark inside, its cover (its outside, then its inside as it turns past upright),
+   the cover's gilt edge, and a glint running along the spine. */
+.zs-cut-inside { fill: #2e2d31; stroke: #1c1b1e; stroke-width: 2.5; stroke-linejoin: round; }
+.zs-cut-cover { fill: #38373a; stroke: #1c1b1e; stroke-width: 2.5; stroke-linejoin: round; }
+.zs-cut-cover.zs-cover-inner { fill: #232226; }
+.zs-cut-stitch { fill: none; stroke: #c99a2e; stroke-width: 1.6; stroke-dasharray: 7 5; stroke-linecap: round; opacity: 0; }
+.zs-cut-gild { fill: none; stroke: #f4b728; stroke-width: 4; stroke-linecap: round; }
+.zs-cut-glint { fill: none; stroke: #fff3c4; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 0.32 1.4; opacity: 0; filter: drop-shadow(0 0 6px rgba(244, 183, 40, 0.95)); }
+.zs-cutter:not(.zs-book) .zs-cut-inside, .zs-cutter:not(.zs-book) .zs-cut-cover, .zs-cutter:not(.zs-book) .zs-cut-stitch, .zs-cutter:not(.zs-book) .zs-cut-gild, .zs-cutter:not(.zs-book) .zs-cut-glint,
+.zs-cutter.zs-book .zs-cut-face, .zs-cutter.zs-book .zs-cut-edge { display: none; }
+.zs-pinned .zs-hud { z-index: 4; }
+.zs-pinned .lz-hero { z-index: 5; }
+/* The café's cards go as the camera dives (--zs-fade, landing-street.ts). */
+.zs-pinned .zs-cafe .lz-tags { opacity: var(--zs-fade, 1); }
+
+/* The props between the stations: Jarvis's lamp, bench and plant; each lamp's glow comes up as the camera passes. */
+.zs-props { display: none; }
+.zs-pinned .zs-props { display: block; position: absolute; left: 0; top: 0; }
+.zs-prop { position: absolute; }
+.zs-prop picture, .zs-prop img { display: block; width: 100%; height: auto; }
+.zs-prop img:not([srcset]) { visibility: hidden; }
+.zs-lamp-glow {
+  position: absolute; left: 59.7%; top: 31.6%; width: 26%; aspect-ratio: 1; border-radius: 50%; transform: translate(-50%, -50%); opacity: 0.15; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 226, 140, 0.95), rgba(255, 214, 94, 0.45) 40%, rgba(255, 214, 94, 0) 75%);
+}
+
+/* The street in 3D (another module), when it is there: its canvas under the captions, the share cards over it. */
+.zs-3d, .zs-3d-labels { display: none; }
+.zs-pinned .zs-3d { display: block; position: absolute; z-index: 1; inset: 0; opacity: 0; pointer-events: none; transition: opacity 240ms linear; }
+.zs-stage.zs-3d-on .zs-3d { opacity: 1; }
+.zs-stage.zs-3d-on .zs-station, .zs-stage.zs-3d-on .zs-props { visibility: hidden; }
+.zs-stage.zs-3d-on .zs-3d-labels { display: block; position: absolute; z-index: 2; inset: 0; pointer-events: none; }
+.zs-3d-labels .zs-chip { left: 0; top: 0; font-size: 12px; transition: opacity 200ms linear; }
+
+/* The stage's ground at nightfall is set by landing-street.ts (white to ink); the header turns to night glass with it. */
+
+/* ── Phones with the stage held (when the 3D street can be tried): the station in the upper part, the caption and the
+   rail under it, on a white that fades up from the foot ── */
+.zs-portrait.zs-pinned .zs-hud::before {
+  inset: auto 0 0; height: 36%;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.98) 0, rgba(255, 255, 255, 0.95) 62%, rgba(255, 255, 255, 0) 100%);
+}
+.zs-portrait.zs-pinned .zs-hud-says { left: 20px; right: 20px; top: auto; bottom: 64px; width: auto; }
+.zs-portrait.zs-pinned .zs-hud-say { bottom: 0; transform: none; text-align: center; font-size: clamp(21px, 5.8vw, 26px); }
+.zs-portrait.zs-pinned .zs-hud.zs-legend-on .zs-hud-say { bottom: 92px; }
+.zs-portrait.zs-pinned .zs-rail { width: min(300px, 76vw); bottom: 26px; }
+.zs-portrait .zs-3d-labels { display: none !important; }
+/* The legend of the six, under the caption, on a phone with the 3D street: lit while a person's part plays, gold once done. */
+.zs-legend { display: none; }
+.zs-hud.zs-legend-on .zs-legend {
+  position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; transition: opacity 400ms var(--lz-ease);
+  font: 500 13.5px / 1.2 var(--lz-ui); font-variant-numeric: tabular-nums; color: rgba(68, 71, 91, 0.62);
+}
+.zs-hud:not(.zs-hud-on) .zs-legend { opacity: 0; }
+.zs-legend-row { display: flex; align-items: center; gap: 7px; min-width: 0; padding: 4px 8px; border-radius: 9px; transition: color 240ms var(--lz-ease), background-color 240ms var(--lz-ease); }
+.zs-legend-row b { font-weight: 650; }
+.zs-legend-row span { margin-left: auto; }
+.zs-legend-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: rgba(68, 71, 91, 0.25); transition: background-color 240ms var(--lz-ease), box-shadow 240ms var(--lz-ease); }
+.zs-legend-row.on { color: #101216; background: rgba(244, 183, 40, 0.14); }
+.zs-legend-row.on .zs-legend-dot, .zs-legend-row.done .zs-legend-dot { background: #f4b728; }
+.zs-legend-row.on .zs-legend-dot { box-shadow: 0 0 8px rgba(244, 183, 40, 0.9); }
+.zs-legend-row.done { color: #7a4f00; }
+
+/* With no held stage, night falls on the page after the last station: white to the ink of the band that follows. */
+.zs-nightfall { display: none; }
+.zs-stacked .zs-nightfall { display: block; height: 0; padding-top: min(44vh, 380px); margin-top: 48px; background: linear-gradient(180deg, var(--lz-white), var(--lz-night)); }
+
+/* Before the cut there is only the café on the stage. */
+.zs-before-cut .zs-station, .zs-before-cut .zs-props { visibility: hidden; }
+
+/* At night the foot of the stage fades into the ink (--zs-dusk), so the street hands over to the band with no edge. */
+.zs-pinned .zs-stage::after {
+  content: ''; position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 26vh; pointer-events: none;
+  background: linear-gradient(180deg, rgba(11, 12, 15, 0), #0b0c0f 88%); opacity: var(--zs-dusk, 0);
+}
+
+/* Each caption's drawing: gold strokes that draw themselves as the caption comes up (landing-street.ts). */
+.zs-icon { display: block; width: 30px; height: 30px; margin-bottom: 14px; fill: none; stroke: #e2a419; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.zs-icon path { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
+.zs-portrait.zs-pinned .zs-icon { margin: 0 auto 10px; width: 26px; height: 26px; }
+.zs-stacked .zs-icon { margin: 0 auto 10px; }
+
+/* The night sky: stars that come out with the night (--zs-dusk) and twinkle while it is night (zs-night). */
+.zs-stars { display: none; }
+.zs-pinned .zs-stars {
+  display: block; position: absolute; z-index: 0; left: 0; right: 0; top: 0; height: 48%; pointer-events: none;
+  opacity: var(--zs-dusk, 0); transform: translate3d(0, calc((1 - var(--zs-dusk, 0)) * 36px), 0);
+}
+.zs-star { position: absolute; border-radius: 50%; background: #fff6dc; opacity: var(--to, 0.6); box-shadow: 0 0 5px rgba(255, 232, 170, 0.75); }
+@media (prefers-reduced-motion: no-preference) {
+  .zs-stage.zs-night .zs-star { animation: zs-twinkle var(--tw, 4s) ease-in-out var(--td, 0s) infinite alternate; }
+}
+@keyframes zs-twinkle { from { opacity: calc(var(--to, 0.6) * 0.25); transform: scale(0.7); } to { opacity: var(--to, 0.6); transform: scale(1.1); } }
+.zs-shooter { display: none; }
+.zs-pinned .zs-shooter {
+  display: block; position: absolute; z-index: 0; right: 10%; top: 9%; width: 140px; height: 2px; border-radius: 2px; opacity: 0; pointer-events: none;
+  background: linear-gradient(90deg, #fffaf0 0%, rgba(255, 236, 180, 0.6) 25%, rgba(255, 236, 180, 0) 100%); box-shadow: 0 0 8px rgba(255, 236, 180, 0.6);
+  transform-origin: 0 50%;
+}
+.zs-pinned.zs-portrait .zs-shooter { right: 3%; top: 7.5%; width: 84px; }

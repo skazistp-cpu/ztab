@@ -1,35 +1,27 @@
-// The opening: its words and ways in, the ticker of example bills, the centrepiece (the app's own screens in a phone
-// among the app's cards, and the cut that fills the friends' cards), the last band, with motion and with reduced
-// motion, every width, and a quiet visit.
+// The opening: its words and ways in, the ticker of example bills, the dinner on the first screen (Jarvis's picture with
+// the ribbons, the lit phones and the share cards drawn over it from the engine's split), the navigation, the last band,
+// with motion and with reduced motion, every width, and a quiet visit.
 // PLAYWRIGHT_MODULE=/path/to/playwright/index.mjs TAB_ORIGIN=http://127.0.0.1:8764 node test/browser/landing.mjs
 import assert from 'node:assert/strict';
 import { mkdirSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
 import { TICKER, tickerLine } from '../../src/landing-ticker.ts';
-import { decoyCode } from '../../src/landing-hero.ts';
-const pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const origin = process.env.TAB_ORIGIN || 'http://127.0.0.1:8764';
+import { LANDING_SAMPLE } from '../../src/landing-sample.ts';
+const module = process.env.PLAYWRIGHT_MODULE;
+const pw = await import(module ? (module.startsWith('/') ? pathToFileURL(module).href : module) : 'playwright');
+const origin = (process.env.TAB_ORIGIN || 'http://127.0.0.1:8764').replace(/\/$/, '');
 const flat = text => text.replace(/\s+/g, ' ').trim();
 const SAMPLE = 'Try a sample dinner on Zcash’s test network, with test coins only.';
 const LEAD = 'Ztab splits a restaurant bill and gives each friend a link to pay their share in Zcash, from their own wallet.';
 const CLAIM = 'There is no account and no custody. The tab lives in the links.';
-// The friends' cards, with the engine-checked example values (landing-sample.ts): who, how much, the start of the link.
-const FRIENDS = [['Ana', '$56.00'], ['Dragan', '$56.00'], ['Tomás', '$56.00'], ['Priya', '$56.00'], ['Jonas', '$20.00']];
-const SCREENS = ['bill', 'people', 'rate', 'links', 'pay'];
-// The files of a visit: the page, one script, one stylesheet, the three faces, and the phone's screens.
-const BASE = [/^\/$/, /^\/assets\/index-[\w-]+\.js$/, /^\/assets\/index-[\w-]+\.css$/, /^\/assets\/inter-latin-wght-normal-[\w-]+\.woff2$/, /^\/assets\/jetbrains-mono-latin-wght-normal-[\w-]+\.woff2$/];
+// The six cards over the phones: the engine-checked split of the sample dinner (landing-sample.ts).
+const SHARES = LANDING_SAMPLE.shares.map(s => [s.name, `$${s.fiatShare}`]);
+// The files of a visit: the page, one script, one stylesheet, the two faces (Geist for the words, Inter inside the
+// app's pieces), and the picture of the dinner.
+const BASE = [/^\/$/, /^\/assets\/index-[\w-]+\.js$/, /^\/assets\/index-[\w-]+\.css$/, /^\/assets\/geist-latin-wght-normal-[\w-]+\.woff2$/, /^\/assets\/inter-latin-wght-normal-[\w-]+\.woff2$/];
 const files = (requests, base) => [...new Set(requests.filter(url => url.startsWith(base)).map(url => new URL(url).pathname))];
 /** The name a screen reader gives the focused control. */
 const focused = page => page.evaluate(() => { const el = document.activeElement; return el?.getAttribute('aria-label') || el?.textContent?.trim(); });
-/** Every animation of the centrepiece, held still at one moment of its loop (ms); then what the cards and the phone show. */
-const at = (page, ms) => page.evaluate(ms => {
-  const stage = document.querySelector('.lz-stage');
-  for (const a of document.getAnimations()) if (stage.contains(a.effect?.target ?? null)) { a.pause(); a.currentTime = ms; }
-  const cards = [...stage.querySelectorAll('.lz-friend')].filter(card => !card.closest('.lz-layer').hidden);
-  return {
-    cards: cards.map(card => [card.querySelector('.lz-name').textContent, getComputedStyle(card.querySelector('.lz-amount')).opacity, getComputedStyle(card.querySelector('.lz-chip')).opacity]),
-    shown: [...stage.querySelectorAll('.lz-shot')].findIndex(img => { const m = new DOMMatrixReadOnly(getComputedStyle(img).transform); return Math.abs(m.m41) < 1 && getComputedStyle(img).opacity === '1'; }),
-  };
-}, ms);
 
 for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
   const browser = await pw[engine].launch();
@@ -37,16 +29,11 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
   try {
     // ── With motion, on a wide screen ──
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'no-preference', locale: 'en-US' });
-    // When each phone screen is given its picture, and when the page first paints.
-    await context.addInitScript(() => {
-      window.__src = {};
-      new MutationObserver(list => { for (const m of list) if (m.target.classList?.contains('lz-shot') && m.target.getAttribute('src')) window.__src[m.target.getAttribute('src')] ??= performance.now(); })
-        .observe(document, { subtree: true, attributes: true, attributeFilter: ['src'], childList: true });
-    });
+    await context.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
     const page = await context.newPage();
     const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
     const requests = []; page.on('request', r => requests.push(r.url()));
-    await page.goto(origin);
+    await page.goto(origin + '/');
     await page.locator('#app h1:visible').waitFor();
     await page.evaluate(() => document.fonts.ready);
 
@@ -60,10 +47,15 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     assert.equal(await page.getByRole('button', { name: 'Start a tab', exact: true }).count(), 1, 'one control named Start a tab');
     assert.equal(await page.getByRole('button', { name: 'Start a tab now', exact: true }).count(), 1, 'and Start a tab now in the last band');
     assert.equal(await page.getByRole('button', { name: 'Open Ztab', exact: true }).count(), 1, 'and Open Ztab in the navigation');
-    // The first screen's and the last band's sample links (the sections below may have their own).
     const samples = page.locator('.lz-hero, .lz-cta').getByRole('link', { name: 'Try a sample dinner', exact: true });
     assert.deepEqual(await samples.evaluateAll(links => links.map(link => link.getAttribute('href'))), ['/?demo', '/?demo']);
     assert.deepEqual((await page.locator('.landing .lz-sample').allTextContents()).map(flat), [SAMPLE, SAMPLE], 'the approved sentence, word for word, twice');
+    // The display face is Geist; the headline is set large.
+    const type = await page.locator('.lz-hero h1').evaluate(el => { const cs = getComputedStyle(el); return [cs.fontFamily.split(',')[0].replace(/['"]/g, ''), parseFloat(cs.fontSize)]; });
+    assert.equal(type[0], 'Geist');
+    assert.ok(type[1] >= 72, `the headline is large (${type[1]} px)`);
+    assert.ok(await page.evaluate(() => document.fonts.check('500 40px Geist')), 'Geist is loaded');
+
     // The ticker: the example bills, word for word, running; it holds still under the pointer.
     assert.deepEqual(await page.locator('.lz-hero .lz-run:not([aria-hidden]) .lz-tick').allTextContents(), TICKER.map(tickerLine));
     const strip = () => page.locator('.lz-hero .lz-track').evaluate(track => track.getAnimations().map(a => a.playState).join());
@@ -73,49 +65,42 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     await page.mouse.move(2, 600);
     assert.equal(await strip(), 'running');
 
-    // The centrepiece: a phone with the app's own five screens and the app's cards, none of it reachable.
-    const stage = page.locator('.lz-stage');
-    assert.equal(await stage.getAttribute('aria-hidden'), 'true');
-    assert.equal(await stage.locator('a, button, input, select, textarea, [tabindex]').count(), 0, 'nothing in it can be focused');
-    const shots = await page.locator('.lz-shot').evaluateAll(list => list.map(img => (img.getAttribute('src') ?? img.dataset.src ?? '').replace(/^.*\//, '')));
-    assert.deepEqual(shots.map(name => name.replace(/-sm(?=\.webp$)/, '')), SCREENS.map(name => `screen-${name}.webp`));
-    // The first screen with the page; the other four only once the page has loaded, and all five arrive whole.
-    // Then the phone starts turning through them.
-    await page.waitForFunction(() => [...document.querySelectorAll('.lz-shot')].every(img => img.complete && img.naturalWidth > 0), null, { timeout: 8000 });
-    await page.waitForFunction(() => [...document.querySelectorAll('.lz-shot')].every(img => img.getAnimations().length > 0), null, { timeout: 4000 });
-    const timing = await page.evaluate(() => ({
-      loaded: performance.getEntriesByType('navigation')[0]?.loadEventEnd,
-      src: window.__src,
-      first: document.querySelector('.lz-shot').getAttribute('src'),
-    }));
-    const later = Object.entries(timing.src).filter(([src]) => src !== timing.first);
-    assert.equal(later.length, 4, `four more screens: ${JSON.stringify(timing.src)}`);
-    for (const [src, when] of later) assert.ok(when >= timing.loaded, `${engine}: ${src} only after the page has loaded (${Math.round(when)} ≥ ${Math.round(timing.loaded)} ms)`);
-    // The table card's code is a fixed drawing that is not a QR code.
-    assert.equal(await page.locator('.lz-table .lz-qr path').getAttribute('d'), decoyCode(0x5eed2a));
-    // The loop: before the cut the friends' cards are empty; after it each shows its share, then its link; the phone
-    // shows the five screens one after another.
-    const before = await at(page, 300);
-    assert.deepEqual(before.cards, FRIENDS.map(([name]) => [name, '0', '0']), 'before the cut');
-    const after = await at(page, 3200);
-    assert.deepEqual(after.cards, FRIENDS.map(([name]) => [name, '1', '1']), 'after the cut: every share and every link');
-    assert.deepEqual(await page.locator('.lz-friend').evaluateAll(cards => cards.map(card => [card.querySelector('.lz-name').textContent, card.querySelector('.lz-amount').textContent])), FRIENDS);
-    for (const [i] of SCREENS.entries()) assert.equal((await at(page, i * 1600 + 900)).shown, i, `${engine}: screen ${i + 1} in the phone at ${i * 1600 + 900} ms`);
-    await page.evaluate(() => { for (const a of document.getAnimations()) a.play(); });
+    // The dinner: the picture and what is drawn over it, none of it reachable.
+    const scene = page.locator('.lz-scene');
+    assert.equal(await scene.getAttribute('aria-hidden'), 'true');
+    assert.equal(await scene.locator('a, button, input, select, textarea, [tabindex]').count(), 0, 'nothing in it can be focused');
+    const art = await scene.locator('.lz-art img').evaluate(img => ({ srcset: img.getAttribute('srcset'), alt: img.getAttribute('alt'), w: img.getAttribute('width'), h: img.getAttribute('height'), source: img.closest('picture')?.querySelector('source')?.getAttribute('type') }));
+    assert.match(art.srcset, /\/landing\/dinner-wide-1200\.webp 1200w, \/landing\/dinner-wide-1600\.webp 1600w, \/landing\/dinner-wide-2400\.webp 2400w/);
+    assert.deepEqual([art.alt, art.w, art.h, art.source], ['', '2400', '1350', 'image/avif']);
+    assert.equal(await scene.locator('.lz-line').count(), 6, 'six ribbons, one to each phone');
+    assert.equal(await scene.locator('.lz-lit').count(), 6, 'six phones to light');
+    assert.equal(await scene.locator('.lz-lamp').count(), 7, 'the lamps of the string lights');
+    assert.deepEqual(await scene.locator('.lz-tag').evaluateAll(cards => cards.map(c => [c.querySelector('.lz-tag-name').textContent, c.querySelector('.lz-tag-amt').textContent])), SHARES, 'each card: a name and the engine’s share');
+    assert.equal(await scene.locator('.lz-tag.lz-own .lz-tag-link').count(), 0, 'the organiser’s own share has no link mark');
+    assert.equal(await scene.locator('.lz-tag:not(.lz-own) .lz-tag-link').count(), 5, 'the five friends’ cards show a link');
+    // The intro: the ribbons draw, the phones light and the cards pop; then a calm loop runs on.
+    await page.waitForFunction(() => [...document.querySelectorAll('.lz-tag-in')].every(el => getComputedStyle(el).opacity === '1'), null, { timeout: 8000 });
+    await page.waitForFunction(() => [...document.querySelectorAll('.lz-line')].every(path => Math.abs(parseFloat(getComputedStyle(path).strokeDashoffset)) < 1), null, { timeout: 8000 });
+    await page.waitForTimeout(600);
+    const loop = await page.evaluate(() => document.querySelector('.lz-scene').getAnimations({ subtree: true }).filter(a => a.playState === 'running' && a.effect.getTiming().iterations === Infinity).length);
+    assert.ok(loop >= 24, `the calm loop runs (${loop} loops)`);
+    // A wide screen holds the street on the screen: the first screen is its start.
+    assert.ok(await page.locator('.zs.zs-pinned').count(), 'the street is held on a wide screen');
 
-    // The navigation: How it works scrolls down the page; Sample dinner opens the demo.
+    // The navigation: How it works takes the page down to the street's first station; Sample dinner opens the demo.
     const nav = page.getByRole('navigation', { name: 'Opening' });
     assert.equal(await nav.getByRole('link', { name: 'Sample dinner', exact: true }).getAttribute('href'), '/?demo');
-    const how = nav.getByRole('button', { name: 'How it works', exact: true });
-    await how.click();
-    // It scrolls (smoothly) until its section is at the top, or the page can go no further.
-    await page.waitForFunction(() => {
-      const target = document.querySelector('#how-it-works') ?? document.querySelector('.lz-cta');
-      const end = scrollY + innerHeight >= document.documentElement.scrollHeight - 1;
-      return scrollY > 0 && (Math.abs(target.getBoundingClientRect().top) < 4 || end);
-    }, null, { timeout: 4000 });
+    await nav.getByRole('button', { name: 'How it works', exact: true }).click();
+    await page.waitForFunction(() => document.querySelector('.zs-hud-say.on') !== null && scrollY > innerHeight, null, { timeout: 6000 });
+    assert.equal(flat(await page.locator('.zs-hud-say.on').innerText()), 'Split it equally or by item, with a tip.');
     await page.evaluate(() => scrollTo(0, 0));
 
+    // The last band's claim comes up through its mask when it is seen, and is then there to read.
+    await page.evaluate(() => { const el = document.querySelector('.lz-cta h2'); scrollTo(0, el.getBoundingClientRect().top + scrollY - innerHeight / 2); });
+    await page.waitForFunction(() => { const h2 = document.querySelector('.lz-cta h2'); return !h2.classList.contains('lz-masked') && getComputedStyle(h2.firstElementChild ?? h2).clipPath === 'none'; }, null, { timeout: 4000 });
+    await page.waitForTimeout(1200);
+    assert.equal(flat(await page.locator('.lz-cta h2').innerText()), CLAIM, 'the claim is there to read');
+    await page.evaluate(() => scrollTo(0, 0));
 
     // Start a tab opens the first step on the same page, its question ready for the screen reader; so does the last band's.
     for (const name of ['Start a tab', 'Start a tab now']) {
@@ -126,22 +111,22 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
       assert.ok(await page.evaluate(() => document.documentElement.classList.contains('cut-off')), 'the steps are on the dark page again');
       await page.goBack();
       await page.locator('.landing').waitFor();
-      assert.ok(await page.evaluate(() => !document.documentElement.classList.contains('cut-off')), 'back on the paper page');
+      assert.ok(await page.evaluate(() => !document.documentElement.classList.contains('cut-off')), 'back on the white page');
     }
 
     // The keyboard meets the logo, the navigation (with Pause motion before Open Ztab), then the ways in, in the order they are seen.
-    await page.goto(origin);
+    await page.goto(origin + '/');
     const order = [];
     for (let i = 0; i < 7; i++) { await page.keyboard.press(tab); order.push(await focused(page)); }
     assert.deepEqual(order, ['Ztab, start a new tab', 'How it works', 'Sample dinner', 'Pause motion', 'Open Ztab', 'Start a tab', 'Try a sample dinner']);
 
-    // A quiet visit: this site's own files only (with motion, all five screens), nothing kept in the browser.
-    assert.ok(requests.every(url => url.startsWith(origin)), 'nothing from another site');
-    assert.ok(!requests.some(url => /demo-|wire-|wasm|gl-/.test(url)));
-    const visit = files(requests, origin);
-    assert.equal(visit.length, BASE.length + SCREENS.length, visit.join(' '));
+    // A quiet visit: this site's own files only (the page, its script and style, two faces and the picture), nothing kept.
+    assert.ok(requests.every(url => url.startsWith(origin) || url.startsWith('data:') || url.startsWith('blob:')), 'nothing from another site');
+    assert.ok(!requests.some(url => /demo-|wire-|wasm/.test(url)));
+    // (The street's pictures and the 3D street come with the scroll of How it works; landing-street*.mjs test them.)
+    const visit = files(requests, origin).filter(f => !/^\/landing\/(street-|sections-pay)/.test(f) && !/^\/assets\/street3d-/.test(f));
     for (const file of BASE) assert.ok(visit.some(f => file.test(f)), `${engine}: ${file}`);
-    for (const name of SCREENS) assert.ok(visit.some(f => new RegExp(`^/landing/screen-${name}(-sm)?\\.webp$`).test(f)), `${engine}: screen ${name}`);
+    assert.deepEqual(visit.filter(f => !BASE.some(file => file.test(f))).map(f => f.replace(/-\d+\.(avif|webp)$/, '')), ['/landing/dinner-wide'], `${engine}: one picture of the dinner (${visit.join(' ')})`);
     assert.deepEqual(await page.evaluate(() => [localStorage.length, sessionStorage.length, document.cookie]), [0, 0, '']);
     // The sample dinner is an ordinary navigation to the existing demo.
     await samples.first().click();
@@ -150,49 +135,47 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     assert.deepEqual(errors, []);
     await context.close();
 
-    // ── With motion, on a phone: its own composition, How it works left out, three cards ──
+    // ── With motion, on a phone: the tall picture, How it works left out, the street one station under another ──
     const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'no-preference', locale: 'en-US', isMobile: engine !== 'webkit', hasTouch: true });
+    await phone.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
     const small = await phone.newPage();
     const smallErrors = []; small.on('pageerror', e => smallErrors.push(e.message));
-    await small.goto(origin);
-    await small.locator('.lz-stage').waitFor();
+    await small.goto(origin + '/');
+    await small.locator('.lz-scene .lz-art img').waitFor();
     assert.equal(await small.getByRole('button', { name: 'How it works', exact: true }).count(), 0, 'How it works is left out on a phone');
     assert.equal(await small.getByRole('link', { name: 'Sample dinner', exact: true }).isVisible(), true);
-    assert.deepEqual(await small.locator('.lz-layer:not([hidden]) .lz-name').allTextContents(), ['Dinner, Friday', 'Ana', 'Jonas']);
-    await small.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
-    assert.deepEqual((await at(small, 300)).cards, [['Ana', '0', '0'], ['Jonas', '0', '0']]);
-    assert.deepEqual((await at(small, 3200)).cards, [['Ana', '1', '1'], ['Jonas', '1', '1']]);
+    assert.match(await small.locator('.lz-scene .lz-art img').getAttribute('srcset'), /\/landing\/dinner-tall-720\.webp 720w, \/landing\/dinner-tall-840\.webp 840w, \/landing\/dinner-tall-1080\.webp 1080w/);
+    assert.deepEqual(await small.locator('.lz-tag').evaluateAll(cards => cards.map(c => [c.querySelector('.lz-tag-name').textContent, c.querySelector('.lz-tag-amt').textContent])), SHARES);
+    // With WebGL 2 the stage is held on a phone too (for the 3D street; its drawn street framed for the phone stands in).
+    assert.ok(await small.locator('.zs.zs-pinned.zs-portrait').count(), 'the street is held on a phone');
     assert.ok(await small.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no sideways scroll');
     assert.deepEqual(smallErrors, []);
     await phone.close();
 
     // ── Reduced motion: one composed still ──
     const calm = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce', locale: 'en-US' });
+    await calm.route(/\/assets\/street3d-[\w-]+\.js$/, route => route.fulfill({ contentType: 'text/javascript', body: 'export const mountStreet = () => Promise.reject(new Error("left out of this test"));' })); // the 3D street: landing-street3d.mjs
     const still = await calm.newPage();
     const stillErrors = []; still.on('pageerror', e => stillErrors.push(e.message)); still.on('console', m => { if (m.type() === 'error') stillErrors.push(m.text()); });
     const stillRequests = []; still.on('request', r => stillRequests.push(r.url()));
-    await still.goto(origin);
-    await still.locator('.lz-stage').waitFor();
+    await still.goto(origin + '/');
+    await still.locator('.lz-scene .lz-art img').waitFor();
     await still.evaluate(() => document.fonts.ready);
     await still.waitForTimeout(400);
     assert.equal(await still.evaluate(() => document.getAnimations().length), 0, 'nothing moves');
-    // The phone keeps its first screen, the only picture loaded; every card shows its share and its link.
-    const pictures = await still.locator('.lz-shot').evaluateAll(list => list.map(img => img.getAttribute('src')));
-    assert.match(pictures[0] ?? '', /\/landing\/screen-bill(-sm)?\.webp$/);
-    assert.deepEqual(pictures.slice(1), [null, null, null, null], 'no other screen is loaded');
-    assert.ok(await still.locator('.lz-shot').first().evaluate(img => { const m = new DOMMatrixReadOnly(getComputedStyle(img).transform); return Math.abs(m.m41) < 1; }), 'the first screen in the phone');
-    assert.ok(await still.locator('.lz-friend').evaluateAll(cards => cards.every(card => getComputedStyle(card.querySelector('.lz-amount')).opacity === '1' && getComputedStyle(card.querySelector('.lz-chip')).opacity === '1')), 'every card filled');
+    // Every ribbon drawn, every phone lit, every card shown.
+    assert.ok(await still.locator('.lz-line').evaluateAll(list => list.every(path => Math.abs(parseFloat(getComputedStyle(path).strokeDashoffset)) < 1)), 'the ribbons are drawn');
+    assert.ok(await still.locator('.lz-tag-in').evaluateAll(list => list.every(el => getComputedStyle(el).opacity === '1')), 'every card shown');
     const quiet = files(stillRequests, origin);
     assert.equal(quiet.length, BASE.length + 1, quiet.join(' '));
-    for (const file of [...BASE, /^\/landing\/screen-bill(-sm)?\.webp$/]) assert.ok(quiet.some(f => file.test(f)), `${engine}: ${file}`);
+    for (const file of [...BASE, /^\/landing\/dinner-tall-(720|840|1080)\.(avif|webp)$/]) assert.ok(quiet.some(f => file.test(f)), `${engine}: ${file}`);
     // The keyboard on a phone: the logo, Sample dinner, then the ways in.
     const phoneOrder = [];
     for (let i = 0; i < 5; i++) { await still.keyboard.press(tab); phoneOrder.push(await focused(still)); }
     assert.deepEqual(phoneOrder, ['Ztab, start a new tab', 'Sample dinner', 'Open Ztab', 'Start a tab', 'Try a sample dinner']);
     await still.evaluate(() => document.activeElement?.blur());
-    // Every width and scheme: no sideways scroll, the ways in on a phone's first screen, and no word cut off in the cards
-    // (only a link's chip may end in an ellipsis, as the app's own chips do).
-    for (const [width, height] of [[320, 568], [390, 844], [1280, 900], [1440, 900]]) {
+    // Every width and scheme: no sideways scroll, and the way in on a phone's first screen.
+    for (const [width, height] of [[320, 568], [390, 844], [768, 1024], [1280, 900], [1440, 900]]) {
       for (const colorScheme of ['light', 'dark']) {
         await still.setViewportSize({ width, height });
         await still.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
@@ -203,12 +186,8 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
           const box = await still.getByRole('button', { name: 'Start a tab', exact: true }).boundingBox();
           assert.ok(box && box.y + box.height <= height, `${engine} ${width}: Start a tab on the first screen`);
         }
-        const cut = await still.evaluate(() => [...document.querySelectorAll('.lz-layer:not([hidden]) .lz-card')].flatMap(card => {
-          const box = card.getBoundingClientRect();
-          return [...card.querySelectorAll('.lz-name, .lz-label, .lz-amount, .lz-total')]
-            .filter(el => el.scrollWidth > el.clientWidth + 1 || el.getBoundingClientRect().right > box.right + 1)
-            .map(el => `${card.querySelector('.lz-name').textContent}: ${el.textContent}`);
-        }));
+        const cut = await still.evaluate(() => [...document.querySelectorAll('.lz-tag-in')].flatMap(card => [...card.querySelectorAll('.lz-tag-name, .lz-tag-amt')]
+          .filter(el => el.scrollWidth > el.clientWidth + 1).map(el => el.textContent)));
         assert.deepEqual(cut, [], `${engine} ${width} ${colorScheme}: nothing cut off in the cards`);
         if (process.env.SHOTS) {
           mkdirSync(process.env.SHOTS, { recursive: true });
@@ -218,7 +197,7 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     }
     assert.deepEqual(stillErrors, []);
     await calm.close();
-    console.log(`${engine}: words, both ways in and the last band's, the navigation, the ticker (word for word, paused under the pointer), the centrepiece (five screens, the first with the page and four after it has loaded, cards filled by the cut, the decoy code, nothing focusable), the phone's composition, Start a tab and Start a tab now, keyboard order, quiet visits, demo link, reduced motion, 320–1440 light/dark PASS`);
+    console.log(`${engine}: words, both ways in and the last band's, Geist, the ticker (word for word, paused under the pointer), the dinner (picture, six ribbons, six lit phones, six cards from the engine, seven lamps, the intro and the calm loop, nothing focusable), the street held on a wide screen, How it works, Start a tab and Start a tab now, keyboard order, quiet visits, demo link, the phone's picture and held street, reduced motion, 320–1440 light/dark PASS`);
   } finally {
     await browser.close();
   }

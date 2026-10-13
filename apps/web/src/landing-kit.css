@@ -1,0 +1,131 @@
+/* ── The app's own pieces, as the opening shows them ───────────────────────────────────────────────────────────────
+   Drawn in the app's face and colours (Inter, ink on paper cards with the gold rail). Placed by the sections' own CSS.
+   Motion is transform and opacity only; see landing-kit.ts for when anything moves. */
+
+.ls-app, .lb-card, .ls-band, .ls-ring, .ls-counts {
+  --ls-ink: #101216; --ls-paper: #fbf8f1; --ls-deep: #f1ecdf; --ls-white: #ffffff; --ls-gold: #f4b728; --ls-gold-text: #7a4f00;
+  --ls-muted: #575245; --ls-rule: #8c8677; --ls-hair: #1012161f; --ls-note: #f3e7c4; --ls-note-text: #4a3600;
+  --ls-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ls-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ls-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.landing .ls-instant, .landing .ls-instant *, .landing .ls-instant::before, .landing .ls-instant *::before { transition: none !important; }
+.landing .ls-away { opacity: 0; }
+/* Rising into place: armed only with motion (see rise() in landing-kit.ts). */
+.ls-armed .ls-rise { opacity: 0; transform: translate3d(0, 32px, 0); }
+.ls-armed .ls-rise.ls-in {
+  opacity: 1; transform: none;
+  transition: opacity 500ms var(--lz-ease) var(--ls-d, 0ms), transform 500ms var(--lz-ease) var(--ls-d, 0ms);
+}
+
+.ls-app {
+  position: absolute; box-sizing: border-box; color: var(--ls-ink); background: var(--ls-paper); border-radius: 18px; text-align: left;
+  box-shadow: 0 1px 2px rgba(16, 18, 22, 0.05), 0 14px 30px -16px rgba(16, 18, 22, 0.24), 0 0 0 1px rgba(16, 18, 22, 0.06);
+  font: 400 1em / 1.45 var(--ls-sans); font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+}
+.ls-app p, .ls-app ul { margin: 0; }
+.ls-app ul { padding: 0; list-style: none; }
+.ls-rail { position: absolute; z-index: 1; top: 0; left: 18px; right: 18px; height: 3px; border-radius: 0 0 3px 3px; background: var(--ls-gold); }
+.ls-row { display: flex; align-items: baseline; gap: 0.5em; margin-top: 0.45em; }
+.ls-row > span:first-child { flex: none; color: var(--ls-muted); }
+.ls-row > i { flex: 1; min-width: 0.5em; }
+.ls-row > b, .ls-row > .ls-fig { font-weight: 650; text-align: right; }
+.ls-fig { display: inline-grid; justify-items: end; overflow: hidden; vertical-align: bottom; }
+.ls-fig > span { grid-area: 1 / 1; white-space: nowrap; }
+.ls-eyebrow { font-size: 0.9em; font-weight: 600; color: var(--ls-muted); }
+.ls-h { font-weight: 750; font-size: 1.3em; line-height: 1.2; letter-spacing: -0.02em; }
+.ls-app .zec { font-family: var(--ls-mono); font-weight: 600; font-size: 0.92em; }
+.ls-app .zg { margin-left: 0.32ch; }
+
+/* How to split: the Bill step's two choices, the chosen one ringed in ink. */
+.ls-legend-plain { font-size: 0.9em; font-weight: 650; }
+.ls-choice {
+  position: relative; isolation: isolate; display: grid; gap: 0.2em; padding: 0.72em 2.4em 0.74em 0.9em;
+  border: 1.5px solid var(--ls-rule); border-radius: 1em; background: var(--ls-white);
+}
+.ls-choice::before { content: ''; position: absolute; z-index: -1; inset: -1.5px; border-radius: inherit; background: var(--ls-deep); box-shadow: inset 0 0 0 2.5px var(--ls-ink); opacity: 0; transition: opacity 200ms ease-out; }
+.ls-choice.on::before { opacity: 1; }
+.ls-choice b { font-size: 0.98em; line-height: 1.25; }
+.ls-radio { position: absolute; top: 50%; right: 0.8em; width: 1.2em; height: 1.2em; margin-top: -0.6em; border-radius: 50%; border: 1.5px solid var(--ls-rule); background: var(--ls-white); box-sizing: border-box; }
+.ls-radio::after { content: ''; position: absolute; inset: 0.22em; border-radius: 50%; background: var(--ls-paper); opacity: 0; }
+.ls-choice.on .ls-radio { background: var(--ls-ink); border-color: var(--ls-ink); }
+.ls-choice.on .ls-radio::after { opacity: 1; }
+
+/* The totals, with a gold piece under each share as long as the share. */
+.ls-share { position: relative; }
+.ls-share > i { position: relative; align-self: center; height: 0.5em; margin: 0 0.15em; }
+.ls-bar {
+  position: absolute; inset: 0; border-radius: 1.5px; background: var(--ls-gold); transform-origin: 0 50%; transform: scaleX(0);
+  clip-path: polygon(0.32em 0, 100% 0, calc(100% - 0.32em) 100%, 0 100%); transition: transform 520ms var(--ls-ease);
+}
+.ls-grand { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5em; margin-top: 0.65em; }
+.ls-grand > span { font-weight: 600; }
+.ls-grand .ls-fig { font-size: 1.75em; font-weight: 750; letter-spacing: -0.03em; line-height: 1.15; }
+.ls-each { margin-top: 0.85em; font-weight: 700; font-size: 1.04em; }
+
+/* A friend's link, its Copy button and Preview. */
+.ls-link {
+  position: relative; display: flex; min-width: 0; margin-top: 0.6em; padding: 0.42em 0.7em; border-radius: 0.7em; overflow: hidden;
+  background: var(--ls-deep); color: var(--ls-muted); font: 500 0.84em / 1.45 var(--ls-mono); white-space: nowrap;
+}
+.ls-link > span { position: relative; z-index: 1; }
+.ls-link > span:first-child { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ls-sel { position: absolute; inset: 0; background: var(--ls-note); opacity: 0; transition: opacity 200ms ease-out; }
+.ls-link.done .ls-sel { opacity: 1; }
+.ls-acts { display: flex; gap: 0.5em; margin-top: 0.75em; }
+.ls-btn {
+  position: relative; display: inline-grid; place-items: center; height: 2.7em; padding: 0 1.2em; border-radius: 999px;
+  border: 1.5px solid var(--ls-ink); font-weight: 650; white-space: nowrap; box-sizing: border-box;
+}
+.ls-btn-ink { background: var(--ls-ink); color: var(--ls-paper); font-weight: 700; }
+.ls-btn-ink > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 0.4em; transition: opacity 160ms ease-out, transform 220ms var(--ls-ease); }
+.ls-copied { opacity: 0; transform: translateY(40%); }
+.ls-btn-ink.done .ls-copy { opacity: 0; transform: translateY(-40%); }
+.ls-btn-ink.done .ls-copied { opacity: 1; transform: none; }
+
+/* The name picker's rows: one lights when it is chosen. */
+.ls-pr {
+  position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 0.6em;
+  height: 2.8em; padding: 0 0.85em; border: 1px solid var(--ls-rule); border-radius: 0.85em; background: var(--ls-white);
+}
+.ls-pr strong { font-weight: 700; }
+.ls-amt { font-weight: 650; font-size: 1.12em; letter-spacing: -0.02em; }
+.ls-amt small { font-size: 0.55em; vertical-align: 0.7em; margin-right: 0.08em; }
+.ls-arr { font-size: 0.9em; transition: transform 200ms var(--ls-ease); }
+.ls-lit { position: absolute; z-index: -1; inset: -1px; border-radius: inherit; background: var(--ls-note); box-shadow: inset 0 0 0 1.5px var(--ls-ink); opacity: 0; transition: opacity 200ms ease-out; }
+.ls-pr.on .ls-lit { opacity: 1; }
+.ls-pr.on .ls-arr { transform: translateX(3px); }
+
+/* The pay page. */
+.ls-owed { margin-top: 0.1em; font-weight: 700; font-size: 1.3em; line-height: 1.2; letter-spacing: -0.015em; }
+.ls-amount { margin-top: 0.1em; font-weight: 750; font-size: 2.9em; line-height: 1.05; letter-spacing: -0.045em; }
+.ls-amount small { font-size: 0.52em; font-weight: 650; vertical-align: 0.78em; margin-right: 0.04em; color: var(--ls-muted); }
+.ls-that { margin-top: 0.35em; font-size: 1.02em; }
+.ls-pays { margin-top: 1em; padding-top: 0.85em; border-top: 1px solid var(--ls-hair); font-weight: 700; font-size: 1.04em; }
+.ls-caution { margin-top: 0.6em; padding: 0.7em 0.85em; border-radius: 0.8em; background: var(--ls-note); color: var(--ls-note-text); font-size: 0.93em; line-height: 1.45; }
+.ls-wallet {
+  position: relative; display: grid; place-items: center; height: 3.5em; margin-top: 0.9em; border-radius: 999px; overflow: hidden;
+  background: var(--ls-gold); color: var(--ls-ink); font-weight: 700; font-size: 1.04em;
+}
+.ls-wallet > span { position: relative; z-index: 1; }
+.ls-shade { position: absolute; inset: 0; background: rgba(122, 79, 0, 0.22); opacity: 0; }
+
+/* A box to tick: the app's own mark. */
+.ls-box { position: relative; flex: none; display: block; width: 1.25em; height: 1.25em; border-radius: 0.3em; border: 1.5px solid var(--ls-rule); background: var(--ls-white); box-sizing: border-box; }
+.ls-box svg { position: absolute; inset: 0.06em; width: calc(100% - 0.12em); height: calc(100% - 0.12em); opacity: 0; fill: none; stroke: var(--ls-ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* A spot picture: it keeps its square while its file comes. */
+.ls-spot { position: absolute; display: block; aspect-ratio: 1; pointer-events: none; }
+.ls-spot picture, .ls-spot img { display: block; width: 100%; height: 100%; }
+
+/* With reduced motion nothing moves at all: no transition, no animation. */
+@media (prefers-reduced-motion: reduce) {
+  .landing .ls-app *, .landing .ls-app *::before, .landing .ls-app *::after { transition: none !important; animation: none !important; }
+  .ls-armed .ls-rise { opacity: 1; transform: none; }
+}
+
+/* A heading coming up through its mask (maskReveal in landing-kit.ts). */
+.lz-mw { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+.lz-mw-in { display: inline-block; }
+.lz-mask-in { display: block; }
+.lz-masked .lz-mask-in { clip-path: inset(0 0 100% 0); }

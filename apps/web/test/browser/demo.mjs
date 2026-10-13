@@ -8,7 +8,7 @@ for(const name of (process.env.BROWSERS||'chromium,webkit').split(',')){
  const ctx=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'}),page=await ctx.newPage(),requests=[],errors=[];
  page.on('request',r=>requests.push(r.url()));page.on('pageerror',e=>errors.push(e.message));
  await ctx.route('**/demo-receiver.json',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(config)}));
- await page.goto(origin);await page.locator('#app h1:visible').waitFor();await page.evaluate(()=>document.fonts.ready);assert.equal(requests.length,6,'ordinary visit loads its six files: the page, a script, a stylesheet, two fonts and the phone\'s first screen');assert.ok(!requests.some(u=>/demo-|wire-|wasm/.test(u)));
+ await page.goto(origin);await page.locator('#app h1:visible').waitFor();await page.evaluate(()=>document.fonts.ready);assert.equal(requests.length,6,'ordinary visit loads its six files: the page, a script, a stylesheet, two fonts (Geist and Inter) and the picture of the dinner');assert.ok(!requests.some(u=>/demo-|wire-|wasm/.test(u)));
  // The landing page offers the sample by one plain link; following it is an ordinary navigation.
  // Its ribbons are laid out for a new width on the next frames, so each width is checked once they are.
  const sample=page.getByRole('link',{name:'Try a sample dinner',exact:true}).first();assert.equal(await sample.getAttribute('href'),'/?demo');

@@ -13,7 +13,7 @@ for(const engine of (process.env.BROWSERS||'chromium,webkit').split(',')){
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
  await page.goto(origin);await newTab(page,{label:'Dinner',total:'90',people:['Ana','Ana'],address,rate:'100'});await page.getByRole('link',{name:'Open my page',exact:true}).click();
  await page.locator('.mine-person').first().waitFor();await page.evaluate(()=>document.fonts.ready);
- const initial=[...requests];assert.equal(initial.length,6);
+ const initial=[...requests];assert.equal(initial.length,7,'the opening and the steps: the page, a script, a stylesheet, three faces (Geist on the opening, Inter and JetBrains Mono in the steps) and the picture of the dinner');
  await page.evaluate(()=>{window.storageCalls=0;for(const m of ['getItem','setItem','removeItem','clear'])Storage.prototype[m]=()=>{window.storageCalls++;throw Error('unexpected storage');};Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>{window.copiedSummary=text;}},configurable:true});});
  const complete=page.getByRole('heading',{name:'Settled in your record',exact:true});assert.equal(await complete.isVisible(),false);
  assert.equal(await page.locator('.mine-count').innerText(),'0 of 2 ticked');

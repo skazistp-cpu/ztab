@@ -15,7 +15,7 @@ for(const engine of (process.env.BROWSERS||'chromium,webkit').split(',')){
  const uri=await link.getAttribute('href');assert.ok(uri.startsWith('zcash:'+address+'?'));
  const params=new URLSearchParams(uri.split('?')[1]);assert.equal(params.get('amount'),'0.3');assert.ok(Buffer.from(params.get('memo'),'base64url').toString().endsWith(' · Ztab'));
  assert.ok(await link.evaluate(e=>e.getBoundingClientRect().bottom<=844),'wallet button on first phone screen');
- await page.evaluate(()=>document.fonts.ready);const initial=[...requests];assert.equal(initial.length,6,'normal flow still loads six own files');
+ await page.evaluate(()=>document.fonts.ready);const initial=[...requests];assert.equal(initial.length,7,'normal flow still loads seven own files: the page, its script and style, three faces (Geist on the opening, Inter and JetBrains Mono in the steps) and the picture of the dinner');
  await page.evaluate(()=>{window.storageCalls=0;for(const m of ['getItem','setItem','removeItem','clear'])Storage.prototype[m]=()=>{window.storageCalls++;throw Error('unexpected storage');};Object.defineProperty(navigator,'clipboard',{value:{writeText:async text=>{window.copiedRequest=text;}} ,configurable:true});});
  await page.getByRole('button',{name:'Copy payment request',exact:true}).click({timeout:2500});
  assert.equal(await page.evaluate(()=>window.copiedRequest),uri,'copied request equals wallet URI including memo');

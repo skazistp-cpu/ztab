@@ -1,92 +1,32 @@
 import { h } from './dom.ts';
+import { formatFiat } from './money.ts';
 import { LANDING_SAMPLE } from './landing-sample.ts';
 import { motionPaused, onMotionPause } from './landing-motion.ts';
 import { TICKER, tickerLine } from './landing-ticker.ts';
-import { pieceLengths } from './cut/shares.ts';
+import { ribbon, TALL, WIDE, type Ribbon, type Scene } from './landing-scene.ts';
 
 /*
  * The opening's first screen and its last band.
  *
- * The first screen: a ticker of example splits, the headline, the way in, and a centrepiece: a phone showing the
- * app's own screens one after another, with the app's cards floating around it. Every few seconds the bill's
- * $300.00 is cut into the six shares and the pieces fly to the friends' cards, which then show their links.
- * Everything moves with transform and opacity; with reduced motion it is one composed still.
+ * The first screen: a ticker of example splits, the headline, the way in, and the dinner: a table seen from above
+ * with the bill in the middle and six phones round it. Gold ribbons draw from the bill to each phone, a small piece of
+ * gold runs along each one, and as it arrives the phone's screen lights and a small card shows that person's share of
+ * the bill (the engine's own split of the sample dinner, LANDING_SAMPLE). Then a calm loop: now and then a piece runs
+ * along one ribbon again. The picture drifts a little with the pointer and the scroll.
+ *
+ * Motion is transform, opacity and the ribbons' stroke only; with reduced motion it is one composed still, the
+ * ribbons drawn and every card shown. A pause (landing-motion.ts) holds all of it where it is.
  */
 
 const calm = (): boolean => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const EASE = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
 const SPRING = 'cubic-bezier(0.3, 1.36, 0.55, 1)';
-/** One loop of the centrepiece: five screens of 1.6 s, and one cut of the bill. */
-const LOOP = 8000;
-const SCREENS = ['bill', 'people', 'rate', 'links', 'pay'] as const;
+const NS = 'http://www.w3.org/2000/svg';
 
-const price = (amount: string): HTMLElement => h('span', { class: 'lz-price' }, h('span', { class: 'lz-cur' }, '$'), amount);
-const shortLink = (link: string): string => link.replace(/….*$/, '…');
-
-/** A friend's card, as the links page draws it (example values). Its amount and link arrive with the cut. */
-function friendCard(i: number): HTMLElement {
-  const share = LANDING_SAMPLE.shares[i];
-  const fixed = share.name in LANDING_SAMPLE.fixed;
-  return h(
-    'div',
-    { class: 'lz-card lz-friend' },
-    h('i', { class: 'lz-rail' }),
-    h('b', { class: 'lz-name' }, share.name),
-    h('span', { class: 'lz-label' }, fixed ? 'Fixed amount' : 'Share of the rest'),
-    h('span', { class: 'lz-amount' }, price(share.fiatShare)),
-    h('span', { class: 'lz-chip' }, shortLink(share.link)),
-  );
-}
-
-/** The bill: its total printed on a gold ribbon, which the cut divides. */
-function billCard(): HTMLElement {
-  return h(
-    'div',
-    { class: 'lz-card lz-bill' },
-    h('b', { class: 'lz-name' }, LANDING_SAMPLE.label),
-    h('span', { class: 'lz-label' }, 'Total'),
-    h('span', { class: 'lz-ribbon' }, h('i', { class: 'lz-band' }), h('span', { class: 'lz-total' }, price(LANDING_SAMPLE.total))),
-  );
-}
-
-/** A table code card with a drawing that looks like a QR code and is not one: it never decodes. */
-function tableCard(): HTMLElement {
-  const holder = h('span', { class: 'lz-qr' });
-  // Fixed markup built here from a fixed seed; no text from anyone reaches it.
-  holder.innerHTML = `<svg viewBox="-2 -2 25 25" aria-hidden="true" focusable="false"><rect x="-2" y="-2" width="25" height="25" rx="2" fill="#fff"/><path d="${decoyCode(0x5eed2a)}" fill="#101216"/></svg>`;
-  return h('div', { class: 'lz-card lz-table' }, h('b', { class: 'lz-name' }, LANDING_SAMPLE.label), holder);
-}
-
-/** A pattern of 21 × 21 modules that looks like a QR code: a fixed seed fills the data area, so it never decodes. */
-export function decoyCode(seed: number): string {
-  const size = 21;
-  let state = seed >>> 0 || 1;
-  const next = (): number => {
-    state ^= state << 13; state >>>= 0;
-    state ^= state >>> 17;
-    state ^= state << 5; state >>>= 0;
-    return state / 0x100000000;
-  };
-  const finder = (x: number, y: number): boolean | undefined => {
-    for (const [fx, fy] of [[0, 0], [size - 7, 0], [0, size - 7]]) {
-      const dx = x - fx, dy = y - fy;
-      if (dx >= -1 && dx <= 7 && dy >= -1 && dy <= 7) {
-        if (dx === -1 || dy === -1 || dx === 7 || dy === 7) return false;
-        return Math.max(Math.abs(dx - 3), Math.abs(dy - 3)) !== 2;
-      }
-    }
-    return undefined;
-  };
-  let path = '';
-  for (let y = 0; y < size; y++) {
-    let run = 0;
-    for (let x = 0; x <= size; x++) {
-      const dark = x < size && (finder(x, y) ?? (y === 6 || x === 6 ? (x + y) % 2 === 0 : next() < 0.48));
-      if (dark) run++;
-      else if (run > 0) { path += `M${x - run} ${y}h${run}v1h-${run}z`; run = 0; }
-    }
-  }
-  return path;
+function svg<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string> = {}, ...children: SVGElement[]): SVGElementTagNameMap[K] {
+  const el = document.createElementNS(NS, tag);
+  for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, value);
+  el.append(...children);
+  return el;
 }
 
 /** The ticker: example splits, the strip twice so it can run on without a seam. */
@@ -96,296 +36,320 @@ export function ticker(): HTMLElement {
   return h('div', { class: 'lz-ticker' }, track);
 }
 
-interface Place { x: number; y: number; d: number; phone?: boolean }
-/** Where each card floats, from the phone's centre (px at desktop size), and how near it is (0 far … 1 near). */
-const PLACES: Record<string, Place> = {
-  bill: { x: -360, y: -150, d: 1 },
-  table: { x: -470, y: 110, d: 0.45 },
-  Ana: { x: 336, y: -200, d: 0.9 },
-  Dragan: { x: 452, y: -40, d: 0.6 },
-  Tomás: { x: 322, y: 118, d: 0.95 },
-  Priya: { x: -300, y: 210, d: 0.75 },
-  Jonas: { x: 476, y: 268, d: 0.55 },
-};
-const PHONE_PLACES: Record<string, Place> = {
-  bill: { x: -84, y: -214, d: 1 },
-  Ana: { x: 96, y: -36, d: 0.9 },
-  Jonas: { x: -92, y: 150, d: 0.95 },
-};
+// ── The dinner ────────────────────────────────────────────────────────────────────────────────────────────────────
 
-export function centrepiece(): HTMLElement {
-  const stage = h('div', { class: 'lz-stage', 'aria-hidden': 'true' });
-  const phone = h('div', { class: 'lz-phone' });
-  const screen = h('div', { class: 'lz-screen' });
-  // The first screen is the one index.html asks for before any script (the small file on a phone).
-  const small = matchMedia('(max-width: 759px)').matches;
-  const shots = SCREENS.map((name, i) => {
-    const file = i === 0 && small ? 'screen-bill-sm' : `screen-${name}`;
-    const img = h('img', { class: 'lz-shot', alt: '', width: '540', height: '1170', decoding: 'async', 'data-src': `/landing/${file}.webp`, draggable: 'false' }) as HTMLImageElement;
-    if (i === 0) { img.classList.add('first'); img.setAttribute('fetchpriority', 'high'); img.decoding = 'sync'; img.src = `/landing/${file}.webp`; }
-    return img;
+/** The intro's beats (ms from the start). */
+const ART_IN = 700;
+const RIB_START = 620;
+const RIB_GAP = 150;
+const RIB_DRAW = 1050;
+const POP = 560;
+/** The calm loop: one piece of gold along one ribbon every BEAT ms, the six in turn. */
+const BEAT = 2300;
+const TRAVEL = 1250;
+
+const arrival = (k: number): number => RIB_START + k * RIB_GAP + RIB_DRAW;
+const INTRO_END = arrival(5) + POP + 300;
+
+/** A small link mark: two rounded links, drawn in gold beside a friend's share. */
+function linkMark(): SVGSVGElement {
+  return svg('svg', { class: 'lz-tag-link', viewBox: '0 0 16 16', 'aria-hidden': 'true', focusable: 'false' },
+    svg('path', { d: 'M6.6 9.4a2.6 2.6 0 0 0 3.7 0l2.3-2.3a2.6 2.6 0 0 0-3.7-3.7l-.9.9' }),
+    svg('path', { d: 'M9.4 6.6a2.6 2.6 0 0 0-3.7 0L3.4 8.9a2.6 2.6 0 0 0 3.7 3.7l.9-.9' }));
+}
+
+/** A person's card over their phone: their name and their share of the bill (a friend's also shows it is a link). */
+function tag(i: number): HTMLElement {
+  const share = LANDING_SAMPLE.shares[i];
+  return h(
+    'div',
+    { class: share.own ? 'lz-tag lz-own' : 'lz-tag' },
+    h(
+      'div',
+      { class: 'lz-tag-in' },
+      h('i', { class: 'lz-tag-rail' }),
+      h('span', { class: 'lz-tag-name' }, share.name),
+      h('span', { class: 'lz-tag-amt' }, formatFiat(share.fiatShare, LANDING_SAMPLE.fiat)),
+      share.own ? undefined : linkMark(),
+    ),
+  );
+}
+
+interface Built {
+  scene: Scene;
+  art: HTMLElement;
+  lines: SVGSVGElement;
+  cardLayer: HTMLElement;
+  seats: { rib: Ribbon; glow: SVGPathElement; line: SVGPathElement; pulse: SVGPathElement; pack: SVGPolygonElement; lit: SVGPolygonElement; halo: SVGEllipseElement; card: HTMLElement }[];
+  bill: SVGEllipseElement;
+  /** The length of the light that runs along a ribbon in the loop. */
+  dash: number;
+}
+
+/** The sizes the picture is shown at, for the browser to choose a file (index.html preloads with the same words). */
+// The tall picture is chosen for a phone's width only, so a window made wider later (with the steps open, say) asks
+// for no other file of it.
+export const PICTURE_SIZES = { wide: '(min-width: 1600px) 1600px, 100vw', tall: '(max-width: 759px) 112vw, 437px' } as const;
+export const pictureSet = (scene: Scene, type: 'avif' | 'webp'): string =>
+  scene.files.widths.map(w => `/landing/${scene.files.name}-${w}.${type} ${w}w`).join(', ');
+
+/** The picture of the dinner, and everything drawn over it, for one of the two compositions. */
+function build(scene: Scene): Built {
+  const sizes = scene === TALL ? PICTURE_SIZES.tall : PICTURE_SIZES.wide;
+  const middle = scene.files.widths[Math.min(1, scene.files.widths.length - 1)];
+  // The picture's sources are given only once the image sits in its <picture> after the AVIF source, so a browser
+  // never starts on the WebP file before it has seen the AVIF one.
+  const img = h('img', { alt: '', width: String(scene.w), height: String(scene.h), decoding: 'async', fetchpriority: 'high', draggable: 'false' });
+  const art = h('div', { class: 'lz-art' }, h('picture', {}, h('source', { type: 'image/avif', srcset: pictureSet(scene, 'avif'), sizes }), img));
+  img.sizes = sizes;
+  img.srcset = pictureSet(scene, 'webp');
+  img.src = `/landing/${scene.files.name}-${middle}.webp`;
+  const defs = svg('defs', {},
+    svg('linearGradient', { id: 'lz-gold', x1: '0', y1: '0', x2: '1', y2: '1' },
+      svg('stop', { offset: '0', 'stop-color': '#F9D36A' }), svg('stop', { offset: '0.55', 'stop-color': '#F4B728' }), svg('stop', { offset: '1', 'stop-color': '#E09A0E' })),
+    svg('linearGradient', { id: 'lz-lit', x1: '0', y1: '0', x2: '0', y2: '1' },
+      svg('stop', { offset: '0', 'stop-color': '#FFFBEF' }), svg('stop', { offset: '1', 'stop-color': '#F9D774' })),
+    svg('radialGradient', { id: 'lz-halo' },
+      svg('stop', { offset: '0', 'stop-color': '#F4B728', 'stop-opacity': '0.6' }), svg('stop', { offset: '1', 'stop-color': '#F4B728', 'stop-opacity': '0' })),
+    svg('radialGradient', { id: 'lz-warm' },
+      svg('stop', { offset: '0', 'stop-color': '#FFD36B', 'stop-opacity': '0.5' }), svg('stop', { offset: '0.6', 'stop-color': '#FFC94A', 'stop-opacity': '0.16' }), svg('stop', { offset: '1', 'stop-color': '#F4B728', 'stop-opacity': '0' })),
+    svg('radialGradient', { id: 'lz-lamp' },
+      svg('stop', { offset: '0', 'stop-color': '#FFF7DA', 'stop-opacity': '0.95' }), svg('stop', { offset: '0.35', 'stop-color': '#FFD86B', 'stop-opacity': '0.55' }), svg('stop', { offset: '1', 'stop-color': '#F4B728', 'stop-opacity': '0' })));
+  const lines = svg('svg', { class: 'lz-lines', viewBox: `0 0 ${scene.w} ${scene.h}`, 'aria-hidden': 'true', focusable: 'false' }, defs);
+  lines.style.setProperty('--sw', String(scene.stroke));
+  // The lamps of the string lights: each glow comes and goes on its own slow time (landing.css).
+  const lamps = svg('g', { class: 'lz-lamps' }, ...scene.lamps.map(([x, y]) => svg('circle', { class: 'lz-lamp', cx: String(x), cy: String(y), r: String(scene.glow), fill: 'url(#lz-lamp)' })));
+  const g = scene.glow;
+  const bill = svg('ellipse', { class: 'lz-bill-glow', cx: String(scene.bill[0]), cy: String(scene.bill[1]), rx: String(g * 4.4), ry: String(g * 2.4), fill: 'url(#lz-halo)' });
+  // The string lights' warm glow on the table, breathing slowly (landing.css).
+  const [tx, ty, trx, try_] = scene.table;
+  const warm = svg('ellipse', { class: 'lz-tableglow', cx: String(tx), cy: String(ty), rx: String(trx), ry: String(try_), fill: 'url(#lz-warm)' });
+  // Steam from the kiosk's cups: two wisps over each stack, rising and fading in turn (landing.css).
+  const k = scene.steamSize;
+  const wisp = (x: number, y: number, n: number): SVGPathElement => svg('path', {
+    class: `lz-wisp lz-wisp-${n}`,
+    d: `M${x} ${y}c${(-0.18 * k).toFixed(1)} ${(-0.2 * k).toFixed(1)} ${(0.2 * k).toFixed(1)} ${(-0.36 * k).toFixed(1)} 0 ${(-0.56 * k).toFixed(1)}s${(0.22 * k).toFixed(1)} ${(-0.34 * k).toFixed(1)} ${(0.02 * k).toFixed(1)} ${(-0.5 * k).toFixed(1)}`,
+    'stroke-width': (k * 0.075).toFixed(2),
   });
-  screen.append(...shots);
-  phone.append(h('i', { class: 'lz-island' }), screen);
-  const phoneFloat = h('div', { class: 'lz-float lz-f0' }, phone);
-  const phoneLayer = h('div', { class: 'lz-layer lz-phone-layer', 'data-depth': '0.35' }, phoneFloat);
+  const steam = svg('g', { class: 'lz-steam' }, ...scene.steam.flatMap(([x, y], i) => [wisp(x - k * 0.06, y, i * 2), wisp(x + k * 0.07, y - k * 0.04, i * 2 + 1)]));
+  const under = svg('g', { class: 'lz-under' }, warm, bill);
+  const over = svg('g', { class: 'lz-over' });
+  lines.append(lamps, steam, under, over);
+  const cardLayer = h('div', { class: 'lz-tags' });
+  cardLayer.style.setProperty('--cs', String(scene.cardSize));
+  const dash = scene.stroke * 11;
+  const half = scene.stroke * 2.6;
+  const seats = scene.seats.map((seat, i) => {
+    const rib = ribbon(scene, seat);
+    const halo = svg('ellipse', { class: 'lz-halo', cx: String(seat.phone[0]), cy: String(seat.phone[1]), rx: String(g * 2.5), ry: String(g * 1.35), fill: 'url(#lz-halo)' });
+    const lit = svg('polygon', { class: 'lz-lit', points: seat.screen.map(p => p.map(n => n.toFixed(1)).join(',')).join(' '), fill: 'url(#lz-lit)' });
+    const glow = svg('path', { class: 'lz-glow', d: rib.d });
+    const line = svg('path', { class: 'lz-line', d: rib.d });
+    const pulse = svg('path', { class: 'lz-pulse', d: rib.d });
+    // A piece of gold, cut at the Z's angle, that runs along the ribbon.
+    const pack = svg('polygon', { class: 'lz-pack', points: `${-half},${-half * 0.45} ${half * 0.5},${-half * 0.45} ${half},${half * 0.45} ${-half * 0.5},${half * 0.45}` });
+    for (const path of [glow, line]) path.style.strokeDasharray = `${rib.length.toFixed(1)}px ${rib.length.toFixed(1)}px`;
+    pulse.style.strokeDasharray = `${dash}px ${(rib.length + dash).toFixed(1)}px`;
+    pulse.style.strokeDashoffset = `${dash}px`;
+    under.append(halo, lit);
+    over.append(glow, line, pulse, pack);
+    const card = tag(i);
+    card.style.left = `${((seat.card[0] / scene.w) * 100).toFixed(3)}%`;
+    card.style.top = `${((seat.card[1] / scene.h) * 100).toFixed(3)}%`;
+    // Which way the card drifts when the camera goes into the table (landing-street.css): away from the bill.
+    const ox = seat.card[0] - scene.bill[0], oy = seat.card[1] - scene.bill[1], len = Math.hypot(ox, oy) || 1;
+    card.style.setProperty('--dx', ((ox / len) * 150).toFixed(1));
+    card.style.setProperty('--dy', ((oy / len) * 110).toFixed(1));
+    cardLayer.append(card);
+    return { rib, glow, line, pulse, pack, lit, halo, card };
+  });
+  return { scene, art, lines, cardLayer, seats, bill, dash };
+}
 
-  const cards: Record<string, HTMLElement> = { bill: billCard(), table: tableCard() };
-  LANDING_SAMPLE.shares.forEach((share, i) => { if (!share.own) cards[share.name] = friendCard(i); });
-  const layers = Object.entries(cards).map(([key, card], k) =>
-    h('div', { class: `lz-layer lz-at-${key === 'Tomás' ? 'Tomas' : key}`, 'data-key': key }, h('div', { class: `lz-float lz-f${(k % 4) + 1}` }, card)));
-  // The pieces that fly from the bill to the friends' cards, as long as their shares.
-  const friends = LANDING_SAMPLE.shares.filter(s => !s.own);
-  const lengths = pieceLengths(1);
-  const flyers = friends.map(share => h('i', { class: 'lz-fly', 'data-to': share.name, style: `--w:${(lengths[LANDING_SAMPLE.shares.indexOf(share)] * 300).toFixed(1)}` }));
-  const cuts = [1, 2, 3, 4].map(() => h('i', { class: 'lz-cutline' }));
-  // The orbit: the six currencies Ztab splits in, on a thin gold ellipse that passes behind and in front of the phone.
-  const orbit = h('div', { class: 'lz-orbit' });
-  // Fixed markup: the ellipse.
-  orbit.innerHTML = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><ellipse cx="50" cy="50" rx="49.6" ry="49.2" fill="none" stroke="#F4B728" stroke-opacity="0.55" stroke-width="1.1" vector-effect="non-scaling-stroke"/></svg>';
-  const coins = ['$', '€', '£', 'Kč', 'zł', 'CHF'].map(sign => h('i', { class: `lz-coin${sign.length > 2 ? ' wide' : ''}` }, sign));
-  stage.append(orbit, ...layers.filter((_, k) => k < 2), phoneLayer, ...layers.filter((_, k) => k >= 2), ...coins, ...flyers);
-  cards.bill.querySelector('.lz-ribbon')?.append(...cuts);
-
-  let narrow = false;
-  let orx = 360, ory = 125;
-  const TILT = (-8 * Math.PI) / 180;
-  /** Puts every coin where it is at time t (seconds): a turn takes a minute; in front of the phone on the near half. */
-  const orbitAt = (t: number): void => {
-    coins.forEach((coin, k) => {
-      const a = (t / 60) * Math.PI * 2 + (k * Math.PI * 2) / coins.length;
-      const x0 = orx * Math.cos(a), y0 = ory * Math.sin(a);
-      const x = x0 * Math.cos(TILT) - y0 * Math.sin(TILT), y = x0 * Math.sin(TILT) + y0 * Math.cos(TILT);
-      const near = (Math.sin(a) + 1) / 2;
-      coin.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${(0.78 + 0.3 * near).toFixed(3)})`;
-      coin.style.opacity = (0.55 + 0.45 * near).toFixed(3);
-      const z = Math.sin(a) > 0 ? '9' : '1';
-      if (coin.style.zIndex !== z) coin.style.zIndex = z;
-    });
+/** Keyframes for a piece of gold along a ribbon between two moments of a run of `total` ms (opacity in at the start, out at the end). */
+function along(rib: Ribbon, from: number, to: number, total: number): Keyframe[] {
+  const o = (ms: number): number => Math.min(1, Math.max(0, ms / total));
+  const frames: Keyframe[] = [];
+  const pos = (k: number, opacity: number): Keyframe => {
+    const [x, y, a] = rib.at[k];
+    return { transform: `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotate(${a.toFixed(1)}deg)`, opacity };
   };
-  // The orbit's clock stands still while the motion is paused, so playing carries on from where it stopped.
-  let heldAt = 0, skew = 0;
-  const clock = (): number => ((motionPaused() ? heldAt : performance.now()) - skew) / 1000;
-  const placeAll = (): void => {
-    narrow = stage.clientWidth < 700;
-    orx = narrow ? 168 : 372; ory = narrow ? 62 : 128;
-    orbit.style.setProperty('--orx', `${orx * 2}px`);
-    orbit.style.setProperty('--ory', `${ory * 2}px`);
-    orbitAt(calm() ? 7 : clock());
-    const places = narrow ? PHONE_PLACES : PLACES;
-    for (const layer of layers) {
-      const key = layer.dataset.key ?? '';
-      const p = places[key];
-      layer.hidden = !p;
-      if (!p) continue;
-      layer.style.setProperty('--x', `${p.x}px`);
-      layer.style.setProperty('--y', `${p.y}px`);
-      layer.style.setProperty('--s', String((narrow ? 0.62 : 0.9) + (narrow ? 0.06 : 0.1) * p.d));
-      layer.style.zIndex = String(Math.round(p.d * 10));
-      layer.dataset.depth = String(p.d);
-    }
-  };
+  if (from > 0) frames.push({ ...pos(0, 0), offset: 0 });
+  const n = rib.at.length - 1;
+  // Ease in and out over the run: more frames are not needed, the points are close.
+  rib.at.forEach((_, k) => {
+    const t = k / n;
+    const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    const ms = from + (to - from) * eased;
+    const opacity = t < 0.06 ? t / 0.06 : t > 0.9 ? Math.max(0, (1 - t) / 0.1) : 1;
+    frames.push({ ...pos(k, opacity), offset: o(ms) });
+  });
+  if (to < total) frames.push({ ...pos(n, 0), offset: 1 });
+  // Offsets must not go back; equal neighbours are fine.
+  for (let k = 1; k < frames.length; k++) frames[k].offset = Math.max(frames[k].offset as number, frames[k - 1].offset as number);
+  return frames;
+}
 
-  // Screens load after the first paint, the first one at once, the others when the browser is idle.
-  const load = (img: HTMLImageElement): void => { if (!img.src && img.dataset.src) img.src = img.dataset.src; };
+export function heroScene(): HTMLElement {
+  const stage = h('div', { class: 'lz-scene', 'aria-hidden': 'true' });
+  const frame = h('div', { class: 'lz-frame' });
+  stage.append(frame);
+  const tall = matchMedia('(max-width: 759px)');
+  let built: Built | undefined;
+  const intro: Animation[] = [];
+  const loop: Animation[] = [];
+  let seen = true;
 
-  const running: Animation[] = [];
-  const screens: Animation[] = [];
-  const at = (ms: number): number => ms / LOOP;
-  // The phone: each screen slides in from the right, holds, and gives way to the next (once all of them are in).
-  const cycle = (): void => {
-    for (const a of screens.splice(0)) a.cancel();
-    if (calm()) return;
-    shots.forEach((img, i) => {
-      const t0 = i * 1600, enter = 420;
-      const before = (o: number, easing?: string): Keyframe => ({ offset: o, transform: 'translateX(100%)', opacity: 1, ...(easing ? { easing } : {}) });
-      const shown = (o: number, easing?: string): Keyframe => ({ offset: o, transform: 'translateX(0)', opacity: 1, ...(easing ? { easing } : {}) });
-      const gone = (o: number): Keyframe => ({ offset: o, transform: 'translateX(-32%)', opacity: 0 });
-      const frames: Keyframe[] = i === SCREENS.length - 1
-        // The last screen leaves at the start of the next loop, as the first comes in.
-        ? [shown(0, EASE), gone(at(enter)), gone(at(t0 - 1)), before(at(t0), EASE), shown(at(t0 + enter)), shown(1)]
-        : [before(0, i === 0 ? EASE : undefined), ...(i ? [before(at(t0), EASE)] : []), shown(at(t0 + enter)), shown(at(t0 + 1600), EASE), gone(at(t0 + 1600 + enter)), gone(1)];
-      screens.push(img.animate(frames, { duration: LOOP, iterations: Infinity }));
-    });
-    for (const a of screens) a.currentTime = 600;
-    if (motionPaused()) for (const a of screens) a.pause();
-  };
-  const play = (): void => {
-    for (const a of running.splice(0)) a.cancel();
-    if (calm()) return;
-    // The cut: the bill's ribbon is cut four times, five pieces fly to the friends, each card shows its share, then its link.
-    const ribbon = cards.bill.querySelector<HTMLElement>('.lz-ribbon');
-    const band = cards.bill.querySelector<HTMLElement>('.lz-band');
-    if (!ribbon || !band) return;
-    const sr = stage.getBoundingClientRect();
-    const rr = ribbon.getBoundingClientRect();
-    const CUT = 700, FLY = 720, HOLD = 7000;
-    cuts.forEach((cut, k) => {
-      running.push(cut.animate(
-        [{ offset: 0, opacity: 0 }, { offset: at(CUT + 30 * k), opacity: 0 }, { offset: at(CUT + 30 * k + 60), opacity: 1 }, { offset: at(CUT + 30 * k + 220), opacity: 0 }, { offset: 1, opacity: 0 }],
-        { duration: LOOP, iterations: Infinity },
-      ));
-    });
-    running.push(band.animate(
-      [{ offset: 0, opacity: 1 }, { offset: at(CUT + 200), opacity: 1 }, { offset: at(CUT + 420), opacity: 0.62 }, { offset: at(HOLD - 600), opacity: 0.62 }, { offset: at(HOLD - 200), opacity: 1 }, { offset: 1, opacity: 1 }],
-      { duration: LOOP, iterations: Infinity },
-    ));
-    let run = 0;
-    const total = friends.reduce((a, s) => a + Number(s.fiatShare), 0);
-    flyers.forEach((fly, k) => {
-      const share = friends[k];
-      const card = cards[share.name];
-      const layer = card?.closest<HTMLElement>('.lz-layer');
-      if (!card || !layer || layer.hidden) { fly.hidden = true; return; }
-      fly.hidden = false;
-      const amount = card.querySelector<HTMLElement>('.lz-amount')!;
-      const chip = card.querySelector<HTMLElement>('.lz-chip')!;
-      const ar = amount.getBoundingClientRect();
-      const frac = Number(share.fiatShare) / total;
-      const sx = rr.left - sr.left + rr.width * (run + frac / 2);
-      run += frac;
-      const sy = rr.top - sr.top + rr.height / 2;
-      const tx = ar.left - sr.left + 34, ty = ar.top - sr.top + ar.height / 2;
-      const mx = (sx + tx) / 2, my = Math.min(sy, ty) - 70 - 30 * (k % 2);
-      const start = CUT + 260 + 70 * k, land = start + FLY;
-      fly.style.left = `${sx}px`;
-      fly.style.top = `${sy}px`;
-      const p = (x: number, y: number, s: number): string => `translate(${(x - sx).toFixed(1)}px, ${(y - sy).toFixed(1)}px) scale(${s})`;
-      running.push(fly.animate(
-        [
-          { offset: 0, opacity: 0, transform: p(sx, sy, 1) },
-          { offset: at(start), opacity: 0, transform: p(sx, sy, 1) },
-          { offset: at(start + 40), opacity: 1, transform: p(sx, sy, 1), easing: 'cubic-bezier(0.45, 0, 0.3, 1)' },
-          { offset: at(start + FLY * 0.5), opacity: 1, transform: p(mx, my, 0.92), easing: 'cubic-bezier(0.3, 0, 0.2, 1)' },
-          { offset: at(land), opacity: 1, transform: p(tx, ty, 0.7) },
-          { offset: at(land + 160), opacity: 0, transform: p(tx, ty, 0.6) },
-          { offset: 1, opacity: 0, transform: p(tx, ty, 0.6) },
-        ],
-        { duration: LOOP, iterations: Infinity },
-      ));
-      running.push(amount.animate(
-        [
-          { offset: 0, opacity: 0, transform: 'scale(0.9)' },
-          { offset: at(land - 40), opacity: 0, transform: 'scale(0.9)', easing: SPRING },
-          { offset: at(land + 260), opacity: 1, transform: 'scale(1)' },
-          { offset: at(HOLD + 40 * k), opacity: 1, transform: 'scale(1)', easing: 'ease-in' },
-          { offset: at(HOLD + 300 + 40 * k), opacity: 0, transform: 'scale(0.96)' },
-          { offset: 1, opacity: 0, transform: 'scale(0.9)' },
-        ],
-        { duration: LOOP, iterations: Infinity },
-      ));
-      running.push(chip.animate(
-        [
-          { offset: 0, opacity: 0, transform: 'translateY(6px)' },
-          { offset: at(land + 220), opacity: 0, transform: 'translateY(6px)', easing: EASE },
-          { offset: at(land + 560), opacity: 1, transform: 'translateY(0)' },
-          { offset: at(HOLD - 40 + 40 * k), opacity: 1, transform: 'translateY(0)', easing: 'ease-in' },
-          { offset: at(HOLD + 260 + 40 * k), opacity: 0, transform: 'translateY(4px)' },
-          { offset: 1, opacity: 0, transform: 'translateY(6px)' },
-        ],
-        { duration: LOOP, iterations: Infinity },
-      ));
-    });
-    if (motionPaused()) for (const a of running) a.pause();
+  const layout = (): void => {
+    for (const a of [...intro.splice(0), ...loop.splice(0)]) a.cancel();
+    const scene = tall.matches ? TALL : WIDE;
+    built = build(scene);
+    frame.style.setProperty('--ar', `${scene.w} / ${scene.h}`);
+    frame.replaceChildren(
+      h('div', { class: 'lz-layer', 'data-depth': '0.22' }, built.art),
+      h('div', { class: 'lz-layer', 'data-depth': '0.42' }, built.lines),
+      h('div', { class: 'lz-layer', 'data-depth': '0.7' }, built.cardLayer),
+    );
   };
 
-  const startAt = (ms: number): void => { for (const a of running) a.currentTime = ms; };
+  /** The calm loop: a piece runs along each ribbon in turn, its phone's light rises and its card nods. */
+  /** Plays an animation on from where it is; one that has run to its end stays there (play would start it over). */
+  const resume = (a: Animation): void => {
+    const end = Number(a.effect?.getComputedTiming().endTime ?? Infinity);
+    if (Number(a.currentTime ?? 0) < end) a.play();
+  };
+  const startLoop = (delay: number): void => {
+    if (!built || calm()) return;
+    const period = BEAT * built.seats.length;
+    const dash = `${built.dash}px`;
+    built.seats.forEach((s, k) => {
+      const t0 = k * BEAT;
+      const o = (ms: number): number => ms / period;
+      const end = t0 + TRAVEL;
+      const timing: KeyframeAnimationOptions = { duration: period, iterations: Infinity, delay };
+      // Offsets inside the loop, never past its end and never going back.
+      const mono = (frames: Keyframe[]): Keyframe[] => {
+        let last = 0;
+        return frames.map(f => { last = Math.max(last, Math.min(1, (f.offset as number) ?? last)); return { ...f, offset: last }; });
+      };
+      loop.push(s.pack.animate(along(s.rib, t0, end, period), { ...timing }));
+      loop.push(s.pulse.animate([
+        { offset: 0, strokeDashoffset: dash },
+        { offset: o(t0), strokeDashoffset: dash, easing: 'cubic-bezier(0.45, 0.05, 0.3, 1)' },
+        { offset: o(end), strokeDashoffset: `${(-s.rib.length).toFixed(1)}px` },
+        { offset: 1, strokeDashoffset: `${(-s.rib.length).toFixed(1)}px` },
+      ], timing));
+      loop.push(s.halo.animate(mono([
+        { offset: 0, opacity: 0.6 }, { offset: o(end - 60), opacity: 0.6, easing: 'ease-out' }, { offset: o(end + 220), opacity: 1, easing: 'ease-in-out' },
+        { offset: o(end + 900), opacity: 0.6 }, { offset: 1, opacity: 0.6 },
+      ]), timing));
+      loop.push(s.lit.animate(mono([
+        { offset: 0, opacity: 0.86 }, { offset: o(end - 60), opacity: 0.86, easing: 'ease-out' }, { offset: o(end + 160), opacity: 1, easing: 'ease-in-out' },
+        { offset: o(end + 800), opacity: 0.86 }, { offset: 1, opacity: 0.86 },
+      ]), timing));
+      loop.push(s.card.firstElementChild!.animate(mono([
+        { offset: 0, transform: 'scale(1)' }, { offset: o(end - 40), transform: 'scale(1)', easing: 'ease-out' }, { offset: o(end + 180), transform: 'scale(1.06)', easing: 'ease-in-out' },
+        { offset: o(end + 520), transform: 'scale(1)' }, { offset: 1, transform: 'scale(1)' },
+      ]), timing));
+    });
+    if (motionPaused() || !seen) for (const a of loop) a.pause();
+  };
 
-  // Depth: layers drift with the pointer (desktop) and with the scroll, nearer cards more; on a spring.
-  let px = 0, py = 0, tx = 0, ty = 0, vx = 0, vy = 0, raf = 0, last = 0, seen = false;
+  /** The intro: the picture rises in, the ribbons draw from the bill, the pieces run, the phones light, the cards pop. */
+  const playIntro = (): void => {
+    if (!built || calm()) return;
+    // The picture rises into place (no fade: it is the first screen's largest picture, and is seen from the first paint).
+    intro.push(built.art.animate([{ transform: 'translate3d(0, 22px, 0) scale(0.985)' }, { transform: 'none' }], { duration: ART_IN, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'backwards' }));
+    intro.push(built.bill.animate([{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'scale(1.25)', offset: 0.55 }, { opacity: 0.8, transform: 'scale(1)' }], { duration: 900, delay: RIB_START - 300, easing: 'ease-out', fill: 'backwards' }));
+    built.seats.forEach((s, k) => {
+      const start = RIB_START + k * RIB_GAP;
+      const land = arrival(k);
+      for (const path of [s.glow, s.line]) {
+        intro.push(path.animate([{ strokeDashoffset: `${s.rib.length.toFixed(1)}px` }, { strokeDashoffset: '0px' }], { duration: RIB_DRAW, delay: start, easing: 'cubic-bezier(0.55, 0.05, 0.25, 1)', fill: 'backwards' }));
+      }
+      intro.push(s.pack.animate(along(s.rib, 0, RIB_DRAW, RIB_DRAW), { duration: RIB_DRAW, delay: start }));
+      intro.push(s.lit.animate([{ opacity: 0 }, { opacity: 1, offset: 0.35 }, { opacity: 0.86 }], { duration: 700, delay: land - 60, easing: 'ease-out', fill: 'backwards' }));
+      intro.push(s.halo.animate([{ opacity: 0, transform: 'scale(0.5)' }, { opacity: 1, transform: 'scale(1.15)', offset: 0.4 }, { opacity: 0.6, transform: 'scale(1)' }], { duration: 1000, delay: land - 80, easing: 'ease-out', fill: 'backwards' }));
+      intro.push(s.card.firstElementChild!.animate(
+        [{ opacity: 0, transform: 'translate3d(0, 14px, 0) scale(0.6)' }, { opacity: 1, transform: 'none' }],
+        { duration: POP, delay: land, easing: SPRING, fill: 'backwards' },
+      ));
+      // A friend's card: its little link turns once as the card lands.
+      const glyph = s.card.querySelector('.lz-tag-link');
+      if (glyph) intro.push(glyph.animate([{ transform: 'rotate(-180deg) scale(0.6)' }, { transform: 'rotate(15deg) scale(1.1)', offset: 0.7 }, { transform: 'none' }], { duration: 760, delay: land + 180, easing: 'cubic-bezier(0.3, 0.7, 0.2, 1)', fill: 'backwards' }));
+    });
+    if (motionPaused()) for (const a of intro) a.pause();
+  };
+
+  // Depth: the layers drift with the pointer (where there is a mouse) and with the scroll, the cards most; on a spring.
+  let px = 0, py = 0, tx = 0, ty = 0, vx = 0, vy = 0, raf = 0, last = 0;
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
-  const all = [phoneLayer, ...layers];
   const tick = (now: number): void => {
     const dt = Math.min(0.032, last ? (now - last) / 1000 : 1 / 60);
     last = now;
-    vx += (120 * (tx - px) - 16 * vx) * dt; px += vx * dt;
-    vy += (120 * (ty - py) - 16 * vy) * dt; py += vy * dt;
-    // (the loop keeps running while the stage is in view: the orbit never stops)
+    vx += (110 * (tx - px) - 18 * vx) * dt; px += vx * dt;
+    vy += (110 * (ty - py) - 18 * vy) * dt; py += vy * dt;
+    // On the street's stage the camera moves the picture; the scroll adds no depth of its own there.
     const r = stage.getBoundingClientRect();
-    const scroll = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
-    for (const layer of all) {
-      const d = Number(layer.dataset.depth ?? 0.5);
-      layer.style.setProperty('--px', `${(px * 16 * d).toFixed(2)}px`);
-      layer.style.setProperty('--py', `${(py * 12 * d - scroll * 28 * d).toFixed(2)}px`);
+    const scroll = stage.closest('.zs-pinned') ? 0 : Math.max(-1, Math.min(1, (r.top + r.height / 2 - innerHeight / 2) / innerHeight));
+    for (const layer of frame.children as HTMLCollectionOf<HTMLElement>) {
+      const d = Number(layer.dataset.depth ?? 0.4);
+      layer.style.setProperty('--px', `${(px * 18 * d).toFixed(2)}px`);
+      layer.style.setProperty('--py', `${(py * 12 * d + scroll * 46 * d).toFixed(2)}px`);
     }
-    if (!calm()) orbitAt((now - skew) / 1000);
-    raf = seen && !motionPaused() ? requestAnimationFrame(tick) : 0;
+    // The spring asks for frames until it has come to rest; a scroll asks for one again.
+    const moving = Math.abs(tx - px) + Math.abs(ty - py) + Math.abs(vx) + Math.abs(vy) > 0.002;
+    raf = seen && !motionPaused() && moving ? requestAnimationFrame(tick) : 0;
   };
-  const kick = (): void => { if (!raf && seen && !motionPaused()) { last = 0; raf = requestAnimationFrame(tick); } };
+  const kick = (): void => { if (!raf && seen && !motionPaused() && !calm()) { last = 0; raf = requestAnimationFrame(tick); } };
 
   const begin = (): void => {
     if (!stage.isConnected) { requestAnimationFrame(begin); return; }
-    placeAll();
-    // The first screen loads now; the rest wait for an idle moment after the first paint.
-    // With reduced motion the phone keeps its first screen and the cards are already filled.
+    layout();
     if (calm()) return;
-    // The other screens come after the page has loaded and settled; the phone starts turning once they are all in.
-    const rest = (): void => {
-      shots.forEach(load);
-      void Promise.all(shots.map(img => img.decode().catch(() => undefined))).then(() => { if (stage.isConnected) cycle(); });
-    };
-    if (document.readyState === 'complete') setTimeout(rest, 1400);
-    else addEventListener('load', () => setTimeout(rest, 1400), { once: true });
-    // On arrival the cards come out from behind the phone to their places, one after another.
-    const places = narrow ? PHONE_PLACES : PLACES;
-    layers.filter(l => !l.hidden).forEach((layer, k) => {
-      const p = places[layer.dataset.key ?? ''];
-      const card = layer.querySelector<HTMLElement>('.lz-card');
-      if (!p || !card) return;
-      card.animate(
-        [{ opacity: 0, transform: `translate(${(-p.x * 0.55).toFixed(1)}px, ${(-p.y * 0.55).toFixed(1)}px) scale(0.86)` }, { opacity: 1, transform: 'none' }],
-        { duration: 760, delay: 120 + 70 * k, easing: SPRING, fill: 'backwards' },
-      );
-    });
-    requestAnimationFrame(() => requestAnimationFrame(() => { play(); startAt(500); }));
-    new IntersectionObserver(entries => {
-      seen = entries.some(e => e.isIntersecting);
-      for (const a of [...running, ...screens]) { if (seen && !motionPaused()) a.play(); else a.pause(); }
-      // The floating cards are a loop of CSS: this class holds them while the stage is off screen (landing.css).
-      stage.classList.toggle('lz-off', !seen);
-      kick();
-    }).observe(stage);
+    playIntro();
+    startLoop(INTRO_END);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(entries => {
+        seen = entries[entries.length - 1].isIntersecting;
+        for (const a of [...intro, ...loop]) { if (seen && !motionPaused()) resume(a); else a.pause(); }
+        // The cards' float is a loop of CSS: this class holds it while the picture is off screen (landing.css).
+        stage.classList.toggle('lz-off', !seen);
+        kick();
+      }).observe(stage);
+    }
     addEventListener('pointermove', e => {
       if (e.pointerType !== 'mouse' || !fine.matches) return;
       tx = (e.clientX / innerWidth) * 2 - 1;
       ty = (e.clientY / innerHeight) * 2 - 1;
       kick();
     }, { passive: true });
+    // A scroll asks for a frame: the depth reads where the picture is on the screen.
     addEventListener('scroll', kick, { passive: true });
-    // Pause motion: the loops hold where they are and the depth stops following the pointer and the scroll; playing
-    // carries on from the same place.
+    // Pause motion: the intro and the loop hold where they are and the depth stops following; playing carries on.
     onMotionPause(paused => {
-      const loops = [...running, ...screens];
+      const all = [...intro, ...loop];
       if (paused) {
         cancelAnimationFrame(raf);
         raf = 0;
-        heldAt = performance.now();
-        for (const a of loops) a.pause();
+        for (const a of all) a.pause();
       } else {
-        skew += performance.now() - heldAt;
-        if (seen) for (const a of loops) a.play();
+        if (seen) for (const a of all) resume(a);
         kick();
       }
     });
-    let width = stage.clientWidth;
-    new ResizeObserver(() => requestAnimationFrame(() => {
-      if (stage.clientWidth === width) return;
-      width = stage.clientWidth;
-      placeAll();
-      play();
-      startAt(500);
-      if (screens.length) cycle();
-    })).observe(stage);
+    // A phone turned on its side, or a window made narrow: the other composition, already drawn.
+    tall.addEventListener?.('change', () => { layout(); startLoop(0); });
   };
   begin();
   return stage;
 }
 
-/** The Cut-ribbon Z, drawn large for the last band: its parts come together once, then light runs along the gold. */
+/** The Cut-ribbon Z, drawn large for the last band, in a soft gold light; light runs slowly along its gold. */
 export function bigMark(): HTMLElement {
   const holder = h('span', { class: 'lz-mark', 'aria-hidden': 'true' });
   // Fixed markup: the brand mark's own paths.
-  holder.innerHTML = '<svg viewBox="0 0 89 110" focusable="false"><defs><clipPath id="lz-bar"><path d="M8 24H81L64 40H8Z"/></clipPath><linearGradient id="lz-shine" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path class="lz-m1" d="M8 24H81L64 40H8Z" fill="#F4B728"/><path class="lz-m2" d="M62 40H81L29 86H8Z" fill="#FBF8F1"/><path class="lz-m3" d="M29 70H81V86H8Z" fill="#FBF8F1"/><g clip-path="url(#lz-bar)"><rect class="lz-m-shine" x="-30" y="20" width="24" height="24" fill="url(#lz-shine)"/></g></svg>';
+  holder.innerHTML = '<i class="lz-mark-glow"></i><svg viewBox="0 0 89 110" focusable="false"><defs><clipPath id="lz-bar"><path d="M8 24H81L64 40H8Z"/></clipPath><linearGradient id="lz-shine" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.8"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><path class="lz-m2" d="M62 40H81L29 86H8Z" fill="#FBF8F1"/><path class="lz-m3" d="M29 70H81V86H8Z" fill="#FBF8F1"/><g clip-path="url(#lz-bar)"><path class="lz-m1" d="M8 24H81L64 40H8Z" fill="#F4B728"/><rect class="lz-m-blade" x="-4" y="18" width="1.6" height="28" fill="#fff"/><rect class="lz-m-shine" x="-30" y="20" width="24" height="24" fill="url(#lz-shine)"/></g></svg>';
   // The light along the gold is a loop of CSS: this class holds it while the Z is off screen (landing.css).
   if (!calm() && 'IntersectionObserver' in window) {
     new IntersectionObserver(entries => { holder.classList.toggle('lz-off', !entries[entries.length - 1].isIntersecting); }).observe(holder);
@@ -393,4 +357,4 @@ export function bigMark(): HTMLElement {
   return holder;
 }
 
-export { SCREENS, ticker as tickerStrip };
+export { ticker as tickerStrip };

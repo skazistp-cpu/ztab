@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Ztab street lab</title>
+  <style>
+    :root { color-scheme: light; --ink: #101216; --muted: #6b6e80; --gold: #f4b728; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #ffffff; color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    header { padding: 48px 24px 24px; max-width: 760px; }
+    header h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+    header p { margin: 0; color: var(--muted); }
+    .street { position: relative; height: 1000vh; }
+    .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+    @supports (height: 100svh) { .stage { height: 100svh; } }
+    .canvas-host { position: absolute; inset: 0; }
+    .caption { position: absolute; left: 4vw; top: 50%; transform: translateY(-50%); max-width: 30vw; font-size: 22px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; pointer-events: none; }
+    .caption small { display: block; font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 6px; }
+    @media (max-width: 759px) { .caption { left: 16px; right: 16px; top: auto; bottom: 6vh; transform: none; max-width: none; font-size: 18px; } }
+    .tag { position: absolute; transform: translate(-50%, -150%); background: #fff; border-radius: 10px; padding: 3px 8px; font-size: 12px; font-weight: 600; box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 6px 18px -8px rgba(0,0,0,0.35); white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 200ms; }
+    .tag.on { opacity: 1; }
+    .legend { display: none; }
+    @media (max-width: 759px) {
+      .legend { position: absolute; left: 16px; right: 16px; bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 200ms; pointer-events: none; }
+      .legend.on { opacity: 1; }
+      .legend span { display: flex; align-items: center; gap: 6px; color: #9a9caa; transition: color 200ms; }
+      .legend span::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #d9dbe2; transition: background-color 200ms, box-shadow 200ms; }
+      .legend span.active { color: #101216; }
+      .legend span.active::before { background: #f4b728; box-shadow: 0 0 0 3px rgba(244, 183, 40, 0.25); }
+      .legend span.done { color: #44475b; }
+      .legend span.done::before { background: #d39710; }
+      .caption { bottom: 86px; }
+    }
+    .hud { position: fixed; right: 10px; bottom: 10px; z-index: 5; background: rgba(16,18,22,0.82); color: #f2f2f2; font: 12px/1.4 ui-monospace, Menlo, monospace; padding: 8px 10px; border-radius: 8px; display: grid; gap: 6px; min-width: 210px; }
+    .hud button { font: inherit; padding: 3px 8px; border-radius: 6px; border: 0; background: var(--gold); color: #101216; cursor: pointer; }
+    .hud input { width: 100%; }
+    .hud[hidden] { display: none; }
+    footer { padding: 40vh 24px 80px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>The Ztab street</h1>
+    <p>Scroll: the camera travels down the street, one station for each step of a tab. (A lab page for the landing's 3D section.)</p>
+  </header>
+  <section class="street" id="street">
+    <div class="stage">
+      <div class="canvas-host" id="host"></div>
+      <p class="caption" id="caption"></p>
+      <div class="legend" id="legend" aria-hidden="true"></div>
+      <div id="tags"></div>
+    </div>
+  </section>
+  <footer>End of the street.</footer>
+  <div class="hud" id="hud">
+    <div id="stats">loading…</div>
+    <input id="slider" type="range" min="0" max="1000" value="0" aria-label="Progress" />
+    <div><button id="pause" type="button">Pause motion</button></div>
+  </div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

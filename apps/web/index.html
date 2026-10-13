@@ -26,10 +26,15 @@
       // link (s… or a table share g…/n) gets the pay page's width. No request is made.
       if (location.hash.length < 2 && !new URLSearchParams(location.search).has('demo')) {
         document.documentElement.classList.add('opening');
-        // The opening's phone shows this screen first: ask for it now, with the page, not after the script.
+        // The opening's picture of the dinner: ask for it now, with the page, not after the script (the same files and
+        // sizes as landing-hero.ts gives the picture, so the browser takes the same one).
+        var tall = matchMedia('(max-width: 759px)').matches;
         var first = document.createElement('link');
-        first.rel = 'preload'; first.as = 'image'; first.setAttribute('fetchpriority', 'high');
-        first.href = matchMedia('(max-width: 759px)').matches ? '/landing/screen-bill-sm.webp' : '/landing/screen-bill.webp';
+        first.rel = 'preload'; first.as = 'image'; first.type = 'image/avif'; first.setAttribute('fetchpriority', 'high');
+        first.setAttribute('imagesrcset', tall
+          ? '/landing/dinner-tall-720.avif 720w, /landing/dinner-tall-840.avif 840w, /landing/dinner-tall-1080.avif 1080w'
+          : '/landing/dinner-wide-1200.avif 1200w, /landing/dinner-wide-1600.avif 1600w, /landing/dinner-wide-2400.avif 2400w');
+        first.setAttribute('imagesizes', tall ? '(max-width: 759px) 112vw, 437px' : '(min-width: 1600px) 1600px, 100vw');
         document.head.appendChild(first);
       }
       else if (/^#(s|g[^/]*\/\d+$)/.test(location.hash)) document.documentElement.classList.add('route-pay');
