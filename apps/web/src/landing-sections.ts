@@ -22,7 +22,7 @@ import './landing-sections.css';
 /** The sentences of these sections, word for word as approved. */
 export const SECTION_SENTENCES = {
   fills: 'A wallet that reads the request fills in the address and the amount, and the note if it supports one.',
-  tried: 'We have tried the requests in Zodl, Zingo, YWallet and Zkool.',
+  tried: 'Tested with Zodl, Zingo, YWallet and Zkool.',
 } as const;
 
 // ── The band of night: the wallet ───────────────────────────────────────────────────────────────────────────────
@@ -226,7 +226,7 @@ export function ring(): HTMLElement {
  * vectors and 16 canonical URIs; the engine's other tests are not counted), the currencies it offers (USD, EUR, GBP, CZK,
  * PLN, CHF), the wallets the requests were tried in (Zodl, Zingo, YWallet, Zkool), and the accounts it keeps.
  */
-const COUNTS: [number, string][] = [[67, 'ZIP 321 conformance tests passed'], [6, 'currencies'], [4, 'wallets tried'], [0, 'accounts']];
+const COUNTS: [number, string][] = [[67, 'ZIP 321 conformance tests passed'], [6, 'currencies'], [4, 'wallets tested'], [0, 'accounts']];
 
 /** The six currencies' signs, from the app's own currency codes, written the way English writes them ($, €, £, Kč, zł, CHF). */
 const SIGNS = FIAT_CURRENCIES.map(code => {

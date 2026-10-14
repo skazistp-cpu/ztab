@@ -123,7 +123,7 @@ const WALLETS_TRIED: [string, string][] = [
 
 function walletsChecked(): HTMLElement {
   return h('div', { class: 'wallets-checked' },
-    h('p', { class: 'wallets-lead' }, h('strong', {}, 'Which wallet?'), ' We have tried these, 10–11 October 2026:'),
+    h('p', { class: 'wallets-lead' }, h('strong', {}, 'Which wallet?'), ' Tested with these, 10–11 October 2026:'),
     h('ul', {}, ...WALLETS_TRIED.map(([place, wallets]) => h('li', {}, h('span', {}, `${place}:`), ' ', wallets))),
     h('p', { class: 'note' }, 'Each result and its limits are in the help below.'),
   );

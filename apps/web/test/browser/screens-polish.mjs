@@ -124,9 +124,9 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
     assert.ok(await page.locator('.card.pay a.primary').evaluate(e => e.getBoundingClientRect().bottom <= 844), 'Open in my wallet on the first phone screen');
     // Which wallet, without opening the help: only wallets, places and dates of the help's own dated log.
     assert.equal(await page.locator('.wallet-help').evaluate(d => d.open), false);
-    // The claims review's wording, word for word (12 Oct 2026), with "Which wallet?" as the bold lead.
+    // The claims review's wording, word for word (12 Oct 2026; its lead as the owner put it, 14 Oct 2026), with "Which wallet?" as the bold lead.
     const said = await page.locator('.wallets-checked > *').evaluateAll(els => els.flatMap(e => e.matches('ul') ? [...e.children] : [e]).map(e => e.textContent.replace(/\s+/g, ' ').trim()));
-    assert.deepEqual(said, ['Which wallet? We have tried these, 10–11 October 2026:', 'iPhone: Zodl (our own report)', 'Android emulator: Zingo 2.0.24, YWallet 1.15.3, Zkool 6.32.0', 'Desktop: Zingo PC 2.0.26 (testnet)', 'Each result and its limits are in the help below.']);
+    assert.deepEqual(said, ['Which wallet? Tested with these, 10–11 October 2026:', 'iPhone: Zodl (our own report)', 'Android emulator: Zingo 2.0.24, YWallet 1.15.3, Zkool 6.32.0', 'Desktop: Zingo PC 2.0.26 (testnet)', 'Each result and its limits are in the help below.']);
     assert.equal(await page.locator('.wallets-lead strong').textContent(), 'Which wallet?');
     await page.locator('.wallet-help > summary').click();
     assert.deepEqual(await page.locator('.wallet-checks th').allInnerTexts(), LOG, 'the log itself is unchanged');

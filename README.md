@@ -340,9 +340,10 @@ The submitted source snapshot is
 The demo and pitch linked above are the submitted videos. Documentation
 clarifications dated 13 October 2026 do not change that source snapshot.
 
-Later commits from 13 October 2026 update the landing page only (the 3D street
-and its motion); the engine and the bill-splitting and payment flow are
-unchanged. The live site at ztab.sebrona.com runs the latest commit.
+Later commits from 13–14 October 2026 update the landing page (the 3D street
+and its motion) and one line of wording on the pay page; the engine and the
+bill-splitting and payment logic are unchanged. The live site at
+ztab.sebrona.com runs the latest commit.
 
 **Demo clarification:** the narration's “137 passed” refers to the combined
 engine test run: 70 Ztab engine tests and 67 ZIP 321 conformance-vector tests.

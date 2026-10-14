@@ -1,10 +1,11 @@
 /*
- * The wallet band's two sentences, word for word as the claims review approved them (13 October 2026). Nothing here
- * changes a word: the lines below only say where the first sentence breaks and which words light up.
+ * The wallet band's two sentences, word for word as approved (the first by the claims review, 13 October 2026; the
+ * second as the owner put it, 14 October 2026). Nothing here changes a word: the lines below only say where the first
+ * sentence breaks and which words light up.
  */
 
 export const BAND_S1 = 'A wallet that reads the request fills in the address and the amount, and the note if it supports one.';
-export const BAND_S2 = 'We have tried the requests in Zodl, Zingo, YWallet and Zkool.';
+export const BAND_S2 = 'Tested with Zodl, Zingo, YWallet and Zkool.';
 
 /** What the wallet fills in, in the order it does. */
 export type Key = 'address' | 'amount' | 'note';
@@ -33,7 +34,7 @@ export const WALLETS = ['Zodl', 'Zingo', 'YWallet', 'Zkool'] as const;
  * the punctuation that follows it, so a line never breaks between a name's check and its comma.
  */
 export const S2_PIECES: readonly (string | { readonly wallet: (typeof WALLETS)[number]; readonly after: string })[] = [
-  'We have tried the requests in ',
+  'Tested with ',
   { wallet: 'Zodl', after: ',' },
   ' ',
   { wallet: 'Zingo', after: ',' },

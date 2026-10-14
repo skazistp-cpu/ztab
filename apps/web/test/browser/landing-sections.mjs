@@ -15,10 +15,10 @@ const pw = await import(module ? (module.startsWith('/') ? pathToFileURL(module)
 const origin = (process.env.TAB_ORIGIN || 'http://127.0.0.1:8764').replace(/\/$/, '');
 const flat = text => text.replace(/\s+/g, ' ').trim();
 
-// In the order of the phone's page: the request, then the wallets tried.
+// In the order of the phone's page: the request, then the wallets tested.
 const LINES = [
   'A wallet that reads the request fills in the address and the amount, and the note if it supports one.',
-  'We have tried the requests in Zodl, Zingo, YWallet and Zkool.',
+  'Tested with Zodl, Zingo, YWallet and Zkool.',
 ];
 // The ring's twelve friends: the sample dinner's five, then two more tabs split by makeTab.
 const ringTab = (label, fiat, total, rate, names) => {
@@ -90,10 +90,10 @@ for (const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
           assert.ok(await page.locator('.wb-screen').evaluate(el => el.inert && el.getAttribute('aria-hidden') === 'true'), `${at}: the page on the phone is a picture (inert)`);
 
           // The counts: four facts, each counted up to its figure once the strip is seen (at once with reduced motion).
-          assert.deepEqual(await page.locator('.ls-count-label').allTextContents(), ['ZIP 321 conformance tests passed', 'currencies', 'wallets tried', 'accounts'], `${at}: the counts' words`);
+          assert.deepEqual(await page.locator('.ls-count-label').allTextContents(), ['ZIP 321 conformance tests passed', 'currencies', 'wallets tested', 'accounts'], `${at}: the counts' words`);
           await scrollToEl(page, '.ls-counts', -200);
           await page.waitForFunction(() => [...document.querySelectorAll('.ls-count-num')].map(n => n.textContent).join() === '67,6,4,0', null, { timeout: 4000 });
-          assert.deepEqual((await page.locator('.ls-count').allTextContents()).map(flat), ['6767 ZIP 321 conformance tests passed', '66 currencies', '44 wallets tried', '00 accounts'], `${at}: each figure also said once, in full`);
+          assert.deepEqual((await page.locator('.ls-count').allTextContents()).map(flat), ['6767 ZIP 321 conformance tests passed', '66 currencies', '44 wallets tested', '00 accounts'], `${at}: each figure also said once, in full`);
           // Each figure's own picture, hidden from a screen reader: 67 ticks (all on once counted), the six currencies'
           // signs from the app's codes, the four wallets' names, and the ghost of an account.
           assert.equal(await page.locator('.ls-dial').count(), 4, `${at}: four figures`);
