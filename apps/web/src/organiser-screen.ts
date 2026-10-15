@@ -7,6 +7,7 @@ import type { Tab } from './tab.ts';
 import { noteMatcher } from './note-match.ts';
 import { paymentFinder } from './payment-finder.ts';
 import { onLeave } from './leave.ts';
+import { followupText } from './organiser-followup.ts';
 
 export const OWN_RECORD = 'Your own record. Ztab cannot see payments on its own.';
 export const WHOLE_TAB_DISCLOSURE = 'Anyone with this link can see the whole tab.';
@@ -58,6 +59,18 @@ export function organiserScreen(table: TableLink, fragment: string, ticks: boole
     h('label', {for: 'settled-summary'}, 'Summary to copy'), summaryText,
   );
   const count = h('p', { class: 'mine-count', role: 'status' });
+  const followupMessage = h('textarea', {
+    id: 'followup-message', readonly: '', rows: '8', spellcheck: 'false',
+  });
+  const selectFollowup = h('button', { type: 'button', class: 'secondary' }, 'Select follow-up text');
+  selectFollowup.addEventListener('click', () => { followupMessage.focus(); followupMessage.select(); });
+  const followup = h('details', { class: 'mine-followup' },
+    h('summary', {}, 'Follow up on unticked shares'),
+    h('p', {}, 'Review this message before sharing it. Unticked shares may already have been paid; check your wallet first.'),
+    h('p', { class: 'note' }, 'The message includes names, amounts and individual pay links. It does not include your organiser link. Copying sends no message.'),
+    h('label', { for: 'followup-message' }, 'Follow-up message to copy'), followupMessage,
+    h('p', { class: 'actions' }, copyButton('Copy follow-up', () => followupMessage.value), selectFollowup),
+  );
   // The bar repeats the count for the eye; the count is what is announced.
   const filled = h('i', {});
   const bar = h('span', { class: 'mine-bar', 'aria-hidden': 'true' }, filled);
@@ -79,6 +92,8 @@ export function organiserScreen(table: TableLink, fragment: string, ticks: boole
     saved.hidden = done === 0;
     keep.classList.toggle('saved', done > 0);
     complete.hidden = !all;
+    followupMessage.value = followupText(table, marks, location.href);
+    followup.hidden = followupMessage.value === '';
     // No summary survives an untick, and nothing is written outside the existing tick link.
     summaryText.value = all ? [
       `${first.label || 'Your tab'} — organiser’s record`,
@@ -154,6 +169,7 @@ export function organiserScreen(table: TableLink, fragment: string, ticks: boole
       complete,
       // Keeping the link comes straight after the list, so it is near the ticks it keeps.
       keep,
+      followup,
       matcher?.element,
       finder?.element,
       h('p', { class: 'mine-new' }, h('a', { href: '#', class: 'tap-link' }, 'Start a new bill')),
