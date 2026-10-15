@@ -1,0 +1,47 @@
+name: CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out this commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Check out pinned ZIP-321 conformance vectors
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: zecdev/zcash-zip321-test-vectors
+          ref: f76de74ac483b9c75dbbfa1ffc40ca170a0892be
+          path: .ci/zip321
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.17.0'
+          package-manager-cache: false
+      - name: Verify the corpus revision
+        run: test "$(git -C .ci/zip321 rev-parse HEAD)" = f76de74ac483b9c75dbbfa1ffc40ca170a0892be
+      - name: Install locked dependencies
+        run: |
+          npm ci --prefix packages/engine --ignore-scripts --no-audit --no-fund
+          npm ci --prefix apps/web --ignore-scripts --no-audit --no-fund
+      - name: Engine typecheck and conformance tests
+        env:
+          ZIP321_CORPUS: ${{ github.workspace }}/.ci/zip321
+        run: |
+          npm run typecheck --prefix packages/engine
+          npm test --prefix packages/engine
+      - name: Web tests and production build
+        run: |
+          npm test --prefix apps/web
+          npm run build --prefix apps/web
