@@ -37,6 +37,9 @@ for(const engine of (process.env.BROWSERS || 'chromium,webkit').split(',')) {
  assert.equal(await section.getAttribute('open'),null);
  await section.locator('summary').click();
  const message=page.getByRole('textbox',{name:'Follow-up message to copy',exact:true});
+ await message.hover();
+ await page.mouse.wheel(0,700);
+ await page.waitForFunction(()=>document.querySelector('#followup-message').scrollTop>0,{},{timeout:2000});
  let text=await message.inputValue();assert.match(text,/2\. Ana — \$40\.00 · 0\.4 ZEC/);
  assert.ok(text.includes(tab.rows[1].fragment));assert.ok(!text.includes(tab.rows[0].fragment));assert.ok(!text.includes('Ben'));assert.ok(!text.includes('/mine'));
  assert.match(text,/does not confirm whether a payment was made/);assert.match(text,/already paid.*before paying again/);assert.match(text,/Testnet: not real ZEC/);

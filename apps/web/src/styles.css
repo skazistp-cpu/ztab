@@ -460,6 +460,7 @@ input[list]::-webkit-calendar-picker-indicator { display: none !important; }
 .mine-complete { margin: 1.5rem 0; padding: 1rem; border: 1px solid var(--rule); border-top: 3px solid var(--gold); border-radius: 12px; background: var(--paper-deep); }
 .mine-complete h2 { margin-top: 0; }
 .mine-complete textarea { overflow: auto; resize: vertical; font-size: .85rem; }
+.mine-followup textarea { overflow: auto; resize: vertical; }
 
 /* The opening's own rules are in landing.css. */
 /* The opening keeps the footer below the first screen until it is drawn, so the footer does not jump. */
