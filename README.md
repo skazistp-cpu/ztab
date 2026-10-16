@@ -228,6 +228,11 @@ API key, wallet connection or environment secret is required.
 
 ## Tests
 
+[The CI workflow](.github/workflows/ci.yml) runs the engine tests against a
+pinned ZIP 321 corpus, web unit tests, typechecks and the production build
+on pushes and pull requests. It does not deploy the site or run browser or
+real-wallet checks. The browser checks below are run separately.
+
 ```sh
 npm test --prefix apps/web
 npm run typecheck --prefix packages/engine
@@ -342,8 +347,16 @@ clarifications dated 13 October 2026 do not change that source snapshot.
 
 Later commits from 13–14 October 2026 update the landing page (the 3D street
 and its motion) and one line of wording on the pay page; the engine and the
-bill-splitting and payment logic are unchanged. The live site at
-ztab.sebrona.com runs the latest commit.
+bill-splitting and payment logic are unchanged by those commits.
+
+Post-submission work dated 15–16 October 2026 adds a copy-only organiser
+follow-up for unticked shares and restores the build and conformance CI
+workflow. These additions are not part of the submitted snapshot. The
+follow-up uses the original individual payment links; it does not change
+payment requests or establish whether someone has paid. See
+[organiser follow-up](docs/organiser-followup.md) for its behaviour and limits.
+Source publication and deployment are separate steps; a repository update
+alone does not mean the live site has been updated.
 
 **Demo clarification:** the narration's “137 passed” refers to the combined
 engine test run: 70 Ztab engine tests and 67 ZIP 321 conformance-vector tests.
